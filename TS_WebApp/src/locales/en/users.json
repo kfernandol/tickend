@@ -1,0 +1,12 @@
+{
+    "UserTableTitle": "List of users",
+    "UserTableHeaderId": "Id",
+    "UserTableHeaderPhoto": "Photo",
+    "UserTableHeaderUsername": "Username",
+    "UserTableHeaderFirstName": "FirstName",
+    "UserTableHeaderLastName": "LastName",
+    "UserTableHeaderEmail": "Email",
+    "UserTableHeaderRol": "Rol",
+    "UserTableHeaderActions": "Actions",
+    "UserTableHeaderNewUser": "New User"
+}

@@ -1,0 +1,15 @@
+:root {
+    --btn-submit-login-color: #45B9FF;
+}
+
+
+.btnSubmitLogin {
+    width: 100%;
+    background-color: var(--btn-submit-login-color);
+    border-color: var(--btn-submit-login-color);
+    transition: box-shadow .2s;
+}
+
+.btnSubmitLogin:hover {
+    box-shadow: var(--btn-submit-login-color) 0px 0px 10px;
+}
