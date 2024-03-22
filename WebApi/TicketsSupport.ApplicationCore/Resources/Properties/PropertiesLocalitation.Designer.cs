@@ -124,11 +124,29 @@ namespace TicketsSupport.ApplicationCore.Resources.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Permission Level.
+        /// </summary>
+        public static string PermissionLevel {
+            get {
+                return ResourceManager.GetString("PermissionLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Rol.
         /// </summary>
         public static string Rol {
             get {
                 return ResourceManager.GetString("Rol", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rol Name.
+        /// </summary>
+        public static string RolName {
+            get {
+                return ResourceManager.GetString("RolName", resourceCulture);
             }
         }
         

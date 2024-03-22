@@ -138,8 +138,14 @@
   <data name="Password" xml:space="preserve">
     <value>Password</value>
   </data>
+  <data name="PermissionLevel" xml:space="preserve">
+    <value>Permission Level</value>
+  </data>
   <data name="Rol" xml:space="preserve">
     <value>Rol</value>
+  </data>
+  <data name="RolName" xml:space="preserve">
+    <value>Rol Name</value>
   </data>
   <data name="Username" xml:space="preserve">
     <value>Username</value>
