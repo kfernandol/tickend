@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { paths } from '../../routes/paths';
 import { classNames } from 'primereact/utils';
 //Components
@@ -12,20 +12,23 @@ import { Toast } from 'primereact/toast';
 
 //Hookss
 import { useTranslation } from 'react-i18next'
-import { usePost } from '../../services/api_services';
+import { useGet, usePost } from '../../services/api_services';
 import useUserForm from '../../hooks/form/useUserForm';
 
 //Models
 import { UserRequestPost } from '../../models/requests/users.request';
 import { UserFormModel } from '../../models/forms/user.form';
 import { BasicResponse, ErrorResponse } from '../../models/responses/basic.response';
+import { RolesResponse } from '../../models/responses/roles.response';
 
 function NewUsers() {
+    const [roles, setRoles] = useState<{ name: string, value: number }[]>([{ name: "", value: 0 }]);
     const toast = useRef<Toast>(null);
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { control, getFormErrorMessage, errors, handleSubmit, reset, getValues } = useUserForm();
     const { SendPostRequest, postResponse, loadingPost, errorPost, httpCodePost } = usePost<BasicResponse>();
+    const { SendGetRequest, getResponse, loadingGet } = useGet<RolesResponse[]>()
 
     const onSubmit = async (data: UserFormModel) => {
 
@@ -40,6 +43,27 @@ function NewUsers() {
 
         SendPostRequest("v1/users/", userData)
     };
+
+    //request initial data
+    useEffect(() => {
+        SendGetRequest("v1/roles/");
+    }, []);
+
+    //load initial data
+    useEffect(() => {
+        if (Array.isArray(getResponse)) {
+            const areAllRolResponses = getResponse.every(item => Object.prototype.toString.call(item) === '[object Object]' && 'permissionLevel' in item);
+
+            if (areAllRolResponses) {
+                const roles = getResponse.map(x => ({
+                    name: x.name,
+                    value: x.id
+                }));
+
+                setRoles(roles);
+            }
+        }
+    }, [getResponse])
 
     useEffect(() => {
         if (errorPost && httpCodePost !== 0) {
@@ -140,7 +164,15 @@ function NewUsers() {
                             control={control}
                             rules={
                                 {
-
+                                    required: t('ErrorIsRequired'),
+                                    maxLength: {
+                                        value: 50,
+                                        message: t('ErrorMaxCaracter') + 50
+                                    },
+                                    minLength: {
+                                        value: 5,
+                                        message: t('ErrorMinCaracter') + 5
+                                    }
 
                                 }}
                             render={({ field, fieldState }) => (
@@ -262,7 +294,10 @@ function NewUsers() {
                             rules={
                                 {
                                     required: t('ErrorIsRequired'),
-
+                                    min: {
+                                        value: 1,
+                                        message: t('ErrorIsRequired')
+                                    },
                                 }}
                             render={({ field, fieldState }) => (
                                 <>
@@ -271,7 +306,7 @@ function NewUsers() {
                                         value={field.value}
                                         optionLabel="name"
                                         placeholder={t("UserCardFormRol")}
-                                        options={[{ name: "Administrador", value: 1 }]}
+                                        options={roles}
                                         focusInputRef={field.ref}
                                         onChange={(e) => field.onChange(e.value)}
                                         className={classNames({ 'p-invalid': fieldState.error }) + " w-full"}

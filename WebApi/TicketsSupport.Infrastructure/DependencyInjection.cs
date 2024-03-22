@@ -21,6 +21,8 @@ namespace TicketsSupport.Infrastructure
             //Dependencies infrastructures
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IAuthRepository, AuthRepository>();
+            services.AddScoped<IRolRepository, RolRepository>();
+            services.AddScoped<IMenuRepository, MenuRepository>();
 
             return services;
         }

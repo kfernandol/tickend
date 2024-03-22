@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { paths } from '../../routes/paths';
 import { classNames } from 'primereact/utils';
 
@@ -22,17 +22,19 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Dropdown } from 'primereact/dropdown';
 import { Toast } from 'primereact/toast';
 import { ProgressSpinner } from 'primereact/progressspinner';
+import { RolesResponse } from '../../models/responses/roles.response';
 
 
 
 function EditUsers() {
+    const [roles, setRoles] = useState<{ name: string, value: number }[]>([{ name: "", value: 0 }]);
     const toast = useRef<Toast>(null);
     const { id } = useParams();
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { control, getFormErrorMessage, errors, handleSubmit, reset, getValues, setValue } = useUserForm();
     const { SendPutRequest, putResponse, loadingPut, errorPut, httpCodePut } = usePut<BasicResponse>();
-    const { SendGetRequest, getResponse, loadingGet } = useGet<UserResponse>()
+    const { SendGetRequest, getResponse, loadingGet } = useGet<UserResponse | RolesResponse>()
 
     const onSubmit = async (data: UserFormModel) => {
 
@@ -54,19 +56,38 @@ function EditUsers() {
     //request user data
     useEffect(() => {
         SendGetRequest("v1/users/" + id);
+        SendGetRequest("v1/roles/");
     }, [])
 
     //Load user data
 
     useEffect(() => {
+
         if (getResponse) {
-            setValue("firstName", getResponse.firstName);
-            setValue("lastName", getResponse.lastName);
-            setValue("email", getResponse.email);
-            setValue("rolId", getResponse.rolId);
-            setValue("username", getResponse.username);
+            if (Array.isArray(getResponse)) {
+
+                //Is Rol List Response
+                const areAllRolResponses = getResponse.every(item => Object.prototype.toString.call(item) === '[object Object]' && 'permissionLevel' in item);
+                if (areAllRolResponses) {
+                    const roles = getResponse.map(x => ({
+                        name: x.name,
+                        value: x.id
+                    }));
+
+                    setRoles(roles);
+                }
+
+                //Is User Response
+            } else if ('firstName' in getResponse) {
+                setValue("firstName", getResponse.firstName);
+                setValue("lastName", getResponse.lastName);
+                setValue("email", getResponse.email);
+                setValue("rolId", getResponse.rolId);
+                setValue("username", getResponse.username);
+            }
         }
-    }, [getResponse, setValue]);
+
+    }, [getResponse]);
 
     //Save User Edit
     useEffect(() => {
@@ -176,7 +197,15 @@ function EditUsers() {
                                     control={control}
                                     rules={
                                         {
-
+                                            required: t('ErrorIsRequired'),
+                                            maxLength: {
+                                                value: 50,
+                                                message: t('ErrorMaxCaracter') + 50
+                                            },
+                                            minLength: {
+                                                value: 5,
+                                                message: t('ErrorMinCaracter') + 5
+                                            }
 
                                         }}
                                     render={({ field, fieldState }) => (
@@ -296,7 +325,7 @@ function EditUsers() {
                                     rules={
                                         {
                                             required: t('ErrorIsRequired'),
-                                            minLength: {
+                                            min: {
                                                 value: 1,
                                                 message: t('ErrorIsRequired')
                                             },
@@ -308,7 +337,7 @@ function EditUsers() {
                                                 value={field.value}
                                                 optionLabel="name"
                                                 placeholder={t("UserCardFormRol")}
-                                                options={[{ name: "Administrador", value: 1 }]}
+                                                options={roles}
                                                 focusInputRef={field.ref}
                                                 onChange={(e) => field.onChange(e.value)}
                                                 className={classNames({ 'p-invalid': fieldState.error }) + " w-full py-1"}

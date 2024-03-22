@@ -17,6 +17,9 @@ IF NOT EXISTS (SELECT 1 FROM [Menu])
 BEGIN 
     INSERT INTO [Menu](Name,  Icon, Url, ParentId, Position, Show, Active) 
     VALUES('Users', 'user', '/users', NULL, 1, 1, 1)
+
+    INSERT INTO [Menu](Name,  Icon, Url, ParentId, Position, Show, Active) 
+    VALUES('Roles', 'roles', '/roles', NULL, 1, 1, 1)
 END;
 
 /* Default insert in MenuXRol */
@@ -24,4 +27,7 @@ IF NOT EXISTS (SELECT 1 FROM [MenuXRol])
 BEGIN 
     INSERT INTO [MenuXRol](MenuId, RoleId) 
     VALUES(1,1)
+
+    INSERT INTO [MenuXRol](MenuId, RoleId) 
+    VALUES(2,1)
 END;

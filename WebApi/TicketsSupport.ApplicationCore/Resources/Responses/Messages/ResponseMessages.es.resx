@@ -117,6 +117,15 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="MenuDeleted" xml:space="preserve">
+    <value>Menu eliminado</value>
+  </data>
+  <data name="MenuUpdated" xml:space="preserve">
+    <value>Menu actualizado</value>
+  </data>
+  <data name="NewMenuAdded" xml:space="preserve">
+    <value>Nuevo menu agregado</value>
+  </data>
   <data name="NewUserAdded" xml:space="preserve">
     <value>Nuevo usuario agregado</value>
   </data>

@@ -12,9 +12,14 @@ namespace TicketsSupport.ApplicationCore.Mappings
             CreateMap<CreateUserRequest, User>();
             CreateMap<User, UserResponse>()
                 .ForMember(dest => dest.RolId, opt => opt.MapFrom(src => src.Rol));
+
             //Rol
             CreateMap<CreateRolRequest, Rol>();
             CreateMap<Rol, RolResponse>();
+
+            //Menu
+            CreateMap<CreateMenuRequest, Menu>();
+            CreateMap<Menu, MenuResponse>();
         }
     }
 }

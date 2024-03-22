@@ -46,7 +46,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
         public async Task<List<RolResponse>> GetRol()
         {
-            return this._context.Users.Where(x => x.Active == true)
+            return this._context.Rols.Where(x => x.Active == true)
                                       .Select(x => this._mapper.Map<RolResponse>(x))
                                       .ToList();
         }

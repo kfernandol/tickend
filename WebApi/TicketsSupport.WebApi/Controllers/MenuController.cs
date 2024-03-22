@@ -16,86 +16,101 @@ namespace TicketsSupport.WebApi.Controllers
     [Authorize]
     [ApiController]
     [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/roles/")]
-    public class RolController : Controller
+    [Route("api/v{version:apiVersion}/menus/")]
+    public class MenuController : Controller
     {
-        private readonly IRolRepository _rolRepository;
+        private readonly IMenuRepository _menuRepository;
 
-        public RolController(IRolRepository rolRepository)
+        public MenuController(IMenuRepository menuRepository)
         {
-            _rolRepository = rolRepository;
+            _menuRepository = menuRepository;
         }
 
         /// <summary>
-        /// Get all roles
+        /// Get all menus
         /// </summary>
         /// <returns></returns>
-        [AuthorizeMenu("Roles")]
+        [AuthorizeRole(PermissionLevel.Administrator)]
         [HttpGet, MapToApiVersion(1.0)]
-        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(RolResponse))]
+        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(List<MenuResponse>))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> GetRoles()
+        public async Task<IActionResult> GetMenus()
         {
-            var users = await this._rolRepository.GetRol();
-            return Ok(users);
+            var menus = await this._menuRepository.GetMenus();
+            return Ok(menus);
         }
 
         /// <summary>
-        /// Get rol by id
+        /// Get menu by id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [AuthorizeMenu("Roles")]
+        [AuthorizeRole(PermissionLevel.Administrator)]
         [HttpGet("{id}"), MapToApiVersion(1.0)]
-        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(RolResponse))]
+        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(MenuResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> GetRolById(int id)
+        public async Task<IActionResult> GetMenuById(int id)
         {
-            var user = await _rolRepository.GetRolById(id);
-            return Ok(user);
+            var menu = await _menuRepository.GetMenusById(id);
+            return Ok(menu);
+        }
+
+
+        /// <summary>
+        /// Get menu by user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [HttpGet("{userId}"), MapToApiVersion(1.0)]
+        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(MenuResponse))]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
+        [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
+        public async Task<IActionResult> GetMenuByUserId(int userId)
+        {
+            var menu = await _menuRepository.GetMenusByUser(userId);
+            return Ok(menu);
         }
 
         /// <summary>
-        /// Create new rol
+        /// Create new menu
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        [AuthorizeMenu("Roles")]
+        [AuthorizeRole(PermissionLevel.Administrator)]
         [HttpPost, MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> Create(CreateRolRequest request)
+        public async Task<IActionResult> Create(CreateMenuRequest request)
         {
-            await _rolRepository.CreateRol(request);
-            return Ok(new BasicResponse { Success = true, Message = ResourcesUtils.GetResponseMessage("NewRolAdded") });
+            await _menuRepository.CreateMenu(request);
+            return Ok(new BasicResponse { Success = true, Message = ResourcesUtils.GetResponseMessage("NewMenuAdded") });
         }
 
         /// <summary>
-        /// Update roles
+        /// Update menu
         /// </summary>
         /// <param name="id"></param>
         /// <param name="request"></param>
         /// <returns></returns>
-        [AuthorizeMenu("Roles")]
+        [AuthorizeRole(PermissionLevel.Administrator)]
         [HttpPut("{id}"), MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> Update(int id, UpdateRolRequest request)
+        public async Task<IActionResult> Update(int id, UpdateMenuRequest request)
         {
-            await _rolRepository.UpdateRol(id, request);
-            return Ok(new BasicResponse { Success = true, Message = ResourcesUtils.GetResponseMessage("RolUpdated") });
+            await _menuRepository.UpdateMenu(id, request);
+            return Ok(new BasicResponse { Success = true, Message = ResourcesUtils.GetResponseMessage("MenuUpdated") });
         }
 
         /// <summary>
-        /// Delete roles
+        /// Delete menus
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [AuthorizeMenu("Roles")]
         [AuthorizeRole(PermissionLevel.Administrator)]
         [HttpDelete("{id}"), MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
@@ -103,8 +118,8 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> Delete(int id)
         {
-            await _rolRepository.DeleteRolById(id);
-            return Ok(new BasicResponse { Success = true, Message = ResourcesUtils.GetResponseMessage("RolDeleted") });
+            await _menuRepository.DeleteMenuById(id);
+            return Ok(new BasicResponse { Success = true, Message = ResourcesUtils.GetResponseMessage("MenuDeleted") });
         }
 
     }

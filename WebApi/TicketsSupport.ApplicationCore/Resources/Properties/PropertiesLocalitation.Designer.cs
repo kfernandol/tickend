@@ -115,6 +115,60 @@ namespace TicketsSupport.ApplicationCore.Resources.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Menu icon.
+        /// </summary>
+        public static string MenuIcon {
+            get {
+                return ResourceManager.GetString("MenuIcon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Menu name.
+        /// </summary>
+        public static string MenuName {
+            get {
+                return ResourceManager.GetString("MenuName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Menu parent.
+        /// </summary>
+        public static string MenuParent {
+            get {
+                return ResourceManager.GetString("MenuParent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Menu position.
+        /// </summary>
+        public static string MenuPosition {
+            get {
+                return ResourceManager.GetString("MenuPosition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Menu show.
+        /// </summary>
+        public static string MenuShow {
+            get {
+                return ResourceManager.GetString("MenuShow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Menu url.
+        /// </summary>
+        public static string MenuUrl {
+            get {
+                return ResourceManager.GetString("MenuUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Password.
         /// </summary>
         public static string Password {
@@ -124,7 +178,7 @@ namespace TicketsSupport.ApplicationCore.Resources.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Permission Level.
+        ///   Looks up a localized string similar to Permission level.
         /// </summary>
         public static string PermissionLevel {
             get {
@@ -142,7 +196,7 @@ namespace TicketsSupport.ApplicationCore.Resources.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Rol Name.
+        ///   Looks up a localized string similar to Rol name.
         /// </summary>
         public static string RolName {
             get {

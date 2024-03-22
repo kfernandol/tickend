@@ -135,17 +135,35 @@
   <data name="LastName" xml:space="preserve">
     <value>Apellido</value>
   </data>
+  <data name="MenuIcon" xml:space="preserve">
+    <value>Icono del menu</value>
+  </data>
+  <data name="MenuName" xml:space="preserve">
+    <value>Nombre del menu</value>
+  </data>
+  <data name="MenuParent" xml:space="preserve">
+    <value>Menu padre</value>
+  </data>
+  <data name="MenuPosition" xml:space="preserve">
+    <value>Posicion del menu</value>
+  </data>
+  <data name="MenuShow" xml:space="preserve">
+    <value>Visibilidad del menu</value>
+  </data>
+  <data name="MenuUrl" xml:space="preserve">
+    <value>Url del menu</value>
+  </data>
   <data name="Password" xml:space="preserve">
     <value>Contraseña</value>
   </data>
   <data name="PermissionLevel" xml:space="preserve">
-    <value>Nivel de Permiso</value>
+    <value>Nivel de permiso</value>
   </data>
   <data name="Rol" xml:space="preserve">
     <value>Rol</value>
   </data>
   <data name="RolName" xml:space="preserve">
-    <value>Nombre de Rol</value>
+    <value>Nombre de rol</value>
   </data>
   <data name="Username" xml:space="preserve">
     <value>Nombre de usuario</value>
