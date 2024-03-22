@@ -1,0 +1,7 @@
+{
+    "ErrorIsRequired": "This field is required",
+    "ErrorMaxCaracter": "The maximum number of characters is ",
+    "ErrorMinCaracter": "The minimum number of characters is ",
+    "ErrorNoMatch": " does not match",
+    "ErrorSelectedRol": "The selected role is not valid"
+}

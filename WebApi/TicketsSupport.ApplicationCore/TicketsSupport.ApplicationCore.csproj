@@ -1,0 +1,107 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+	
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+	
+  <ItemGroup>
+    <PackageReference Include="AutoMapper.Contrib.Autofac.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="Konscious.Security.Cryptography.Argon2" Version="1.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.3" />
+    <PackageReference Include="Serilog" Version="3.1.1" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Exceptions\Details\ExceptionDetails.en.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExceptionDetails.en.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Exceptions\Details\ExceptionDetails_es.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExceptionDetails_es.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Exceptions\Messages\ExceptionMessages_en.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExceptionMessages_en.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Exceptions\Messages\ExceptionMessages_es.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExceptionMessages_es.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Exceptions\Messages\ResponseMessages_en.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ResponseMessages_en.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Exceptions\Messages\ResponseMessages_es.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ResponseMessages_es.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Properties\PropertiesLocalitation.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>PropertiesLocalitation.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Responses\Messages\ResponseMessages_en.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ResponseMessages_en.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Responses\Messages\ResponseMessages_es.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ResponseMessages_es.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+	
+  <ItemGroup>
+    <Compile Update="Resources\Exceptions\Details\ExceptionDetails_es.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ExceptionDetails_es.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Exceptions\Messages\ExceptionMessages_es.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ExceptionMessages_es.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Exceptions\Messages\ExceptionMessages_en.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ExceptionMessages_en.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Exceptions\Messages\ResponseMessages_en.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ResponseMessages_en.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Exceptions\Messages\ResponseMessages_es.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ResponseMessages_es.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Properties\PropertiesLocalitation.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>PropertiesLocalitation.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Responses\Messages\ResponseMessages_en.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ResponseMessages_en.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Responses\Messages\ResponseMessages_es.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ResponseMessages_es.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+	
+  <ItemGroup>
+    <Folder Include="Resources\Properties\" />
+  </ItemGroup>
+
+</Project>
