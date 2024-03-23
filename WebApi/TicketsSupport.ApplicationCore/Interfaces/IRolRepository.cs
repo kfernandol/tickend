@@ -9,5 +9,6 @@ namespace TicketsSupport.ApplicationCore.Interfaces
         Task DeleteRolById(int id);
         Task<RolResponse> CreateRol(CreateRolRequest request);
         Task<RolResponse> UpdateRol(int id, UpdateRolRequest request);
+        Task<List<PermissionLevelResponse>> GetPermissionLevels();
     }
 }

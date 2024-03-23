@@ -5,27 +5,30 @@ import { initReactI18next, useTranslation } from 'react-i18next';
 import { RootState } from './redux/store';
 
 //ENG FILES
+import GeneralEN from "./locales/en/general.json";
+import SidebarEN from "./locales/en/sidebar.json";
+import LanguagesEN from "./locales/en/languages.json";
+import ErrorsEN from "./locales/en/errors.json";
 import loginEN from "./locales/en/login.json";
 import UsersEN from "./locales/en/users.json";
-import SidebarEN from "./locales/en/sidebar.json";
-import ErrorsEN from "./locales/en/errors.json";
-import GeneralEN from "./locales/en/general.json";
-import LanguagesEN from "./locales/en/languages.json";
+import RolesEN from "./locales/en/roles.json";
 
 //ES FILE
+import GeneralES from "./locales/es/general.json";
+import SidebarES from "./locales/es/sidebar.json";
+import LanguagesES from "./locales/es/languages.json";
+import ErrorsES from "./locales/es/errors.json";
 import loginES from "./locales/es/login.json";
 import UsersES from "./locales/es/users.json";
-import SidebarES from "./locales/es/sidebar.json";
-import ErrorsES from "./locales/es/errors.json";
-import GeneralES from "./locales/es/general.json";
-import LanguagesES from "./locales/es/languages.json";
+import RolesES from "./locales/es/roles.json";
+
 
 const resources = {
     en: {
-        translation: { ...loginEN, ...UsersEN, ...SidebarEN, ...ErrorsEN, ...GeneralEN, ...LanguagesEN }
+        translation: { ...loginEN, ...UsersEN, ...SidebarEN, ...ErrorsEN, ...GeneralEN, ...LanguagesEN, ...RolesEN }
     },
     es: {
-        translation: { ...loginES, ...UsersES, ...SidebarES, ...ErrorsES, ...GeneralES, ...LanguagesES }
+        translation: { ...loginES, ...UsersES, ...SidebarES, ...ErrorsES, ...GeneralES, ...LanguagesES, ...RolesES }
     }
 }
 

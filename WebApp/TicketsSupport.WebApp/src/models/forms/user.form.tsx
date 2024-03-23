@@ -6,5 +6,4 @@ export interface UserFormModel {
     password: string;
     confirmPassword: string;
     rolId: number;
-    active: boolean
 }

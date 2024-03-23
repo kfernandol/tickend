@@ -1,7 +1,11 @@
 {
   "GlobalSearch": "Search",
   "GlobalConfirmation": "Confirmation",
-  "GlobalConfirmationDeleteText": "Are you sure you want to delete the user?",
+  "GlobalConfirmationDeleteText": "Are you sure you want to delete the element?",
   "GlobalMenuTextAvatarLanguages": "Languages",
-  "GlobalMenuTextProfile": "Profile"
+  "GlobalMenuTextProfile": "Profile",
+  "GlobalButtonCancel": "Cancel",
+  "GlobalButtonAccept": "Accept",
+  "GlobalButtonSave": "Save",
+  "GlobalButtonDelete": "Delete"
 }

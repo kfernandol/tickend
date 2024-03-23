@@ -97,7 +97,7 @@ function NewUsers() {
             <Card title={t("UserCardTitleNewUser")} subTitle={t("UserCardSubTitleNewUser")}>
                 <form className='mt-5 grid gap-2"' onSubmit={handleSubmit(onSubmit)}>
                     {/* FirstName Input */}
-                    <div className='col-6'>
+                    <div className='col-12 sm:col-6'>
                         <Controller
                             name="firstName"
                             control={control}
@@ -128,7 +128,7 @@ function NewUsers() {
                     </div>
 
                     {/* LastName Input */}
-                    <div className='col-6'>
+                    <div className='col-12 sm:col-6'>
                         <Controller
                             name="lastName"
                             control={control}
@@ -158,7 +158,7 @@ function NewUsers() {
                         />
                     </div>
                     {/* Username Input */}
-                    <div className='col-6'>
+                    <div className='col-12 sm:col-6'>
                         <Controller
                             name="username"
                             control={control}
@@ -190,7 +190,7 @@ function NewUsers() {
                     </div>
 
                     {/* Email Input */}
-                    <div className='col-6'>
+                    <div className='col-12 sm:col-6'>
                         <Controller
                             name="email"
                             control={control}
@@ -222,7 +222,7 @@ function NewUsers() {
 
 
                     {/* Password Input */}
-                    <div className='col-6'>
+                    <div className='col-12 sm:col-6'>
                         <Controller
                             name="password"
                             control={control}
@@ -253,7 +253,7 @@ function NewUsers() {
                     </div>
 
                     {/* Password Input */}
-                    <div className='col-6'>
+                    <div className='col-12 sm:col-6'>
                         <Controller
                             name="confirmPassword"
                             control={control}
@@ -301,17 +301,19 @@ function NewUsers() {
                                 }}
                             render={({ field, fieldState }) => (
                                 <>
-                                    <Dropdown
-                                        id={field.name}
-                                        value={field.value}
-                                        optionLabel="name"
-                                        placeholder={t("UserCardFormRol")}
-                                        options={roles}
-                                        focusInputRef={field.ref}
-                                        onChange={(e) => field.onChange(e.value)}
-                                        className={classNames({ 'p-invalid': fieldState.error }) + " w-full"}
-                                    />
-                                    {getFormErrorMessage(field.name)}
+                                    <span className="p-float-label w-full">
+                                        <Dropdown
+                                            id={field.name}
+                                            value={field.value}
+                                            optionLabel="name"
+                                            options={roles}
+                                            focusInputRef={field.ref}
+                                            onChange={(e) => field.onChange(e.value)}
+                                            className={classNames({ 'p-invalid': fieldState.error }) + " w-full py-1"}
+                                        />
+                                        <label htmlFor="dd-city">{t("UserCardFormRol")}</label>
+                                        {getFormErrorMessage(field.name)}
+                                    </span>
                                 </>
 
                             )}

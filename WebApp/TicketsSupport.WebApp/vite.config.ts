@@ -44,12 +44,10 @@ export default defineConfig({
             '@': fileURLToPath(new URL('./src', import.meta.url))
         }
     },
+	
     server: {
         proxy: {
-            '^/weatherforecast': {
-                target: 'https://localhost:7183/',
-                secure: false
-            }
+            
         },
         port: 5173,
         https: {

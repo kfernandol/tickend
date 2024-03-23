@@ -74,6 +74,13 @@ function Sidebar() {
                         <Ripple />
                       </Link>
                     </li>
+                    <li>
+                      <Link to={paths.roles} className="p-ripple no-underline flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full">
+                        <i className="pi pi-bookmark mr-2"></i>
+                        <span className="font-medium">Roles</span>
+                        <Ripple />
+                      </Link>
+                    </li>
                   </ul>
                 </li>
               </ul>

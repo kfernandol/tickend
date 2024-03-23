@@ -107,5 +107,20 @@ namespace TicketsSupport.WebApi.Controllers
             return Ok(new BasicResponse { Success = true, Message = ResourcesUtils.GetResponseMessage("RolDeleted") });
         }
 
+        /// <summary>
+        /// Get all permission levels
+        /// </summary>
+        /// <returns></returns>
+        [AuthorizeMenu("Roles")]
+        [HttpGet("PermissionLevels"), MapToApiVersion(1.0)]
+        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(PermissionLevelResponse))]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
+        [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
+        public async Task<IActionResult> GetPermissionLevels()
+        {
+            var permissionLevels = await this._rolRepository.GetPermissionLevels();
+            return Ok(permissionLevels);
+        }
+
     }
 }

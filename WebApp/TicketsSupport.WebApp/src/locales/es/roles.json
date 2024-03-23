@@ -1,0 +1,21 @@
+{
+    "RolesTableTitle": "Lista de roles",
+    "RolesTableHeaderNewRol": "Nuevo Rol",
+    "RolesTableHeaderId": "Id",
+    "RolesTableHeaderName": "Nombre",
+    "RolesTableHeaderPermissionLevel": "Nivel de Permisos",
+    "RolesTableHeaderMenus": "Menus",
+    "RolesTableHeaderActions": "Acciones",
+    "RolesTableDeleteTitle": "Rol deletion",
+    "RolesCardTitleNewRol": "Agregar nuevo rol",
+    "RolesCardSubTitleNewRol": "Enter the necessary information in the form to add the new rol",
+    "RolesCardFormId": "Id",
+    "RolesCardFormName": "Nombre",
+    "RolesCardFormPermissionLevel": "Selecciona un nivel de Permisos",
+    "RolesCardFormMenus": "Menus",
+    "RolesCardFormButtonSave": "Nuevo rol",
+    "RolesCardFormButtonCancel": "Cancelar",
+    "RolesCardTitleEditRol": "Editar rol",
+    "RolesCardSubTitleEditRol": "Edit the information you want to edit on the form",
+    "RolesCardFormButtonEdit": "Editar rol"
+}

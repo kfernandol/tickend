@@ -36,7 +36,6 @@ namespace TicketsSupport.ApplicationCore.Authorization.Role
 
             #region Get User Database
             var User = _context.Users.Include(x => x.RolNavigation)
-                                      .ThenInclude(x => x.PermissionLevel)
                                       .FirstOrDefault(x => x.Id == int.Parse(UserId) && x.Active == true && x.RolNavigation.Active == true);
             if (User == null)
                 throw new NotFoundException(ExceptionMessage.NotFound("User", UserId));
