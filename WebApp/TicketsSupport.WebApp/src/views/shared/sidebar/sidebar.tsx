@@ -1,28 +1,68 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 //css
 import "./sidebar.css"
 //Components
 import { Ripple } from "primereact/Ripple";
 import { StyleClass } from "primereact/StyleClass";
 import { Button } from "primereact/button";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../../redux/AuthSlice";
 import { Link } from "react-router-dom";
 import { paths } from "../../../routes/paths";
+//redux
+import { RootState } from "../../../redux/store";
+import { AuthToken } from "../../../models/tokens/token.model";
 //hooks
 import { useTranslation } from "react-i18next";
+import { useGet } from "../../../services/api_services";
+import useTokenData from "../../../hooks/utils/useTokenData";
+//models
+import { MenusResponse } from "../../../models/responses/menus.response";
 
 function Sidebar() {
-  const btnRef1 = useRef(null);
-  const dispatch = useDispatch();
   const sidebar = document.querySelector("#app-sidebar-2");
+  //Translation
   const { t } = useTranslation();
+  const Dashboard = t("Dashboard");
+  let [MenusTranslation, setMenusTranslation] = useState<{ name: string, value: string }[]>([]);
+
+  //Redux Data
+  const dispatch = useDispatch();
+  const language = useSelector((state: RootState) => state.language);
+  const authenticated = useSelector((state: RootState) => state.auth);
+  const getTokenData = useTokenData<AuthToken>(authenticated?.token);
+
+  //Api Request
+  const { SendGetRequest, getResponse } = useGet<MenusResponse[]>();
+  const [Menus, setMenus] = useState<MenusResponse[]>([]);
+
+  //Menu ref
+  //const menuRefs = Menus.filter(x => x.parentId === null).map(() => useRef(null));
+  const btnRef = useRef(null);
+  const menuRefs = useRef<React.MutableRefObject<null>[]>([]);
+
+  useEffect(() => {
+    SendGetRequest("v1/menus/byuser/" + getTokenData?.id);
+  }, [])
+
+  useEffect(() => {
+    if (getResponse) {
+      setMenus(getResponse);
+      menuRefs.current = Menus.filter(x => x.parentId === null).map(() => React.createRef<null>());
+
+    }
+  }, [getResponse])
+
+  useEffect(() => {
+    //load translation
+    if (Menus) {
+      setMenusTranslation(Menus.map(x => ({ name: x.name, value: t(x.name) })));
+    }
+  }, [language, Menus, t])
 
   const hideSidebar = () => {
     sidebar?.classList.add("hidden");
   }
-
-
 
   const Logout = () => {
     dispatch(logout());
@@ -49,39 +89,43 @@ function Sidebar() {
                 <li>
                   <Link to={paths.home} className="p-ripple no-underline flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full">
                     <i className="pi pi-home mr-2"></i>
-                    <span className="font-medium">Dashboard</span>
+                    <span className="font-medium">{Dashboard}</span>
                     <Ripple />
                   </Link>
-                  <StyleClass
-                    nodeRef={btnRef1}
-                    selector="@next"
-                    enterClassName="hidden"
-                    enterActiveClassName="slidedown"
-                    leaveToClassName="hidden"
-                    leaveActiveClassName="slideup"
-                  >
-                    <div ref={btnRef1} className="p-ripple p-3 flex align-items-center justify-content-between text-600 cursor-pointer">
-                      <span className="font-medium">Security</span>
-                      <i className="pi pi-chevron-down"></i>
-                      <Ripple />
-                    </div>
-                  </StyleClass>
-                  <ul className="list-none p-0 m-0 overflow-hidden">
-                    <li>
-                      <Link to={paths.users} className="p-ripple no-underline flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full">
-                        <i className="pi pi-bookmark mr-2"></i>
-                        <span className="font-medium">Users</span>
-                        <Ripple />
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to={paths.roles} className="p-ripple no-underline flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full">
-                        <i className="pi pi-bookmark mr-2"></i>
-                        <span className="font-medium">Roles</span>
-                        <Ripple />
-                      </Link>
-                    </li>
-                  </ul>
+
+                  {Menus.filter(x => x.parentId === null && x.show === true).sort((a, b) => a.position - b.position).map((menu, index) => {
+                    return (
+
+                      <div key={menu.name + index}>
+                        <StyleClass
+                          nodeRef={btnRef}
+                          selector="@next"
+                          enterClassName="hidden"
+                          enterActiveClassName="slidedown"
+                          leaveToClassName="hidden"
+                          leaveActiveClassName="slideup"
+                        >
+                          <div ref={btnRef} className="p-ripple p-3 flex align-items-center justify-content-between text-600 cursor-pointer">
+                            <span className="font-medium">{MenusTranslation.find(x => x.name == menu.name)?.value}</span>
+                            <i className={`pi pi-chevron-down`}></i>
+                            <Ripple />
+                          </div>
+                        </StyleClass>
+                        <ul className="list-none p-0 m-0 overflow-hidden">
+                          {Menus.filter(x => x.parentId === menu.id && x.show === true).sort((a, b) => a.position - b.position).map((submenu, index) => (
+                            <li key={submenu.name + index}>
+                              <Link to={submenu.url} className="p-ripple no-underline flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full">
+                                <i className={`mr-2 pi ${submenu.icon}`}></i>
+                                <span className="font-medium">{MenusTranslation.find(x => x.name == submenu.name)?.value}</span>
+                                <Ripple />
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+
+                      </div>
+                    );
+                  })}
                 </li>
               </ul>
 

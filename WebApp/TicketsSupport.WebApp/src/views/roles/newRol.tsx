@@ -38,8 +38,8 @@ function NewRol() {
 
     //Translation
     const { t } = useTranslation();
-    const CardTitleEdit = t("RolesCardTitleEditRol");
-    const CardSubTitle = t("RolesCardSubTitleEditRol");
+    const CardTitleEdit = t("RolesCardTitleNewRol");
+    const CardSubTitle = t("RolesCardSubTitleNewRol");
     const ErrorRequired = t('ErrorIsRequired');
     const ErrorMaxCaracter = t('ErrorMaxCaracter');
     const ErrorMinCaracter = t('ErrorMinCaracter');

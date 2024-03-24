@@ -7,5 +7,7 @@
   "GlobalButtonCancel": "Cancel",
   "GlobalButtonAccept": "Accept",
   "GlobalButtonSave": "Save",
-  "GlobalButtonDelete": "Delete"
+  "GlobalButtonDelete": "Delete",
+  "GlobalTextTrue": "True",
+  "GlobalTextFalse": "False"
 }

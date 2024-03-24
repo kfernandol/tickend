@@ -1,5 +1,5 @@
-import React from "react";
-import { Navigate, createBrowserRouter, redirect } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Navigate, RouteObject, createBrowserRouter, redirect } from "react-router-dom";
 import { paths } from "./paths";
 //components
 import ProtectedRoute from "../components/routesProtected/routesProtected";
@@ -12,10 +12,13 @@ import EditUsers from "../views/users/editUsers.tsx";
 import Roles from "../views/roles/roles";
 import NewRol from "../views/roles/newRol";
 import EditRoles from "../views/roles/editRol";
-
+import Menus from "../views/menus/menus.tsx";
+import NewMenu from "../views/menus/newMenu.tsx";
+import EditMenu from "../views/menus/editMenu.tsx";
 
 //Routes with login
 export const routesAuthorized = () => {
+
   return createBrowserRouter([
     {
       path: "/",
@@ -24,21 +27,21 @@ export const routesAuthorized = () => {
         {
           path: "",
           element:
-            <ProtectedRoute>
+            <ProtectedRoute name="Home">
               <Home />,
             </ProtectedRoute>
         },
         {
           path: paths.users,
           element:
-            <ProtectedRoute>
+            <ProtectedRoute name="Users">
               <Users />
             </ProtectedRoute>,
         },
         {
           path: paths.newUser,
           element:
-            <ProtectedRoute>
+            <ProtectedRoute name="Users">
               <NewUsers />
             </ProtectedRoute>
         },
@@ -50,21 +53,21 @@ export const routesAuthorized = () => {
         {
           path: paths.editUserWithId,
           element:
-            <ProtectedRoute>
+            <ProtectedRoute name="Users">
               <EditUsers />
             </ProtectedRoute>
         },
         {
           path: paths.roles,
           element:
-            <ProtectedRoute>
+            <ProtectedRoute name="Roles">
               <Roles />
             </ProtectedRoute>,
         },
         {
           path: paths.newRol,
           element:
-            <ProtectedRoute>
+            <ProtectedRoute name="Roles">
               <NewRol />
             </ProtectedRoute>
         },
@@ -76,8 +79,34 @@ export const routesAuthorized = () => {
         {
           path: paths.editRolWithId,
           element:
-            <ProtectedRoute>
+            <ProtectedRoute name="Roles">
               <EditRoles />
+            </ProtectedRoute>
+        },
+        {
+          path: paths.menus,
+          element:
+            <ProtectedRoute name="Menus">
+              <Menus />
+            </ProtectedRoute>,
+        },
+        {
+          path: paths.newMenus,
+          element:
+            <ProtectedRoute name="Menus">
+              <NewMenu />
+            </ProtectedRoute>
+        },
+        {
+          path: paths.editMenus,
+          element:
+            <Navigate to={paths.menus}></Navigate>
+        },
+        {
+          path: paths.editMenusWithId,
+          element:
+            <ProtectedRoute name="Menus">
+              <EditMenu />
             </ProtectedRoute>
         }
       ],

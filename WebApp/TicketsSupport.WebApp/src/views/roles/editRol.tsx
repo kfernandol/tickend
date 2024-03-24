@@ -24,7 +24,7 @@ import { MenusResponse } from '../../models/responses/menus.response';
 import { Checkbox } from 'primereact/checkbox';
 import { RolesResponse } from '../../models/responses/roles.response';
 
-function NewRol() {
+export default function EditRol() {
     const { id } = useParams();
     const toast = useRef<Toast>(null);
     const navigate = useNavigate();
@@ -262,4 +262,3 @@ function NewRol() {
     )
 }
 
-export default NewRol

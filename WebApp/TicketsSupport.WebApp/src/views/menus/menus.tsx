@@ -15,19 +15,20 @@ import { useDelete, useGet } from "../../services/api_services";
 import { useTranslation } from 'react-i18next';
 //models
 import { BasicResponse, ErrorResponse } from '../../models/responses/basic.response';
-import { RolesResponse } from '../../models/responses/roles.response';
+import { MenusResponse } from '../../models/responses/menus.response';
+import { Badge } from 'primereact/badge';
 
-export default function Roles() {
+export default function Menus() {
     const toast = useRef<Toast>(null);
-    //Table Filterss
+    //Table Filters
     const [globalFilterValue, setGlobalFilterValue] = useState('');
     const [filters, setFilters] = useState({
         global: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     });
     //Api Request
     const { SendDeleteRequest, deleteResponse, errorDelete, httpCodeDelete } = useDelete<BasicResponse>();
-    const { SendGetRequest, getResponse, loadingGet } = useGet<RolesResponse[]>();
-    const [roles, setRoles] = useState<{ id: number, name: string, permissionLevel: string, menus: string[] }[]>([]);
+    const { SendGetRequest, getResponse, loadingGet } = useGet<MenusResponse[]>();
+    const [menus, setMenus] = useState<any>([]);
     let deleteUserId = "";
 
     //Translations
@@ -37,33 +38,44 @@ export default function Roles() {
     const GlobalButtonDelete = t("GlobalButtonDelete");
     const GlobalButtonCancel = t("GlobalButtonCancel");
     const GlobalSearch = t("GlobalSearch");
-    const TableTitle = t("RolesTableTitle");
-    const TableDeleteTitle = t("RolesTableDeleteTitle");
-    const CardTitleNewElement = t("RolesCardTitleNewRol");
-    const RolesTableHeaderNewRol = t("RolesTableHeaderNewRol")
-    const RolesTableHeaderId = t("RolesTableHeaderId");
-    const RolesTableHeaderName = t("RolesTableHeaderName");
-    const RolesTableHeaderPermissionLevel = t("RolesTableHeaderPermissionLevel");
-    const RolesTableHeaderMenus = t("RolesTableHeaderMenus");
-    const RolesTableHeaderActions = t("RolesTableHeaderActions");
+    const GlobalTextTrue = t("GlobalTextTrue");
+    const GlobalTextFalse = t("GlobalTextFalse");
+    const TableTitle = t("MenusTableTitle");
+    const TableDeleteTitle = t("MenusTableDeleteTitle");
+    const CardTitleNewElement = t("MenusCardTitleNewMenu");
+    const TableHeaderNew = t("MenusTableHeaderNewMenu")
+    const TableHeaderId = t("MenusTableHeaderId");
+    const TableHeaderName = t("MenusTableHeaderName");
+    const TableHeaderActions = t("MenusTableHeaderActions");
+    const TableHeaderUrl = t("MenusTableHeaderUrl");
+    const TableHeaderIcon = t("MenusTableHeaderIcon");
+    const TableHeaderPosition = t("MenusTableHeaderPosition");
+    const TableHeaderParentId = t("MenusTableHeaderParentId");
+    const TableHeaderShow = t("MenusTableHeaderShow");
+
 
     //Send Request
     useEffect(() => {
-        SendGetRequest("v1/roles");
+        SendGetRequest("v1/menus");
     }, [deleteResponse])
 
     //Get Response
     useEffect(() => {
         if (getResponse) {
-            var rolesResponse = getResponse.map(x => ({
+            console.log()
+            const menus = getResponse.map(x => ({
                 id: x.id,
                 name: x.name,
-                permissionLevel: x.permissionLevel,
-                menus: x.menus.map(x => x.name + ", ")
+                icon: <i className={'pi ' + x.icon} />,
+                url: x.url,
+                parentId: getResponse.find(c => c.id == x.parentId)?.name,
+                position: x.parentId !== null ? x.position : '',
+                show: x.show === true ? <Badge value={GlobalTextTrue} severity="success"></Badge> : <Badge value={GlobalTextFalse} severity="danger"></Badge>
             }))
-            setRoles(rolesResponse);
+
+            setMenus(menus);
         }
-    }, [getResponse]);
+    }, [getResponse, t]);
 
     //Notification Api Response
     useEffect(() => {
@@ -120,16 +132,16 @@ export default function Roles() {
                 <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder={GlobalSearch} />
             </span>
             {/* Add new */}
-            <Link to={paths.newRol}>
+            <Link to={paths.newMenus}>
                 <Button icon="pi pi-plus" severity='success'>
-                    <span className='pl-2'>{RolesTableHeaderNewRol}</span>
+                    <span className='pl-2'>{TableHeaderNew}</span>
                 </Button>
             </Link>
         </div>
     );
 
     const ActionsTableTemplate = (rowData: { id: string; }) => {
-        const editUrlPath = paths.editRolWithId.slice(0, paths.editRolWithId.length - 3);
+        const editUrlPath = paths.editMenusWithId.slice(0, paths.editMenusWithId.length - 3);
         return <>
             <div className='flex gap-2'>
                 <Link to={editUrlPath + rowData.id}>
@@ -154,7 +166,7 @@ export default function Roles() {
 
     //Accept Delete user
     function acceptDelete() {
-        SendDeleteRequest("v1/roles/" + deleteUserId);
+        SendDeleteRequest("v1/menus/" + deleteUserId);
     }
 
     return (
@@ -169,7 +181,7 @@ export default function Roles() {
                     <Toast ref={toast} />
                     <div className="card" style={{ backgroundColor: "#17212f5D" }}>
                         <DataTable
-                            value={roles}
+                            value={menus}
                             header={TableHeader}
                             style={{ backgroundColor: "#17212f5D" }}
                             dataKey="id"
@@ -177,15 +189,18 @@ export default function Roles() {
                             rows={10}
                             size='small'
                             filters={filters}
-                            globalFilterFields={['id', 'name', 'permissionLevel', 'menus']}
+                            globalFilterFields={['id', 'name', 'url', 'icon', 'position', 'parentId', 'show']}
                             emptyMessage="No customers found."
                         >
                             <Column style={{ width: '5rem' }} />
-                            <Column field="id" header={RolesTableHeaderId} sortable />
-                            <Column field="name" header={RolesTableHeaderName} sortable />
-                            <Column field="permissionLevel" header={RolesTableHeaderPermissionLevel} sortable />
-                            <Column field="menus" header={RolesTableHeaderMenus} sortable />
-                            <Column header={RolesTableHeaderActions} body={ActionsTableTemplate} sortable />
+                            <Column field="id" header={TableHeaderId} sortable />
+                            <Column field="name" header={TableHeaderName} sortable />
+                            <Column field="url" header={TableHeaderUrl} sortable />
+                            <Column field="icon" header={TableHeaderIcon} sortable />
+                            <Column field="position" header={TableHeaderPosition} sortable />
+                            <Column field="parentId" header={TableHeaderParentId} sortable />
+                            <Column field="show" header={TableHeaderShow} sortable />
+                            <Column header={TableHeaderActions} body={ActionsTableTemplate} sortable />
                         </DataTable>
                     </div>
                     <ConfirmDialog

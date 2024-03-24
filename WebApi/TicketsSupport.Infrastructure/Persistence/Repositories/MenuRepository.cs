@@ -66,12 +66,16 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
         public async Task<List<MenuResponse>> GetMenusByUser(int userId)
         {
-            return this._context.Users.Include(x => x.RolNavigation)
-                                           .ThenInclude(x => x.MenuXrols)
-                                           .ThenInclude(x => x.Menu)
-                                           .Where(x => x.Id == userId && x.RolNavigation.MenuXrols.Any(x => x.Menu.Active == true))
-                                           .Select(x => this._mapper.Map<MenuResponse>(x))
-                                           .ToList();
+            var menuByUser = await _context.MenuXrols.Include(x => x.Menu)
+                                                     .Include(x => x.Role)
+                                                     .ThenInclude(x => x.Users)
+                                                     .Where(x => x.Role.Users.Any(x => x.Id == userId) && x.Menu.Active == true)
+                                                     .Select(x => _mapper.Map<MenuResponse>(x.Menu))
+                                                     .ToListAsync();
+
+
+
+            return menuByUser;
         }
 
         public async Task<MenuResponse> UpdateMenu(int id, UpdateMenuRequest request)

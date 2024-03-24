@@ -45,7 +45,7 @@ function _Layout() {
         <header className="Header">
           <_Header />
         </header>
-        <main className="Main px-5 mt-1">
+        <main className="Main px-5 mt-1 pb-5">
           <BreadCrumb className="mb-3" home={home} model={breadcrumbTtems} style={{ backgroundColor: "#17212f5D" }} />
           <Outlet />
         </main>

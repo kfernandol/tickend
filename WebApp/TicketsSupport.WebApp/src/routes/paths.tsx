@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 export const paths = {
   home: "/",
   users: "/Users",

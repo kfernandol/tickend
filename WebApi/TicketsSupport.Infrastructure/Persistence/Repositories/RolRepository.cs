@@ -90,7 +90,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             {
                 role.Menus = _context.MenuXrols.Include(x => x.Menu)
                                                 .AsNoTracking()
-                                                .Where(x => x.RoleId == role.Id)
+                                                .Where(x => x.RoleId == role.Id && x.Menu.Active == true)
                                                 .Select(z => z.Menu)
                                                 .ToList();
             }
@@ -106,7 +106,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
             rol.Menus = _context.MenuXrols.Include(x => x.Menu)
                                           .AsNoTracking()
-                                          .Where(x => x.RoleId == rol.Id)
+                                          .Where(x => x.RoleId == rol.Id && x.Menu.Active == true)
                                           .Select(x => x.Menu)
                                           .ToList();
             if (rol != null)

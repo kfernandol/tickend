@@ -19,10 +19,13 @@ INSERT INTO [Menu](Name,  Icon, Url, ParentId, Position, Show, Active)
     VALUES('Security', 'security', '#', NULL, 1, 1, 1)
 
     INSERT INTO [Menu](Name,  Icon, Url, ParentId, Position, Show, Active) 
-    VALUES('Users', 'user', '/users', 1, 1, 1, 1)
+    VALUES('Users', 'pi-users', '/users', 1, 1, 1, 1)
 
     INSERT INTO [Menu](Name,  Icon, Url, ParentId, Position, Show, Active) 
-    VALUES('Roles', 'roles', '/roles', 1, 2, 1, 1)
+    VALUES('Roles', 'pi-id-card', '/roles', 1, 2, 1, 1)
+
+     INSERT INTO [Menu](Name,  Icon, Url, ParentId, Position, Show, Active) 
+    VALUES('Menus', 'pi-th-large', '/menus', 1, 3, 1, 1)
 END;
 
 /* Default insert in MenuXRol */
