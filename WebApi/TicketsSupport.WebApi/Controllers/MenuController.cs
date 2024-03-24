@@ -86,7 +86,7 @@ namespace TicketsSupport.WebApi.Controllers
         public async Task<IActionResult> Create(CreateMenuRequest request)
         {
             await _menuRepository.CreateMenu(request);
-            return Ok(new BasicResponse { Success = true, Message = ResourcesUtils.GetResponseMessage("NewMenuAdded") });
+            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementDeleted"), "Menu") });
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace TicketsSupport.WebApi.Controllers
         public async Task<IActionResult> Update(int id, UpdateMenuRequest request)
         {
             await _menuRepository.UpdateMenu(id, request);
-            return Ok(new BasicResponse { Success = true, Message = ResourcesUtils.GetResponseMessage("MenuUpdated") });
+            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementUpdated"), "Menu") });
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace TicketsSupport.WebApi.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             await _menuRepository.DeleteMenuById(id);
-            return Ok(new BasicResponse { Success = true, Message = ResourcesUtils.GetResponseMessage("MenuDeleted") });
+            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementDeleted"), "Menu") });
         }
 
     }

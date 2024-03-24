@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
-using TicketsSupport.ApplicationCore.Authorization.Menu;
-using TicketsSupport.ApplicationCore.Authorization.Role;
 using TicketsSupport.ApplicationCore.Commons;
 using TicketsSupport.ApplicationCore.DTOs;
 using TicketsSupport.ApplicationCore.Interfaces;
@@ -16,111 +14,89 @@ namespace TicketsSupport.WebApi.Controllers
     [Authorize]
     [ApiController]
     [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/roles/")]
-    public class RolController : Controller
+    [Route("api/v{version:apiVersion}/ticket/status")]
+    public class TicketStatusController : Controller
     {
-        private readonly IRolRepository _rolRepository;
+        private readonly ITicketStatusRepository _ticketStatusRepository;
 
-        public RolController(IRolRepository rolRepository)
+        public TicketStatusController(ITicketStatusRepository ticketStatusRepository)
         {
-            _rolRepository = rolRepository;
+            _ticketStatusRepository = ticketStatusRepository;
         }
 
         /// <summary>
-        /// Get all roles
+        /// Get all ticket status
         /// </summary>
         /// <returns></returns>
-        [AuthorizeMenu("Roles")]
         [HttpGet, MapToApiVersion(1.0)]
-        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(RolResponse))]
+        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(List<TicketStatusResponse>))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> GetRoles()
+        public async Task<IActionResult> GetTicketStatus()
         {
-            var users = await this._rolRepository.GetRol();
-            return Ok(users);
+            var ticketStatus = await _ticketStatusRepository.GetTicketStatus();
+            return Ok(ticketStatus);
         }
 
         /// <summary>
-        /// Get rol by id
+        /// Get ticket status by id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [AuthorizeMenu("Roles")]
         [HttpGet("{id}"), MapToApiVersion(1.0)]
-        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(RolResponse))]
+        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(TicketStatusResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> GetRolById(int id)
+        public async Task<IActionResult> GetMenuById(int id)
         {
-            var user = await _rolRepository.GetRolById(id);
-            return Ok(user);
+            var ticketStatus = await _ticketStatusRepository.GetTicketStatusById(id);
+            return Ok(ticketStatus);
         }
 
         /// <summary>
-        /// Create new rol
+        /// Create new ticket status
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        [AuthorizeMenu("Roles")]
         [HttpPost, MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> Create(CreateRolRequest request)
+        public async Task<IActionResult> Create(CreateTicketStatusRequest request)
         {
-            await _rolRepository.CreateRol(request);
-            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementAdded"), "Rol") });
+            await _ticketStatusRepository.CreateTicketStatus(request);
+            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementAdded"), "Ticket status") });
         }
 
         /// <summary>
-        /// Update roles
+        /// Update ticket status
         /// </summary>
         /// <param name="id"></param>
         /// <param name="request"></param>
         /// <returns></returns>
-        [AuthorizeMenu("Roles")]
         [HttpPut("{id}"), MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> Update(int id, UpdateRolRequest request)
+        public async Task<IActionResult> Update(int id, UpdateTicketStatusRequest request)
         {
-            await _rolRepository.UpdateRol(id, request);
-            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementUpdated"), "Rol") });
+            await _ticketStatusRepository.UpdateTicketStatus(id, request);
+            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementUpdated"), "Ticket status") });
         }
 
         /// <summary>
-        /// Delete roles
+        /// Delete ticket status
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [AuthorizeMenu("Roles")]
-        [AuthorizeRole(PermissionLevel.Administrator)]
         [HttpDelete("{id}"), MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> Delete(int id)
         {
-            await _rolRepository.DeleteRolById(id);
-            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementDeleted"), "Rol") });
+            await _ticketStatusRepository.DeleteTicketStatusById(id);
+            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementDeleted"), "Ticket status") });
         }
-
-        /// <summary>
-        /// Get all permission levels
-        /// </summary>
-        /// <returns></returns>
-        [AuthorizeMenu("Roles")]
-        [HttpGet("PermissionLevels"), MapToApiVersion(1.0)]
-        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(PermissionLevelResponse))]
-        [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
-        [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> GetPermissionLevels()
-        {
-            var permissionLevels = await this._rolRepository.GetPermissionLevels();
-            return Ok(permissionLevels);
-        }
-
     }
 }

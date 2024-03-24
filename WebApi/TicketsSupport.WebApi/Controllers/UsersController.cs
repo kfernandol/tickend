@@ -69,7 +69,7 @@ namespace TicketsSupport.WebApi.Controllers
         public async Task<IActionResult> Create(CreateUserRequest request)
         {
             await _userRepository.CreateUser(request);
-            return Ok(new BasicResponse { Success = true, Message = ResourcesUtils.GetResponseMessage("NewUserAdded") });
+            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementAdded"), "User") });
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace TicketsSupport.WebApi.Controllers
         public async Task<IActionResult> Update(int id, UpdateUserRequest request)
         {
             await _userRepository.UpdateUser(id, request);
-            return Ok(new BasicResponse { Success = true, Message = ResourcesUtils.GetResponseMessage("UserUpdated") });
+            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementUpdated"), "User") });
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace TicketsSupport.WebApi.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             await _userRepository.DeleteUserById(id);
-            return Ok(new BasicResponse { Success = true, Message = ResourcesUtils.GetResponseMessage("UserDeleted") });
+            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementDeleted"), "User") });
         }
     }
 }
