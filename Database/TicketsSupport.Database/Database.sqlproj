@@ -65,9 +65,16 @@
     <Build Include="Tables\User.sql" />
     <Build Include="Tables\Menu.sql" />
     <Build Include="Tables\MenuXRol.sql" />
+    <Build Include="Tables\TicketType.sql" />
+    <Build Include="Tables\TicketStatus.sql" />
+    <Build Include="Tables\TicketPriority.sql" />
+    <Build Include="Tables\Project.sql" />
+    <Build Include="Tables\ProjectXTicketType.sql" />
+    <Build Include="Tables\ProjectXTicketStatus.sql" />
+    <Build Include="Tables\ProjectXTicketPriority.sql" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="TS_Database.Developer.publish.xml" />
     <None Include="DefaultInserts\DefaultInserts.sql" />
+    <None Include="TS_Database.publish.dev.xml" />
   </ItemGroup>
 </Project>

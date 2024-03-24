@@ -1,0 +1,6 @@
+﻿CREATE TABLE [dbo].[ProjectXTicketStatus]
+(
+	[Id] INT NOT NULL PRIMARY KEY IDENTITY,
+	[ProjectId] INT NOT NULL FOREIGN KEY REFERENCES [Project](Id),
+	[TicketStatusId] INT NOT NULL FOREIGN KEY REFERENCES [TicketStatus](Id)
+)
