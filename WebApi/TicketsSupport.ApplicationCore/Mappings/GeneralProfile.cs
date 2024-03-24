@@ -20,6 +20,18 @@ namespace TicketsSupport.ApplicationCore.Mappings
             //Menu
             CreateMap<CreateMenuRequest, Menu>();
             CreateMap<Menu, MenuResponse>();
+
+            //Ticket Priority
+            CreateMap<CreateTicketTypeRequest, TicketPriority>();
+            CreateMap<TicketPriority, TicketPriorityResponse>();
+
+            //Ticket Status
+            CreateMap<CreateTicketStatusRequest, TicketStatus>();
+            CreateMap<TicketStatus, TicketStatusResponse>();
+
+            //Ticket Type
+            CreateMap<CreateTicketTypeRequest, TicketType>();
+            CreateMap<TicketType, TicketTypeResponse>();
         }
     }
 }

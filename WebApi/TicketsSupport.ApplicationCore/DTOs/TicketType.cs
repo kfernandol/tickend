@@ -8,7 +8,7 @@ using TicketsSupport.ApplicationCore.Resources.Properties;
 
 namespace TicketsSupport.ApplicationCore.DTOs
 {
-    public class CreateTicketType
+    public class CreateTicketTypeRequest
     {
         [Required(ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldRequired))]
         [MaxLength(100, ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldMaxLength))]
@@ -26,7 +26,7 @@ namespace TicketsSupport.ApplicationCore.DTOs
         public string IconColor { get; set; }
     }
 
-    public class UpdateTicketType : CreateTicketType
+    public class UpdateTicketTypeRequest : CreateTicketTypeRequest
     {
 
         [Required(ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldRequired))]

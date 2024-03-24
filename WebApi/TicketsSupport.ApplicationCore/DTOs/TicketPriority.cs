@@ -8,7 +8,7 @@ using TicketsSupport.ApplicationCore.Resources.Properties;
 
 namespace TicketsSupport.ApplicationCore.DTOs
 {
-    public class CreateTicketPriority
+    public class CreateTicketPriorityRequest
     {
         [Required(ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldRequired))]
         [MaxLength(100, ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldMaxLength))]
@@ -21,7 +21,7 @@ namespace TicketsSupport.ApplicationCore.DTOs
         public string Color { get; set; }
     }
 
-    public class UpdateTicketPriority : CreateTicketPriority
+    public class UpdateTicketPriorityRequest : CreateTicketPriorityRequest
     {
         [Required(ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldRequired))]
         public int Id { get; set; }
