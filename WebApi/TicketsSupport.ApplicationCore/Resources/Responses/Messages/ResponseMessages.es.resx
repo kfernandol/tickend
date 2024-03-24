@@ -117,31 +117,31 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="MenuDeleted" xml:space="preserve">
-    <value>Menu eliminado</value>
+  <data name="ElementAdded" xml:space="preserve">
+    <value>{0} agregado correctamente</value>
   </data>
-  <data name="MenuUpdated" xml:space="preserve">
-    <value>Menu actualizado</value>
+  <data name="ElementDeleted" xml:space="preserve">
+    <value>{0} eliminado correctamente</value>
   </data>
-  <data name="NewMenuAdded" xml:space="preserve">
-    <value>Nuevo menu agregado</value>
+  <data name="ElementUpdated" xml:space="preserve">
+    <value>{0}  actualizado correctamente</value>
   </data>
-  <data name="NewUserAdded" xml:space="preserve">
-    <value>Nuevo usuario agregado</value>
+  <data name="Menu" xml:space="preserve">
+    <value>Menu</value>
   </data>
-  <data name="UserDeleted" xml:space="preserve">
-    <value>Usuario eliminado</value>
+  <data name="Rol" xml:space="preserve">
+    <value>Rol</value>
   </data>
-  <data name="UserUpdated" xml:space="preserve">
-    <value>Usuario actualizado</value>
+  <data name="TicketPriority" xml:space="preserve">
+    <value>Prioridad de ticket</value>
   </data>
-  <data name="NewRolAdded" xml:space="preserve">
-    <value>Nuevo rol agregado</value>
+  <data name="TicketStatus" xml:space="preserve">
+    <value>Estado de ticket</value>
   </data>
-  <data name="RolDeleted" xml:space="preserve">
-    <value>Rol eliminado</value>
+  <data name="TicketType" xml:space="preserve">
+    <value>Tipo de ticket</value>
   </data>
-  <data name="RolUpdated" xml:space="preserve">
-    <value>Rol actualizado</value>
+  <data name="User" xml:space="preserve">
+    <value>Usuario</value>
   </data>
 </root>

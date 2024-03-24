@@ -3,8 +3,8 @@ import ReactDOM from "react-dom/client";
 import { PrimeReactProvider } from "primereact/api";
 import { Provider } from "react-redux";
 import { persistor, store } from "./redux/store.tsx";
-import RoutesGuard from "./components/routesGuard/routesGuard.tsx";
 import { PersistGate } from "redux-persist/integration/react";
+import { RoutesGuard } from "./components/routesGuard/routesGuard.tsx";
 //css and scss
 import "./index.css";
 //PrimeReact

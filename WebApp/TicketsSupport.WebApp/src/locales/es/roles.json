@@ -6,7 +6,7 @@
     "RolesTableHeaderPermissionLevel": "Nivel de Permisos",
     "RolesTableHeaderMenus": "Menus",
     "RolesTableHeaderActions": "Acciones",
-    "RolesTableDeleteTitle": "Rol deletion",
+    "RolesTableDeleteTitle": "Eliminar rol",
     "RolesCardTitleNewRol": "Agregar nuevo rol",
     "RolesCardSubTitleNewRol": "Enter the necessary information in the form to add the new rol",
     "RolesCardFormId": "Id",

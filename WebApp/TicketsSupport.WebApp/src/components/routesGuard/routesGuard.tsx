@@ -1,11 +1,11 @@
-import React, { Suspense } from "react";
+import React, { Suspense, memo } from "react";
 import { useSelector } from "react-redux";
 import { RouterProvider } from "react-router-dom";
 import { RootState } from "../../redux/store";
 import { routesAuthorized, routesUnauthorized } from "../../routes/routes";
 import { ProgressSpinner } from "primereact/progressspinner";
 
-export default function RoutesGuard() {
+const RoutesGuard = memo(() => {
     const authenticated = useSelector((state: RootState) => state.auth);
 
     function Loading() {
@@ -23,5 +23,8 @@ export default function RoutesGuard() {
             <Suspense fallback={<Loading />}>
                 <RouterProvider router={authenticated.token !== null && authenticated.token !== "" ? routesAuthorized() : routesUnauthorized()}></RouterProvider>
             </Suspense>
-        </>);
-}
+        </>
+    );
+});
+
+export { RoutesGuard };

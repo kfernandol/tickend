@@ -65,7 +65,7 @@ namespace TicketsSupport.WebApi.Controllers
         public async Task<IActionResult> Create(CreateTicketStatusRequest request)
         {
             await _ticketStatusRepository.CreateTicketStatus(request);
-            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementAdded"), "Ticket status") });
+            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementAdded"), ResourcesUtils.GetResponseMessage("TicketStatus")) });
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace TicketsSupport.WebApi.Controllers
         public async Task<IActionResult> Update(int id, UpdateTicketStatusRequest request)
         {
             await _ticketStatusRepository.UpdateTicketStatus(id, request);
-            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementUpdated"), "Ticket status") });
+            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementUpdated"), ResourcesUtils.GetResponseMessage("TicketStatus")) });
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace TicketsSupport.WebApi.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             await _ticketStatusRepository.DeleteTicketStatusById(id);
-            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementDeleted"), "Ticket status") });
+            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementDeleted"), ResourcesUtils.GetResponseMessage("TicketStatus")) });
         }
     }
 }

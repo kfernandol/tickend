@@ -15,6 +15,9 @@ import EditRoles from "../views/roles/editRol";
 import Menus from "../views/menus/menus.tsx";
 import NewMenu from "../views/menus/newMenu.tsx";
 import EditMenu from "../views/menus/editMenu.tsx";
+import TicketTypes from "../views/ticket-types/ticketType.tsx";
+import { NewTicketType } from "../views/ticket-types/ticketTypeNew.tsx";
+import { EditTicketType } from "../views/ticket-types/ticketTypeEdit.tsx";
 
 //Routes with login
 export const routesAuthorized = () => {
@@ -107,6 +110,32 @@ export const routesAuthorized = () => {
           element:
             <ProtectedRoute name="Menus">
               <EditMenu />
+            </ProtectedRoute>
+        },
+        {
+          path: paths.ticketTypes,
+          element:
+            <ProtectedRoute name="TicketTypes">
+              <TicketTypes />
+            </ProtectedRoute>,
+        },
+        {
+          path: paths.newTicketType,
+          element:
+            <ProtectedRoute name="TicketTypes">
+              <NewTicketType />
+            </ProtectedRoute>
+        },
+        {
+          path: paths.EditTicketType,
+          element:
+            <Navigate to={paths.ticketTypes}></Navigate>
+        },
+        {
+          path: paths.EditTicketTypeWithId,
+          element:
+            <ProtectedRoute name="TicketTypes">
+              <EditTicketType />
             </ProtectedRoute>
         }
       ],

@@ -66,7 +66,7 @@ namespace TicketsSupport.WebApi.Controllers
         public async Task<IActionResult> Create(CreateTicketPriorityRequest request)
         {
             await _ticketPriorityRepository.CreateTicketPriority(request);
-            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementAdded"), "Ticket priority") });
+            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementAdded"), ResourcesUtils.GetResponseMessage("TicketPriority")) });
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace TicketsSupport.WebApi.Controllers
         public async Task<IActionResult> Update(int id, UpdateTicketPriorityRequest request)
         {
             await _ticketPriorityRepository.UpdateTicketPriority(id, request);
-            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementUpdated"), "Ticket priority") });
+            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementUpdated"), ResourcesUtils.GetResponseMessage("TicketPriority")) });
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace TicketsSupport.WebApi.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             await _ticketPriorityRepository.DeleteTicketPriorityById(id);
-            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementDeleted"), "Ticket priority") });
+            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementDeleted"), ResourcesUtils.GetResponseMessage("TicketPriority")) });
         }
     }
 }

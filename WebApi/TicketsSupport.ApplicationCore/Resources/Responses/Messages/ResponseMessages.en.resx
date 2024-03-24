@@ -126,4 +126,22 @@
   <data name="ElementUpdated" xml:space="preserve">
     <value>{0} successfully updated</value>
   </data>
+  <data name="Menu" xml:space="preserve">
+    <value>Menu</value>
+  </data>
+  <data name="Rol" xml:space="preserve">
+    <value>Rol</value>
+  </data>
+  <data name="TicketPriority" xml:space="preserve">
+    <value>Ticket priority</value>
+  </data>
+  <data name="TicketStatus" xml:space="preserve">
+    <value>Ticket status</value>
+  </data>
+  <data name="TicketType" xml:space="preserve">
+    <value>Ticket type</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>User</value>
+  </data>
 </root>

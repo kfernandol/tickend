@@ -13,5 +13,17 @@ export const paths = {
   menus: "/Menus",
   newMenus: "/Menus/New",
   editMenus: "/Menus/Edit/",
-  editMenusWithId: "/Menus/Edit/:id"
+  editMenusWithId: "/Menus/Edit/:id",
+  ticketTypes: "/Ticket/Types",
+  newTicketType: "/Ticket/Types/New",
+  EditTicketType: "/Ticket/Types/Edit",
+  EditTicketTypeWithId: "/Ticket/Types/Edit/:id",
+  ticketStatus: "/Ticket/Status",
+  newTicketStatus: "/Ticket/Status/New",
+  EditTicketStatus: "/Ticket/Status/Edit",
+  EditTicketStatusWithId: "Ticket/Status/Edit/:id",
+  ticketPriorities: "/Ticket/Priorities",
+  newTicketPriorities: "/Ticket/Priorities/New",
+  EditTicketPriorities: "/Ticket/Priorities/Edit",
+  EditTicketPrioritiesWithId: "Ticket/Priorities/Edit/:id",
 };

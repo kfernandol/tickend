@@ -1,0 +1,21 @@
+{
+    "TicketTypeTableTitle": "Lista de tipos de  ticket",
+    "TicketTypeTableHeaderNewTicketType": "Nuevo tipo de ticket",
+    "TicketTypeTableHeaderId": "Id",
+    "TicketTypeTableHeaderName": "Nombre",
+    "TicketTypeTableHeaderIcon": "Icono",
+    "TicketTypeTableHeaderIconColor": "Color",
+    "TicketTypeTableHeaderActions": "Actiones",
+    "TicketTypeTableDeleteTitle": "Eliminar tipo de ticket",
+    "TicketTypeCardTitleNewTicketType": "Agregar nuevo tipo de ticket",
+    "TicketTypeCardSubTitleNewTicketType": "Escribe la informacion necesaria en el formulario para agregar el nuevo tipo de ticket",
+    "TicketTypeCardFormId": "Id",
+    "TicketTypeCardFormName": "Nombre",
+    "TicketTypeCardFormIcon": "Icono",
+    "TicketTypeCardFormIconColor": "Color",
+    "TicketTypeCardFormButtonSave": "Agregar tipo de ticket",
+    "TicketTypeCardFormButtonCancel": "Cancelar",
+    "TicketTypeCardTitleEditTicketType": "Editar tipo de ticket",
+    "TicketTypeCardSubTitleEditTicketType": "Edita la informacion que quieras editar en el formulario",
+    "TicketTypeCardFormButtonEdit": "Editar tipo de ticket"
+}

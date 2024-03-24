@@ -13,6 +13,7 @@ import ErrorsEN from "./locales/en/errors.json";
 import loginEN from "./locales/en/login.json";
 import UsersEN from "./locales/en/users.json";
 import RolesEN from "./locales/en/roles.json";
+import TicketTypesEN from "./locales/en/tickets-types.json";
 
 //ES FILE
 import GeneralES from "./locales/es/general.json";
@@ -23,14 +24,21 @@ import loginES from "./locales/es/login.json";
 import UsersES from "./locales/es/users.json";
 import RolesES from "./locales/es/roles.json";
 import MenusES from "./locales/es/menus.json";
+import TicketTypesES from "./locales/es/tickets-types.json";
 
 
 const resources = {
     en: {
-        translation: { ...loginEN, ...UsersEN, ...SidebarEN, ...MenusEN, ...ErrorsEN, ...GeneralEN, ...LanguagesEN, ...RolesEN }
+        translation: {
+            ...loginEN, ...UsersEN, ...SidebarEN, ...MenusEN, ...ErrorsEN, ...GeneralEN, ...LanguagesEN, ...RolesEN,
+            ...TicketTypesEN
+        }
     },
     es: {
-        translation: { ...loginES, ...UsersES, ...SidebarES, ...MenusES, ...ErrorsES, ...GeneralES, ...LanguagesES, ...RolesES }
+        translation: {
+            ...loginES, ...UsersES, ...SidebarES, ...MenusES, ...ErrorsES, ...GeneralES, ...LanguagesES, ...RolesES,
+            ...TicketTypesES
+        }
     }
 }
 
