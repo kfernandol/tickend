@@ -13,6 +13,7 @@ namespace TicketsSupport.ApplicationCore.DTOs
     public class CreateRolRequest
     {
         [Required(ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldRequired))]
+        [MaxLength(150, ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldMaxLength))]
         [Display(Name = "RolName", ResourceType = typeof(PropertiesLocalitation))]
         public string Name { get; set; } = null!;
 

@@ -61,6 +61,15 @@ namespace TicketsSupport.ApplicationCore.Resources.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Color.
+        /// </summary>
+        public static string Color {
+            get {
+                return ResourceManager.GetString("Color", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} field is invalid.
         /// </summary>
         public static string FieldInvalid {
@@ -102,6 +111,15 @@ namespace TicketsSupport.ApplicationCore.Resources.Properties {
         public static string FirstName {
             get {
                 return ResourceManager.GetString("FirstName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Icon.
+        /// </summary>
+        public static string Icon {
+            get {
+                return ResourceManager.GetString("Icon", resourceCulture);
             }
         }
         
@@ -165,6 +183,15 @@ namespace TicketsSupport.ApplicationCore.Resources.Properties {
         public static string MenuUrl {
             get {
                 return ResourceManager.GetString("MenuUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string Name {
+            get {
+                return ResourceManager.GetString("Name", resourceCulture);
             }
         }
         

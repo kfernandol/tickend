@@ -24,7 +24,35 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[Project]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ProjectXTicketPriority]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ProjectXTicketStatus]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ProjectXTicketType]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Rol]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TicketPriority]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TicketStatus]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TicketType]",
          "ObjectType": 0
       },
       {
@@ -32,7 +60,7 @@
          "ObjectType": 0
       }
    ],
-   "UiHint": null,
+   "UiHint": "..\\..\\Database\\TicketsSupport.Database\\Database.sqlproj",
    "UncountableWords": null,
    "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": false,

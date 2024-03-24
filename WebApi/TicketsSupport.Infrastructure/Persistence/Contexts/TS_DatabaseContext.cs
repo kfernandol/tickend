@@ -18,7 +18,21 @@ public partial class TS_DatabaseContext : DbContext
 
     public virtual DbSet<MenuXrol> MenuXrols { get; set; }
 
+    public virtual DbSet<Project> Projects { get; set; }
+
+    public virtual DbSet<ProjectXticketPriority> ProjectXticketPriorities { get; set; }
+
+    public virtual DbSet<ProjectXticketStatus> ProjectXticketStatuses { get; set; }
+
+    public virtual DbSet<ProjectXticketType> ProjectXticketTypes { get; set; }
+
     public virtual DbSet<Rol> Rols { get; set; }
+
+    public virtual DbSet<TicketPriority> TicketPriorities { get; set; }
+
+    public virtual DbSet<TicketStatus> TicketStatuses { get; set; }
+
+    public virtual DbSet<TicketType> TicketTypes { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
@@ -54,6 +68,55 @@ public partial class TS_DatabaseContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull);
         });
 
+        modelBuilder.Entity<Project>(entity =>
+        {
+            entity.ToTable("Project");
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<ProjectXticketPriority>(entity =>
+        {
+            entity.ToTable("ProjectXTicketPriority");
+
+            entity.HasOne(d => d.Project).WithMany(p => p.ProjectXticketPriorities)
+                .HasForeignKey(d => d.ProjectId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            entity.HasOne(d => d.TicketPriority).WithMany(p => p.ProjectXticketPriorities)
+                .HasForeignKey(d => d.TicketPriorityId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+        });
+
+        modelBuilder.Entity<ProjectXticketStatus>(entity =>
+        {
+            entity.ToTable("ProjectXTicketStatus");
+
+            entity.HasOne(d => d.Project).WithMany(p => p.ProjectXticketStatuses)
+                .HasForeignKey(d => d.ProjectId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            entity.HasOne(d => d.TicketStatus).WithMany(p => p.ProjectXticketStatuses)
+                .HasForeignKey(d => d.TicketStatusId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+        });
+
+        modelBuilder.Entity<ProjectXticketType>(entity =>
+        {
+            entity.ToTable("ProjectXTicketType");
+
+            entity.HasOne(d => d.Project).WithMany(p => p.ProjectXticketTypes)
+                .HasForeignKey(d => d.ProjectId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            entity.HasOne(d => d.TicketType).WithMany(p => p.ProjectXticketTypes)
+                .HasForeignKey(d => d.TicketTypeId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+        });
+
         modelBuilder.Entity<Rol>(entity =>
         {
             entity.ToTable("Rol");
@@ -61,6 +124,52 @@ public partial class TS_DatabaseContext : DbContext
             entity.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(150)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<TicketPriority>(entity =>
+        {
+            entity.ToTable("TicketPriority");
+
+            entity.Property(e => e.Color)
+                .IsRequired()
+                .HasMaxLength(7)
+                .IsUnicode(false);
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<TicketStatus>(entity =>
+        {
+            entity.ToTable("TicketStatus");
+
+            entity.Property(e => e.Color)
+                .IsRequired()
+                .HasMaxLength(7)
+                .IsUnicode(false);
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<TicketType>(entity =>
+        {
+            entity.ToTable("TicketType");
+
+            entity.Property(e => e.Icon)
+                .IsRequired()
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.IconColor)
+                .IsRequired()
+                .HasMaxLength(7)
+                .IsUnicode(false);
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100)
                 .IsUnicode(false);
         });
 

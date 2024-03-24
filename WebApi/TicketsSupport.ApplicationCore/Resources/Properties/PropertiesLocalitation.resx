@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Color" xml:space="preserve">
+    <value>Color</value>
+  </data>
   <data name="FieldInvalid" xml:space="preserve">
     <value>{0} field is invalid</value>
   </data>
@@ -131,6 +134,9 @@
   </data>
   <data name="FirstName" xml:space="preserve">
     <value>Firstname</value>
+  </data>
+  <data name="Icon" xml:space="preserve">
+    <value>Icon</value>
   </data>
   <data name="LastName" xml:space="preserve">
     <value>Lastname</value>
@@ -152,6 +158,9 @@
   </data>
   <data name="MenuUrl" xml:space="preserve">
     <value>Menu url</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
   </data>
   <data name="Password" xml:space="preserve">
     <value>Password</value>
