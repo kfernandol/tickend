@@ -24,19 +24,29 @@ INSERT INTO [Menu](Name,  Icon, Url, ParentId, Position, Show, Active)
     INSERT INTO [Menu](Name,  Icon, Url, ParentId, Position, Show, Active) 
     VALUES('Roles', 'pi-id-card', '/roles', 1, 2, 1, 1)
 
-     INSERT INTO [Menu](Name,  Icon, Url, ParentId, Position, Show, Active) 
+    INSERT INTO [Menu](Name,  Icon, Url, ParentId, Position, Show, Active) 
     VALUES('Menus', 'pi-th-large', '/menus', 1, 3, 1, 1)
+
+    INSERT INTO [Menu](Name,  Icon, Url, ParentId, Position, Show, Active) 
+    VALUES('Tickets', '', '#', NULL, 2, 1, 1)
+
+    INSERT INTO [Menu](Name,  Icon, Url, ParentId, Position, Show, Active) 
+    VALUES('TicketTypes', 'pi pi-tags', '/ticket/types', 5, 2, 1, 1)
+
 END;
 
 /* Default insert in MenuXRol */
 IF NOT EXISTS (SELECT 1 FROM [MenuXRol])
 BEGIN 
-    INSERT INTO [MenuXRol](MenuId, RoleId) 
-    VALUES(1,1)
-
+    /* Users Menu */
     INSERT INTO [MenuXRol](MenuId, RoleId) 
     VALUES(2,1)
 
+    /* Rol Menu */
     INSERT INTO [MenuXRol](MenuId, RoleId) 
     VALUES(3,1)
+
+    /* Menus Menu */
+    INSERT INTO [MenuXRol](MenuId, RoleId) 
+    VALUES(4,1)
 END;

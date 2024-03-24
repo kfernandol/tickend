@@ -25,6 +25,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
         public async Task<MenuResponse> CreateMenu(CreateMenuRequest request)
         {
             var menu = _mapper.Map<Menu>(request);
+            menu.ParentId = request.ParentId > 0 ? request.ParentId : null;
             menu.Active = true;
 
             this._context.Menus.Add(menu);
@@ -73,6 +74,18 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                      .Select(x => _mapper.Map<MenuResponse>(x.Menu))
                                                      .ToListAsync();
 
+            var parentIds = menuByUser.Where(x => x.ParentId != null).Select(x => x.ParentId).Distinct().ToList();
+
+            foreach (var parentId in parentIds)
+            {
+                var menu = await _context.Menus.Where(x => x.Id == parentId).Select(x => _mapper.Map<MenuResponse>(x)).FirstOrDefaultAsync();
+                if (menu != null)
+                    menuByUser.Add(menu);
+
+                else
+                    throw new NotFoundException(ExceptionMessage.NotFound("Menu Parent", $"{parentId}"));
+
+            }
 
 
             return menuByUser;
@@ -86,7 +99,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 menu.Url = request.Url;
                 menu.Icon = request.Icon;
                 menu.Position = request.Position;
-                menu.ParentId = request.ParentId;
+                menu.ParentId = request.ParentId > 0 ? request.ParentId : null;
                 menu.Show = request.Show;
                 menu.Active = true;
 

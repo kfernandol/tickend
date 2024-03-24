@@ -33,6 +33,7 @@ export default function NewMenu() {
     //Form
     const { control, getFormErrorMessage, errors, handleSubmit, reset, getValues, setValue } = useMenuForm();
     const [Menus, setMenus] = useState<MenusResponse[]>([]);
+    const [FilterIcon, setFilterIcon] = useState<string>('');
     //Request Hook
     const { SendPostRequest, postResponse, loadingPost, errorPost, httpCodePost } = usePost<BasicResponse>();
     const { SendGetRequest, getResponse, loadingGet, errorGet, httpCodeGet } = useGet<PermissionLevelResponse | MenusResponse>();
@@ -165,8 +166,8 @@ export default function NewMenu() {
                                         message: ErrorMaxCaracter + 150
                                     },
                                     minLength: {
-                                        value: 3,
-                                        message: ErrorMinCaracter + 3
+                                        value: 1,
+                                        message: ErrorMinCaracter + 1
                                     }
 
                                 }}
@@ -190,7 +191,6 @@ export default function NewMenu() {
                             control={control}
                             rules={
                                 {
-                                    required: ErrorRequired,
                                     maxLength: {
                                         value: 150,
                                         message: ErrorMaxCaracter + 150
@@ -205,7 +205,7 @@ export default function NewMenu() {
                                 <>
                                     <label htmlFor={field.name} className={classNames({ 'p-error': errors.name })}></label>
                                     <span className="p-float-label">
-                                        <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
+                                        <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => { field.onChange(e.target.value); setFilterIcon(e.target.value) }} />
                                         <label htmlFor={field.name}>{CardFormIcon}</label>
                                     </span>
                                     {getFormErrorMessage(field.name)}
@@ -214,17 +214,15 @@ export default function NewMenu() {
                         />
                     </div>
 
-                    <Card>
+                    <Card className='w-full'>
                         <div className='grid text-center' style={{ maxHeight: "250px", overflowY: "auto" }}>
-                            {Object.entries(PrimeIcons).map(([key, value]) => (
+                            {Object.entries(PrimeIcons).filter(([key, value]) => key.toLowerCase().includes(FilterIcon.toLowerCase())).map(([key, value]) => (
                                 <div className='col-3 md:col-1 mb-5'>
-                                    <Button onClick={() => onClickIcon(value)} type='button' icon={value} rounded text severity="primary" aria-label="Bookmark" />
+                                    <Button onClick={() => onClickIcon(value)} type='button' icon={value} rounded text severity="info" aria-label="Bookmark" />
                                 </div>
 
                             ))}
                         </div>
-
-
                     </Card>
 
                     {/* Position Input */}
@@ -310,19 +308,6 @@ export default function NewMenu() {
                         <Controller
                             name="show"
                             control={control}
-                            rules={
-                                {
-                                    required: ErrorRequired,
-                                    maxLength: {
-                                        value: 150,
-                                        message: ErrorMaxCaracter + 150
-                                    },
-                                    minLength: {
-                                        value: 3,
-                                        message: ErrorMinCaracter + 3
-                                    }
-
-                                }}
                             render={({ field, fieldState }) => (
                                 <>
                                     <label htmlFor={field.name} className={classNames({ 'p-error': errors.show })}></label>

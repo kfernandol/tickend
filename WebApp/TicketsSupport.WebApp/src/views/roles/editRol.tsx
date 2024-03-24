@@ -227,8 +227,8 @@ export default function EditRol() {
                     <div className='col-12 grid'>
                         {Menus.filter(x => x.parentId === null).map((value: MenusResponse, index: number) => (
                             <div className='col-2 px-4' key={`parent-${value.id}`}>
-                                <div className='flex flex-column gap-3'>
-                                    <Card title={value.name} className='text-center' >
+                                <div className='flex flex-column gap-3 h-full'>
+                                    <Card title={value.name} className='text-center h-full' >
                                         {Menus.filter(x => x.parentId === value.id).map((childValue: MenusResponse, childIndex: number) => (
                                             <div key={`child-${childValue.id}`} className="flex align-items-center pb-2 px-3">
                                                 <Checkbox
