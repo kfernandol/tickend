@@ -22,7 +22,7 @@ namespace TicketsSupport.ApplicationCore.Mappings
             CreateMap<Menu, MenuResponse>();
 
             //Ticket Priority
-            CreateMap<CreateTicketTypeRequest, TicketPriority>();
+            CreateMap<CreateTicketPriorityRequest, TicketPriority>();
             CreateMap<TicketPriority, TicketPriorityResponse>();
 
             //Ticket Status

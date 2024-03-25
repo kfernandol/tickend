@@ -2,7 +2,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { TicketPriorityFormModel } from "../../models/forms/ticketPriority.form";
 
-export default function useTicketTypeForm() {
+export default function useTicketPriorityForm() {
 
 
     const {

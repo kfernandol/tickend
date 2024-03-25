@@ -1,0 +1,19 @@
+{
+    "TicketStatusTableTitle": "List of ticket status",
+    "TicketStatusTableHeaderNewTicketStatus": "New ticket status",
+    "TicketStatusTableHeaderId": "Id",
+    "TicketStatusTableHeaderName": "Name",
+    "TicketStatusTableHeaderColor": "Color",
+    "TicketStatusTableHeaderActions": "Actions",
+    "TicketStatusTableDeleteTitle": "Ticket status deletion",
+    "TicketStatusCardTitleNewTicketStatus": "Add new ticket status",
+    "TicketStatusCardSubTitleNewTicketStatus": "Enter the necessary information in the form to add the new ticket status",
+    "TicketStatusCardFormId": "Id",
+    "TicketStatusCardFormName": "Name",
+    "TicketStatusCardFormColor": "Color",
+    "TicketStatusCardFormButtonSave": "Add ticket status",
+    "TicketStatusCardFormButtonCancel": "Cancel",
+    "TicketStatusCardTitleEditTicketStatus": "Edit ticket status",
+    "TicketStatusCardSubTitleEditTicketStatus": "Edit the information you want to edit on the form",
+    "TicketStatusCardFormButtonEdit": "Edit ticket status"
+}

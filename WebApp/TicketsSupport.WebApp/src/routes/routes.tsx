@@ -18,6 +18,12 @@ import EditMenu from "../views/menus/editMenu.tsx";
 import TicketTypes from "../views/ticket-types/ticketType.tsx";
 import { NewTicketType } from "../views/ticket-types/ticketTypeNew.tsx";
 import { EditTicketType } from "../views/ticket-types/ticketTypeEdit.tsx";
+import TicketStatus from "../views/ticket-status/ticketStatus.tsx";
+import { NewTicketStatus } from "../views/ticket-status/ticketStatusNew.tsx";
+import { EditTicketStatus } from "../views/ticket-status/ticketStatusEdit.tsx";
+import TicketPriority from "../views/ticket-priority/ticketPriority.tsx";
+import { NewTicketPriority } from "../views/ticket-priority/ticketPriorityNew.tsx";
+import { EditTicketPriority } from "../views/ticket-priority/ticketPriorityEdit.tsx";
 
 //Routes with login
 export const routesAuthorized = () => {
@@ -136,6 +142,58 @@ export const routesAuthorized = () => {
           element:
             <ProtectedRoute name="TicketTypes">
               <EditTicketType />
+            </ProtectedRoute>
+        },
+        {
+          path: paths.ticketStatus,
+          element:
+            <ProtectedRoute name="TicketStatus">
+              <TicketStatus />
+            </ProtectedRoute>,
+        },
+        {
+          path: paths.newTicketStatus,
+          element:
+            <ProtectedRoute name="TicketStatus">
+              <NewTicketStatus />
+            </ProtectedRoute>
+        },
+        {
+          path: paths.EditTicketStatus,
+          element:
+            <Navigate to={paths.ticketStatus}></Navigate>
+        },
+        {
+          path: paths.EditTicketStatusWithId,
+          element:
+            <ProtectedRoute name="TicketStatus">
+              <EditTicketStatus />
+            </ProtectedRoute>
+        },
+        {
+          path: paths.ticketPriorities,
+          element:
+            <ProtectedRoute name="TicketPriority">
+              <TicketPriority />
+            </ProtectedRoute>,
+        },
+        {
+          path: paths.newTicketPriorities,
+          element:
+            <ProtectedRoute name="TicketPriority">
+              <NewTicketPriority />
+            </ProtectedRoute>
+        },
+        {
+          path: paths.EditTicketPriorities,
+          element:
+            <Navigate to={paths.ticketPriorities}></Navigate>
+        },
+        {
+          path: paths.EditTicketPrioritiesWithId,
+          element:
+            <ProtectedRoute name="TicketPriority">
+              <EditTicketPriority />
             </ProtectedRoute>
         }
       ],

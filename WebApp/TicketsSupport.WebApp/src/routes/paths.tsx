@@ -21,9 +21,9 @@ export const paths = {
   ticketStatus: "/Ticket/Status",
   newTicketStatus: "/Ticket/Status/New",
   EditTicketStatus: "/Ticket/Status/Edit",
-  EditTicketStatusWithId: "Ticket/Status/Edit/:id",
+  EditTicketStatusWithId: "/Ticket/Status/Edit/:id",
   ticketPriorities: "/Ticket/Priorities",
   newTicketPriorities: "/Ticket/Priorities/New",
   EditTicketPriorities: "/Ticket/Priorities/Edit",
-  EditTicketPrioritiesWithId: "Ticket/Priorities/Edit/:id",
+  EditTicketPrioritiesWithId: "/Ticket/Priorities/Edit/:id",
 };
