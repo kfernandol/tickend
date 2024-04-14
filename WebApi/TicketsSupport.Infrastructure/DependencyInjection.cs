@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TicketsSupport.ApplicationCore.Interfaces;
 using TicketsSupport.Infrastructure.Persistence.Contexts;
 using TicketsSupport.Infrastructure.Persistence.Repositories;
+using TicketsSupport.Infrastructure.Services.Email;
 
 namespace TicketsSupport.Infrastructure
 {
@@ -20,12 +21,15 @@ namespace TicketsSupport.Infrastructure
 
             //Dependencies infrastructures
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IProfileRepository, ProfileRepository>();
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IRolRepository, RolRepository>();
             services.AddScoped<IMenuRepository, MenuRepository>();
+            services.AddScoped<IProjectRepository, ProjectRepository>();
             services.AddScoped<ITicketPriorityRepository, TicketPriorityRepository>();
             services.AddScoped<ITicketStatusRepository, TicketStatusRepository>();
             services.AddScoped<ITicketTypeRepository, TicketTypeRepository>();
+            services.AddScoped<IEmailSender, EmailSender>();
 
             return services;
         }

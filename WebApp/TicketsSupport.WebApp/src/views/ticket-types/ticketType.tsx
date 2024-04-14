@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { LegacyRef, useEffect, useRef, useState } from 'react'
 import { FilterMatchMode } from 'primereact/api';
 import { paths } from '../../routes/paths';
@@ -14,7 +15,7 @@ import { ProgressSpinner } from 'primereact/progressspinner';
 import { useDelete, useGet } from "../../services/api_services";
 import { useTranslation } from 'react-i18next';
 //models
-import { BasicResponse, ErrorResponse } from '../../models/responses/basic.response';
+import { BasicResponse, ErrorResponse, ErrorsResponse } from '../../models/responses/basic.response';
 import { Badge } from 'primereact/badge';
 import { TicketTypeResponse } from '../../models/responses/ticketType.response';
 
@@ -28,27 +29,32 @@ export default function TicketTypes() {
     //Api Request
     const { SendDeleteRequest, deleteResponse, errorDelete, httpCodeDelete } = useDelete<BasicResponse>();
     const { SendGetRequest, getResponse, loadingGet } = useGet<TicketTypeResponse[]>();
-    const [menus, setMenus] = useState<any>([]);
-    let deleteTicketTypeId = "";
+    const [TicketTypes, setTicketTypes] = useState<{
+        id: number,
+        name: string,
+        icon: React.JSX.Element,
+        iconColor: React.JSX.Element,
+    }[]>([]);
 
     //Translations
     const { t } = useTranslation();
-    const GlobalConfirmationDeleteText = t("GlobalConfirmationDeleteText");
-    const GlobalConfirmation = t("GlobalConfirmation");
-    const GlobalButtonDelete = t("GlobalButtonDelete");
-    const GlobalButtonCancel = t("GlobalButtonCancel");
-    const GlobalSearch = t("GlobalSearch");
-    const GlobalTextTrue = t("GlobalTextTrue");
-    const GlobalTextFalse = t("GlobalTextFalse");
-    const TableTitle = t("TicketTypeTableTitle");
-    const TableDeleteTitle = t("TicketTypeTableDeleteTitle");
-    const CardTitleNewElement = t("MenusCardTitleNewMenu");
-    const TableHeaderNew = t("TicketTypeTableHeaderNewTicketType")
-    const TableHeaderId = t("TicketTypeTableHeaderId");
-    const TableHeaderName = t("TicketTypeTableHeaderName");
-    const TableHeaderIcon = t("TicketTypeTableHeaderIcon");
-    const TableHeaderIconColor = t("TicketTypeTableHeaderIconColor");
-    const TableHeaderActions = t("TicketTypeTableHeaderActions");
+    const GlobalConfirmationDeleteText = t("deleteConfirmation.description", { 0: t("navigation.Users") });
+    const GlobalConfirmation = t("deleteConfirmation.title");
+    const GlobalButtonDelete = t("buttons.delete");
+    const GlobalButtonCancel = t("common.cardFormButtons.cancel");
+    const GlobalSearch = t("placeholders.search");
+    const TableDeleteTitle = t("deleteConfirmation.title");
+    const TableTitle = t("ticketTypes.tableTitle");
+    const TableHeaderNew = t("ticketTypes.labels.new")
+    const TableHeaderId = t("common.labels.id");
+    const TableHeaderName = t("common.labels.name");
+    const TableHeaderIcon = t("ticketTypes.labels.icon");
+    const TableHeaderIconColor = t("ticketTypes.labels.iconColor");
+    const TableHeaderActions = t("common.labels.actions");
+
+    //Links
+    const NewItemUrl = paths.newTicketType;
+    const EditItemUrl = paths.EditTicketTypeWithId;
 
 
     //Send Request
@@ -59,48 +65,42 @@ export default function TicketTypes() {
     //Get Response
     useEffect(() => {
         if (getResponse) {
-            const menus = getResponse.map(x => ({
+            const TicketTypes = getResponse.map(x => ({
                 id: x.id,
                 name: x.name,
                 icon: <i className={x.icon} />,
                 iconColor: <Badge value={x.iconColor} style={{ backgroundColor: x.iconColor }}></Badge>
             }))
 
-            setMenus(menus);
+            setTicketTypes(TicketTypes);
         }
     }, [getResponse, t]);
 
-    //Notification Api Response
+    //Notification delete
     useEffect(() => {
-        //Delete user complete
         if (httpCodeDelete === 200) {
-            toast?.current?.show({ severity: 'error', summary: TableDeleteTitle, detail: deleteResponse?.message, life: 3000 });
+            toast?.current?.show({ severity: 'success', summary: TableDeleteTitle, detail: deleteResponse?.message, life: 3000 });
+            setTimeout(() => SendGetRequest("v1/ticket/priorities"), 3000);
         }
-        //Bad Request
-        else if (httpCodeDelete == 400) {
-            const errorResponse: ErrorResponse = errorDelete?.response?.data as ErrorResponse;
-
-            if (errorResponse) {
-                const errorsJson: string[] = JSON.parse(errorResponse.details);
-                //ErrorResponse with list errors
-                if (errorsJson) {
-                    const errorsHtml = Object.values(errorsJson).flat().map((error, index) => {
-                        return <li>{index + 1}. {error}</li>;
-                    });
-
-                    toast?.current?.show({ severity: 'error', summary: CardTitleNewElement, detail: <ul id='errors-toast'>{errorsHtml}</ul>, life: 3000 });
-                } else {
-                    toast?.current?.show({ severity: 'error', summary: CardTitleNewElement, detail: errorResponse.details, life: 3000 });
-                }
+        if (errorDelete && httpCodeDelete !== 0) {
+            if ('errors' in errorDelete) {//Is Errors Response
+                const errors = errorDelete as ErrorsResponse;
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const errorsHtml = Object.entries(errors.errors).map(([_field, errors], index) => (
+                    errors.map((error, errorIndex) => (
+                        <li key={`${index}-${errorIndex}`}>{error}</li>
+                    ))
+                )).flat();
+                toast?.current?.show({ severity: 'error', summary: TableDeleteTitle, detail: <ul id='errors-toast' className='pl-0'>{errorsHtml}</ul>, life: 50000 });
+            } else if ('details' in errorDelete) {//Is Error Response
+                const error = errorDelete as ErrorResponse;
+                toast?.current?.show({
+                    severity: 'error', summary: TableDeleteTitle, detail: error.details, life: 3000
+                });
             }
         }
-        else {
-            const response = errorDelete?.response?.data as ErrorResponse;
-            if (response) {
-                toast?.current?.show({ severity: 'error', summary: CardTitleNewElement, detail: response.details, life: 3000 });
-            }
-        }
-    }, [deleteResponse, errorDelete, httpCodeDelete, t])
+
+    }, [errorDelete, httpCodeDelete, deleteResponse])
 
 
     //Table Search Filter
@@ -125,7 +125,7 @@ export default function TicketTypes() {
                 <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder={GlobalSearch} />
             </span>
             {/* Add new */}
-            <Link to={paths.newTicketType}>
+            <Link to={NewItemUrl}>
                 <Button icon="pi pi-plus" severity='success'>
                     <span className='pl-2'>{TableHeaderNew}</span>
                 </Button>
@@ -134,7 +134,7 @@ export default function TicketTypes() {
     );
 
     const ActionsTableTemplate = (rowData: { id: string; }) => {
-        const editUrlPath = paths.EditTicketTypeWithId.slice(0, paths.EditTicketTypeWithId.length - 3);
+        const editUrlPath = EditItemUrl.slice(0, EditItemUrl.length - 3);
         return <>
             <div className='flex gap-2'>
                 <Link to={editUrlPath + rowData.id}>
@@ -147,20 +147,15 @@ export default function TicketTypes() {
 
     //Confirm Delete User Dialog
     const confirmDelete = (id: string) => {
-        deleteTicketTypeId = id;
         confirmDialog({
             message: GlobalConfirmationDeleteText,
             header: GlobalConfirmation,
             icon: 'pi pi-exclamation-triangle',
             defaultFocus: 'accept',
-            accept: acceptDelete,
+            accept: () => SendDeleteRequest("v1/ticket/types/" + id),
         });
     };
 
-    //Accept Delete user
-    function acceptDelete() {
-        SendDeleteRequest("v1/ticket/types/" + deleteTicketTypeId);
-    }
 
     return (
         <>
@@ -174,7 +169,7 @@ export default function TicketTypes() {
                     <Toast ref={toast} />
                     <div className="card" style={{ backgroundColor: "#17212f5D" }}>
                         <DataTable
-                            value={menus}
+                            value={TicketTypes}
                             header={TableHeader}
                             style={{ backgroundColor: "#17212f5D" }}
                             dataKey="id"
@@ -211,7 +206,6 @@ export default function TicketTypes() {
                                         severity='danger'
                                         onClick={(event) => {
                                             hide(event);
-                                            acceptDelete();
                                         }}
                                         className="w-8rem"
                                     ></Button>

@@ -3,8 +3,8 @@ import storage from "redux-persist/lib/storage";
 import persistReducer from "redux-persist/es/persistReducer";
 import { persistStore } from "redux-persist";
 //Slices
-import authReducer from "./AuthSlice";
-import languageReducer from "./LanguageSlice";
+import authReducer from "./Slices/AuthSlice";
+import languageReducer from "./Slices/LanguageSlice";
 
 const persistConfig = {
   key: "auth",

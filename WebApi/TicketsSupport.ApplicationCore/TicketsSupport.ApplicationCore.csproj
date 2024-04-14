@@ -19,6 +19,10 @@
   </ItemGroup>
 	
   <ItemGroup>
+    <EmbeddedResource Update="Resources\Emails\ResetPassword\ResetPassword.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ResetPassword.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="Resources\Exceptions\Details\ExceptionDetails.en.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ExceptionDetails.en.Designer.cs</LastGenOutput>
@@ -58,6 +62,11 @@
   </ItemGroup>
 	
   <ItemGroup>
+    <Compile Update="Resources\Emails\ResetPassword\ResetPassword.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ResetPassword.resx</DependentUpon>
+    </Compile>
     <Compile Update="Resources\Exceptions\Details\ExceptionDetails_es.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

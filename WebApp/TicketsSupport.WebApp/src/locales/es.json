@@ -1,0 +1,222 @@
+{
+  "auth": {
+    "login": {
+      "title": "Iniciar sesión",
+      "subtitle": "Inicie sesión para administrar su cuenta",
+      "submit": "Iniciar sesión",
+      "labels": {
+        "username": "Nombre de usuario",
+        "password": "Contraseña"
+      },
+      "usernameRequired": "Se requiere el nombre de usuario",
+      "passwordRequired": "Se requiere la contraseña",
+      "loginInvalid": "Nombre de usuario o contraseña inválidos",
+      "keepMeLogin": "No cerrar sesión",
+      "restorePassword": "¿Olvidaste tu contraseña?"
+    }
+  },
+  "navigation": {
+    "Dashboard": "Inicio",
+    "Security": "Seguridad",
+    "Users": "Usuarios",
+    "Roles": "Roles",
+    "Menus": "Menús",
+    "Tickets": "Tickets",
+    "TicketStatus": "Estados de ticket",
+    "TicketTypes": "Tipos de ticket",
+    "TicketPriority": "Prioridades de ticket",
+    "Projects": "Proyectos",
+    "Ticket": "Ticket"
+  },
+  "sidebar": {
+    "logout": "Cerrar sesión"
+  },
+  "common": {
+    "labels": {
+      "id": "ID",
+      "name": "Nombre",
+      "actions": "Acciones"
+    },
+    "deleteTitle": "Eliminación",
+    "cardTitles": {
+      "new": "Agregar nuevo {{0}}",
+      "edit": "Editar {{0}}"
+    },
+    "cardSubTitles": {
+      "new": "Ingrese la información necesaria en el formulario para agregar un nuevo {{0}}",
+      "edit": "Edite la información que desea modificar en el formulario"
+    },
+    "cardFormButtons": {
+      "save": "Agregar {{0}}",
+      "cancel": "Cancelar",
+      "edit": "Editar {{0}}"
+    }
+  },
+  "menus": {
+    "tableTitle": "Lista de menús",
+    "labels": {
+      "new": "Nuevo menú",
+      "url": "URL",
+      "icon": "Ícono",
+      "position": "Posición",
+      "parentId": "Padre",
+      "show": "Mostrar"
+    }
+  },
+  "roles": {
+    "tableTitle": "Lista de roles",
+    "labels": {
+      "new": "Nuevo rol",
+      "permissionLevel": "Nivel de permiso",
+      "menus": "Menús"
+    }
+  },
+  "ticketPriorities": {
+    "tableTitle": "Lista de prioridades de ticket",
+    "labels": {
+      "new": "Nueva prioridad de ticket",
+      "color": "Color"
+    }
+  },
+  "ticketStatuses": {
+    "tableTitle": "Lista de estados de ticket",
+    "labels": {
+      "new": "Nuevo estado de ticket",
+      "color": "Color"
+    }
+  },
+  "ticketTypes": {
+    "tableTitle": "Lista de tipos de ticket",
+    "labels": {
+      "new": "Nuevo tipo de ticket",
+      "icon": "Ícono",
+      "iconColor": "Color de ícono"
+    }
+  },
+  "users": {
+    "tableTitle": "Lista de usuarios",
+    "labels": {
+      "photo": "Foto",
+      "username": "Nombre de usuario",
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "email": "Correo electrónico",
+      "role": "Rol",
+      "new": "Nuevo usuario",
+      "password": "Contraseña",
+      "confirmPassword": "Confirmar contraseña"
+    }
+  },
+  "buttons": {
+    "cancel": "Cancelar",
+    "accept": "Aceptar",
+    "save": "Guardar",
+    "delete": "Eliminar"
+  },
+  "boolean": {
+    "true": "Verdadero",
+    "false": "Falso"
+  },
+  "placeholders": {
+    "search": "Buscar"
+  },
+  "selects": {
+    "languages": "Seleccionar un idioma"
+  },
+  "deleteConfirmation": {
+    "title": "Confirmación",
+    "description": "¿Está seguro de que desea eliminar este {{0}}"
+  },
+  "avatarMenu": {
+    "languages": "Idiomas",
+    "profile": "Perfil"
+  },
+  "errors": {
+    "required": "Este campo es obligatorio",
+    "maxLength": "El número máximo de caracteres es {{0}}",
+    "minLength": "El número mínimo de caracteres es {{0}}",
+    "noMatch": "{{0}} no coincide"
+  },
+  "languages": {
+    "en": "Inglés",
+    "es": "Español"
+  },
+  "profile": {
+    "labels": {
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "confirmPassword": "Confirmar contraseña"
+    },
+    "errors": {
+      "fileSize": {
+        "title": "Error de tamaño de archivo",
+        "message": "Tamaño máximo 5 MB"
+      }
+    }
+  },
+  "resetPassword": {
+    "title": "¿Olvidaste tu contraseña?",
+    "subTitle": "Por favor, ingresa tu correo electrónico registrado. Enviaremos las instrucciones para ayudarte a restablecer tu contraseña.",
+    "labels": {
+      "submit": "Restablecer contraseña"
+    }
+  },
+  "resetPasswordSend": {
+    "title": "Instrucciones enviadas por correo electrónico",
+    "subTitle": "Por favor, sigue las instrucciones que hemos enviado a tu bandeja de entrada.",
+    "labels": {
+      "return": "Regresar al inicio"
+    }
+  },
+  "changePassword": {
+    "title": "Restablecer contraseña",
+    "labels": {
+      "submit": "Cambiar contraseña",
+      "password": "Contraseña",
+      "confirmPassword": "Confirmar contraseña"
+    },
+    "errors": {
+      "changePassword": "Ocurrio un problema al intentar cambiar la contraseña."
+    }
+  },
+  "changePasswordSend": {
+    "title": "Contraseña cambiada",
+    "subTitle": "La contraseña ha sido cambiada exitosamente.",
+    "labels": {
+      "return": "Regresar al inicio"
+    }
+  },
+  "projects": {
+    "tableTitle": "Lista de Proyectos",
+    "labels": {
+      "new": "Nuevo proyecto",
+      "photo": "Foto",
+      "description": "Descripcion",
+      "status": "Estados",
+      "priorities": "Prioridades",
+      "types": "Tipos",
+      "clients": "Clientes",
+      "developer": "Desarroladores",
+      "selectPriorities": "Selecciona las prioridades de tickets",
+      "SelectTypes": "Selecciona los tipos de tickets",
+      "selectStatus": "Selecciona los estados de tickets",
+      "selectClients": "Selecciona los clientes",
+      "selectDeveloper": "Selecciona los desarrolladores"
+    }
+  },
+  "tickets": {
+    "tableTitle": "Lista de Tickets",
+    "labels": {
+      "new": "Nuevo Ticket",
+      "title": "Titulo",
+      "project": "Proyecto",
+      "priority": "Prioridad",
+      "type": "Tipo",
+      "status": "Estado",
+      "dateCreated": "Fecha de Creacion",
+      "dateUpdated": "Ultima Actualización"
+    }
+  }
+}

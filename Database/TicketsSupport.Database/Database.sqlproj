@@ -72,9 +72,12 @@
     <Build Include="Tables\ProjectXTicketType.sql" />
     <Build Include="Tables\ProjectXTicketStatus.sql" />
     <Build Include="Tables\ProjectXTicketPriority.sql" />
+    <Build Include="Tables\UserRestorePassword.sql" />
+    <Build Include="Tables\ProjectXDeveloper.sql" />
+    <Build Include="Tables\ProjectXClients.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DefaultInserts\DefaultInserts.sql" />
-    <None Include="TS_Database.publish.dev.xml" />
+    <None Include="TS_Database.dev.publish.xml" />
   </ItemGroup>
 </Project>

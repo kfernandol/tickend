@@ -30,6 +30,7 @@ namespace TicketsSupport.ApplicationCore.DTOs
 
         [Required(ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldRequired))]
         [MaxLength(50, ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldMaxLength))]
+        [MinLength(5, ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldMinLength))]
         [Display(Name = "Password", ResourceType = typeof(PropertiesLocalitation))]
         public virtual string Password { get; set; }
 
@@ -43,17 +44,20 @@ namespace TicketsSupport.ApplicationCore.DTOs
         [Required(ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldRequired))]
         public int Id { get; set; }
 
-        [Required(ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldRequired))]
+        [Required(AllowEmptyStrings = true, ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldRequired))]
+        [MinLength(0, ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldMinLength))]
         public override string Password { get => base.Password; set => base.Password = value; }
     }
 
     public class UserResponse
     {
         public int Id { get; set; }
+        public string Photo { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Username { get; set; }
         public string Email { get; set; }
         public int RolId { get; set; }
+        public string? LevelPermission { get; set; }
     }
 }

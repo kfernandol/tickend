@@ -9,9 +9,17 @@ public partial class Project
 
     public string Name { get; set; } = null!;
 
+    public string Description { get; set; } = null!;
+
     public byte[]? Photo { get; set; }
 
+    public DateOnly? ExpirationSupportDate { get; set; }
+
     public bool Active { get; set; }
+
+    public virtual ICollection<ProjectXclient> ProjectXclients { get; set; } = new List<ProjectXclient>();
+
+    public virtual ICollection<ProjectXdeveloper> ProjectXdevelopers { get; set; } = new List<ProjectXdeveloper>();
 
     public virtual ICollection<ProjectXticketPriority> ProjectXticketPriorities { get; set; } = new List<ProjectXticketPriority>();
 

@@ -1,0 +1,223 @@
+{
+  "auth": {
+    "login": {
+      "title": "Login",
+      "subtitle": "Log in to manage your account",
+      "submit": "Log in",
+      "labels": {
+        "username": "Username",
+        "password": "Password"
+      },
+      "usernameRequired": "Username is required",
+      "passwordRequired": "Password is required",
+      "loginInvalid": "Username or password invalid",
+      "keepMeLogin": "Keep me logged in",
+      "restorePassword": "Forgot your password?"
+    }
+  },
+  "navigation": {
+    "Dashboard": "Dashboard",
+    "Security": "Security",
+    "Users": "Users",
+    "Roles": "Roles",
+    "Menus": "Menus",
+    "Tickets": "Tickets",
+    "TicketStatus": "Ticket Statuses",
+    "TicketTypes": "Ticket Types",
+    "TicketPriority": "Ticket Priorities",
+    "Profile": "Profiles",
+    "Projects": "Projects",
+    "Ticket": "Ticket"
+  },
+  "sidebar": {
+    "logout": "Logout"
+  },
+  "common": {
+    "labels": {
+      "id": "ID",
+      "name": "Name",
+      "actions": "Actions"
+    },
+    "deleteTitle": "Deletion",
+    "cardTitles": {
+      "new": "Add New {{0}}",
+      "edit": "Edit {{0}}"
+    },
+    "cardSubTitles": {
+      "new": "Enter the necessary information in the form to add a new {{0}}",
+      "edit": "Edit the information you want to modify on the form"
+    },
+    "cardFormButtons": {
+      "save": "Add {{0}}",
+      "cancel": "Cancel",
+      "edit": "Edit {{0}}"
+    }
+  },
+  "menus": {
+    "tableTitle": "List of menus",
+    "labels": {
+      "new": "New Menu",
+      "url": "URL",
+      "icon": "Icon",
+      "position": "Position",
+      "parentId": "Parent",
+      "show": "Show"
+    }
+  },
+  "roles": {
+    "tableTitle": "List of Roles",
+    "labels": {
+      "new": "New Role",
+      "permissionLevel": "Permission Level",
+      "menus": "Menus"
+    }
+  },
+  "ticketPriorities": {
+    "tableTitle": "List of Ticket Priorities",
+    "labels": {
+      "new": "New Ticket Priority",
+      "color": "Color"
+    }
+  },
+  "ticketStatuses": {
+    "tableTitle": "List of Ticket Statuses",
+    "labels": {
+      "new": "New Ticket Status",
+      "color": "Color"
+    }
+  },
+  "ticketTypes": {
+    "tableTitle": "List of Ticket Types",
+    "labels": {
+      "new": "New Ticket Type",
+      "icon": "Icon",
+      "iconColor": "Icon Color"
+    }
+  },
+  "users": {
+    "tableTitle": "List of Users",
+    "labels": {
+      "photo": "Photo",
+      "username": "Username",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "role": "Role",
+      "new": "New User",
+      "password": "Password",
+      "confirmPassword": "Confirm Password"
+    }
+  },
+  "buttons": {
+    "cancel": "Cancel",
+    "accept": "Accept",
+    "save": "Save",
+    "delete": "Delete"
+  },
+  "boolean": {
+    "true": "True",
+    "false": "False"
+  },
+  "placeholders": {
+    "search": "Search"
+  },
+  "selects": {
+    "languages": "Select a Language"
+  },
+  "deleteConfirmation": {
+    "title": "Confirmation",
+    "description": "Are you sure you want to delete this {{0}}"
+  },
+  "avatarMenu": {
+    "languages": "Languages",
+    "profile": "Profile"
+  },
+  "errors": {
+    "required": "This field is required",
+    "maxLength": "The maximum number of characters is {{0}}",
+    "minLength": "The minimum number of characters is {{0}}",
+    "noMatch": "{{0}} does not match"
+  },
+  "languages": {
+    "en": "English",
+    "es": "Spanish"
+  },
+  "profile": {
+    "labels": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm Password"
+    },
+    "errors": {
+      "fileSize": {
+        "title": "File Size Error",
+        "message": "Max size 5 MB"
+      }
+    }
+  },
+  "resetPassword": {
+    "title": "Forgot Password?",
+    "subTitle": "Please enter your registered email address. We'll send instructions to help reset your password.",
+    "labels": {
+      "submit": "Reset Password"
+    }
+  },
+  "resetPasswordSend": {
+    "title": "Email Instructions Sent",
+    "subTitle": "Please follow the instructions we sent to your inbox.",
+    "labels": {
+      "return": "Return Home"
+    }
+  },
+  "changePassword": {
+    "title": "Reset Password",
+    "labels": {
+      "submit": "Change Password",
+      "password": "Password",
+      "confirmPassword": "Confirm Password"
+    },
+    "errors": {
+      "changePassword": "Problem on change password."
+    }
+  },
+  "changePasswordSend": {
+    "title": "Password Changed",
+    "subTitle": "Your password has been changed successfully.",
+    "labels": {
+      "return": "Return Home"
+    }
+  },
+  "projects": {
+    "tableTitle": "List of Projects",
+    "labels": {
+      "new": "New project",
+      "photo": "Photo",
+      "description": "Description",
+      "status": "Status",
+      "priorities": "Priorities",
+      "types": "Types",
+      "clients": "Clients",
+      "developer": "Developers",
+      "selectPriorities": "Select ticket priorities",
+      "SelectTypes": "Select ticket types",
+      "selectStatus": "Select ticket status",
+      "selectClients": "Select ticket clients",
+      "selectDeveloper": "Select ticket developer"
+    }
+  },
+  "tickets": {
+    "tableTitle": "List Tickets",
+    "labels": {
+      "new": "New Ticket",
+      "title": "Title",
+      "project": "Project",
+      "priority": "Priority",
+      "type": "Type",
+      "status": "Status",
+      "dateCreated": "Date Created",
+      "dateUpdated": "Last Updated"
+    }
+  }
+}

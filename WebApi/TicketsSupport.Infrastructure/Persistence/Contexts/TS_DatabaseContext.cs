@@ -20,6 +20,10 @@ public partial class TS_DatabaseContext : DbContext
 
     public virtual DbSet<Project> Projects { get; set; }
 
+    public virtual DbSet<ProjectXclient> ProjectXclients { get; set; }
+
+    public virtual DbSet<ProjectXdeveloper> ProjectXdevelopers { get; set; }
+
     public virtual DbSet<ProjectXticketPriority> ProjectXticketPriorities { get; set; }
 
     public virtual DbSet<ProjectXticketStatus> ProjectXticketStatuses { get; set; }
@@ -35,6 +39,8 @@ public partial class TS_DatabaseContext : DbContext
     public virtual DbSet<TicketType> TicketTypes { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
+
+    public virtual DbSet<UserRestorePassword> UserRestorePasswords { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -72,10 +78,40 @@ public partial class TS_DatabaseContext : DbContext
         {
             entity.ToTable("Project");
 
+            entity.Property(e => e.Description)
+                .IsRequired()
+                .HasMaxLength(500)
+                .IsUnicode(false);
             entity.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(100)
                 .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<ProjectXclient>(entity =>
+        {
+            entity.ToTable("ProjectXClients");
+
+            entity.HasOne(d => d.Client).WithMany(p => p.ProjectXclients)
+                .HasForeignKey(d => d.ClientId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            entity.HasOne(d => d.Project).WithMany(p => p.ProjectXclients)
+                .HasForeignKey(d => d.ProjectId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+        });
+
+        modelBuilder.Entity<ProjectXdeveloper>(entity =>
+        {
+            entity.ToTable("ProjectXDeveloper");
+
+            entity.HasOne(d => d.Developer).WithMany(p => p.ProjectXdevelopers)
+                .HasForeignKey(d => d.DeveloperId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            entity.HasOne(d => d.Project).WithMany(p => p.ProjectXdevelopers)
+                .HasForeignKey(d => d.ProjectId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
         });
 
         modelBuilder.Entity<ProjectXticketPriority>(entity =>
@@ -204,6 +240,22 @@ public partial class TS_DatabaseContext : DbContext
                 .IsUnicode(false);
 
             entity.HasOne(d => d.RolNavigation).WithMany(p => p.Users).HasForeignKey(d => d.Rol);
+        });
+
+        modelBuilder.Entity<UserRestorePassword>(entity =>
+        {
+            entity.ToTable("UserRestorePassword");
+
+            entity.Property(e => e.CreateDate).HasColumnType("datetime");
+            entity.Property(e => e.ExpirationDate).HasColumnType("datetime");
+            entity.Property(e => e.Hash)
+                .IsRequired()
+                .HasMaxLength(150)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.User).WithMany(p => p.UserRestorePasswords)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
         });
 
         OnModelCreatingPartial(modelBuilder);

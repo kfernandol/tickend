@@ -19,10 +19,12 @@ namespace TicketsSupport.WebApi.Controllers
     public class UsersController : Controller
     {
         private readonly IUserRepository _userRepository;
+        private readonly IProfileRepository _profileRepository;
 
-        public UsersController(IUserRepository userRepository)
+        public UsersController(IUserRepository userRepository, IProfileRepository profileRepository)
         {
             _userRepository = userRepository;
+            _profileRepository = profileRepository;
         }
 
         /// <summary>
@@ -31,7 +33,7 @@ namespace TicketsSupport.WebApi.Controllers
         /// <returns></returns>
         [AuthorizeMenu("Users")]
         [HttpGet, MapToApiVersion(1.0)]
-        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(UserResponse))]
+        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(List<UserResponse>))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> GetUsers()
@@ -104,6 +106,22 @@ namespace TicketsSupport.WebApi.Controllers
         {
             await _userRepository.DeleteUserById(id);
             return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementDeleted"), ResourcesUtils.GetResponseMessage("User")) });
+        }
+
+        /// <summary>
+        /// Update User Profile
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPut("profile/{id}"), MapToApiVersion(1.0)]
+        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
+        [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
+        public async Task<IActionResult> Update(int id, UpdateProfileRequest request)
+        {
+            await _profileRepository.UpdateProfile(id, request);
+            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementUpdated"), ResourcesUtils.GetResponseMessage("Profile")) });
         }
     }
 }

@@ -1,11 +1,11 @@
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, AxiosRequestConfig } from "axios";
 //redux
 import { RootState } from "../redux/store";
-import { login, logout } from "../redux/AuthSlice";
+import { login, logout } from "../redux/Slices/AuthSlice";
 //hooks
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import useTokenData from "../hooks/utils/useTokenData";
+import useTokenData from "../hooks/useTokenData";
 //Models
 import { AuthResponse } from "../models/responses/auth.response";
 import { AuthToken } from "../models/tokens/token.model";
@@ -33,7 +33,7 @@ const useApiClient = () => {
 
     //Refresh token - interceptor response
     apiClient.interceptors.response.use((response) => response, async (error) => {
-        console.log(error)
+
         const originalRequest = error.config;
         if (error.response.status === 401 && !originalRequest._retry) {
             try {
@@ -135,14 +135,15 @@ function useGet<T>() {
     const [errorGet, setErrorGet] = useState<ErrorResponse | ErrorsResponse | null>();
     const [httpCodeGet, setHttpCodeGet] = useState(0);
 
-    function SendGetRequest(url: string) {
+    function SendGetRequest(url: string, config?: AxiosRequestConfig) {
         setLoadingGet(true);
-        setErrorGet(undefined);
+        setErrorGet(null);
 
-        apiClient.get(url)
+        return apiClient.get(url, config)
             .then((response) => {
                 setGetResponse(response.data!);
-                setHttpCodeGet(response.status)
+                setHttpCodeGet(response.status);
+                return { data: response.data, url: url }
             })
             .catch((error: unknown) => {
                 if (axios.isAxiosError(error)) {
@@ -180,6 +181,7 @@ function useGet<T>() {
                         setErrorGet(errorResponse);
                     }
                 }
+                return Promise.reject(error);
             })
             .finally(() => {
                 setLoadingGet(false);
@@ -196,11 +198,11 @@ function usePost<T>() {
     const [errorPost, setErrorPost] = useState<ErrorResponse | ErrorsResponse | null>();
     const [httpCodePost, setHttpCodePost] = useState(0);
 
-    const SendPostRequest = (url: string, dataSend = {}) => {
+    const SendPostRequest = (url: string, dataSend = {}, config?: AxiosRequestConfig) => {
         setLoadingPost(true);
         setErrorPost(undefined); // Resetea el error antes de cada solicitud
 
-        apiClient.post(url, dataSend)
+        apiClient.post(url, dataSend, config)
 
             .then((response) => {
                 setPostResponse(response.data);
@@ -259,11 +261,11 @@ function usePut<T>() {
     const [errorPut, setErrorPut] = useState<ErrorResponse | ErrorsResponse | null>();
     const [httpCodePut, setHttpCodePut] = useState(0);
 
-    const SendPutRequest = (url: string, dataSend = {}) => {
+    const SendPutRequest = (url: string, dataSend = {}, config?: AxiosRequestConfig) => {
         setErrorPut(undefined); // Resetea el error antes de cada solicitud
         setLoadingPut(true);
 
-        apiClient.put(url, dataSend)
+        apiClient.put(url, dataSend, config)
 
             .then((response) => {
                 setPutResponse(response.data);
@@ -321,11 +323,11 @@ function useDelete<T>() {
     const [errorDelete, setErrorDelete] = useState<ErrorResponse | ErrorsResponse | null>();
     const [httpCodeDelete, setHttpDeleteCode] = useState(0);
 
-    const SendDeleteRequest = (url: string) => {
+    const SendDeleteRequest = (url: string, config?: AxiosRequestConfig) => {
         setLoadingDelete(true);
         setErrorDelete(undefined);
 
-        apiClient.delete(url)
+        apiClient.delete(url, config)
             .then((response) => {
                 setDeleteResponse(response.data);
                 setHttpDeleteCode(response.status)

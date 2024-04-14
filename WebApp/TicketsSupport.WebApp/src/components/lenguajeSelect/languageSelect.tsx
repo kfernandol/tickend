@@ -9,7 +9,7 @@ import { ChevronRightIcon } from 'primereact/icons/chevronright';
 import '../../assets/css/flags.css'
 //models
 import { Languages } from '../../models/combobox/languages';
-import { changeLanguage } from '../../redux/LanguageSlice';
+import { changeLanguage } from '../../redux/Slices/LanguageSlice';
 import { i18next } from "../../i18n";
 
 //List Languages
@@ -47,7 +47,7 @@ function LenguajeSelect() {
         if (option) {
             return (
                 <div className="flex align-items-center">
-                    <img alt={option.name} src="https://primefaces.org/cdn/primereact/images/flag/flag_placeholder.png" className={`mr-2 flag flag-${option.flag.toLowerCase()}`} style={{ width: '18px' }} />
+                    <img alt={option.name} src="/src/assets/imgs/flags_placeholder.png" className={`mr-2 flag flag-${option.flag.toLowerCase()}`} style={{ width: '18px' }} />
                     <div>{option.name}</div>
                 </div>
             );
@@ -59,7 +59,7 @@ function LenguajeSelect() {
     const languageOptionTemplate = (option) => {
         return (
             <div className="flex align-items-center">
-                <img alt={option.name} src="https://primefaces.org/cdn/primereact/images/flag/flag_placeholder.png" className={`mr-2 flag flag-${option.flag.toLowerCase()}`} style={{ width: '18px' }} />
+                <img alt={option.name} src="/src/assets/imgs/flags_placeholder.png" className={`mr-2 flag flag-${option.flag.toLowerCase()}`} style={{ width: '18px' }} />
                 <div>{option.name}</div>
             </div>
         );

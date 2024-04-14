@@ -1,7 +1,0 @@
-{
-    "ErrorIsRequired": "Este campo es obligatorio",
-    "ErrorMaxCaracter": "El maximo de caracteres es de ",
-    "ErrorMinCaracter": "El minimo de caracteres es de ",
-    "ErrorNoMatch": " no coincide",
-    "ErrorSelectedRol": "El rol seleccionado no es valido"
-}

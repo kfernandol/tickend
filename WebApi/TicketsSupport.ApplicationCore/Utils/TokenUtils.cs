@@ -57,5 +57,17 @@ namespace TicketsSupport.ApplicationCore.Utils
 
             return (RefreshToken, RefreshTokenHashFinal);
         }
+
+        public static string GenerateRandomHash()
+        {
+            var randomNumber = new byte[32];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+
+            var RandomBase64String = Convert.ToBase64String(randomNumber);
+            var HashRandomBase64String = HashUtils.HashPassword(RandomBase64String);
+
+            return HashRandomBase64String.hashedPassword;
+        }
     }
 }

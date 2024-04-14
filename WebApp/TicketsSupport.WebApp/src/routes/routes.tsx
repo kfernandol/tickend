@@ -1,29 +1,36 @@
-import React, { useEffect, useState } from "react";
-import { Navigate, RouteObject, createBrowserRouter, redirect } from "react-router-dom";
+import React from "react";
+import { Navigate, createBrowserRouter } from "react-router-dom";
 import { paths } from "./paths";
 //components
 import ProtectedRoute from "../components/routesProtected/routesProtected";
 import Home from "../views/home/home";
-import _Layout from "../views/shared/layout/_layout";
-import _LayoutLogin from "../views/shared/layoutLogin/layoutLogin";
-import Users from "../views/users/users.tsx";
-import NewUsers from "../views/users/newUsers.tsx";
-import EditUsers from "../views/users/editUsers.tsx";
-import Roles from "../views/roles/roles";
-import NewRol from "../views/roles/newRol";
-import EditRoles from "../views/roles/editRol";
-import Menus from "../views/menus/menus.tsx";
-import NewMenu from "../views/menus/newMenu.tsx";
-import EditMenu from "../views/menus/editMenu.tsx";
-import TicketTypes from "../views/ticket-types/ticketType.tsx";
-import { NewTicketType } from "../views/ticket-types/ticketTypeNew.tsx";
-import { EditTicketType } from "../views/ticket-types/ticketTypeEdit.tsx";
-import TicketStatus from "../views/ticket-status/ticketStatus.tsx";
-import { NewTicketStatus } from "../views/ticket-status/ticketStatusNew.tsx";
-import { EditTicketStatus } from "../views/ticket-status/ticketStatusEdit.tsx";
-import TicketPriority from "../views/ticket-priority/ticketPriority.tsx";
-import { NewTicketPriority } from "../views/ticket-priority/ticketPriorityNew.tsx";
-import { EditTicketPriority } from "../views/ticket-priority/ticketPriorityEdit.tsx";
+import Layout from "../views/shared/layout/Layout.tsx";
+import LayoutLogin from "../views/shared/LayoutLogin/layoutLogin.tsx";
+import Users from "../views/users/User.tsx";
+import UsersNew from "../views/users/User.new.tsx";
+import UsersEdit from "../views/users/User.edit.tsx";
+import Roles from "../views/roles/Rol.tsx";
+import RolNew from "../views/roles/Rol.new.tsx";
+import RolEdit from "../views/roles/Rol.edit.tsx";
+import Menus from "../views/menus/Menus.tsx";
+import MenuNew from "../views/menus/Menu.new.tsx";
+import MenuEdit from "../views/menus/Menu.edit.tsx";
+import TicketTypes from "../views/ticket-types/TicketType.tsx";
+import TicketTypeNew from "../views/ticket-types/TicketType.new.tsx";
+import TicketTypeEdit from "../views/ticket-types/TicketType.edit.tsx";
+import TicketStatus from "../views/ticket-status/TicketStatus.tsx";
+import TicketStatusNew from "../views/ticket-status/TicketStatus.new.tsx";
+import TicketStatusEdit from "../views/ticket-status/TicketStatus.edit.tsx";
+import TicketPriority from "../views/ticket-priority/TicketPriority.tsx";
+import TicketPriorityNew from "../views/ticket-priority/TicketPriority.new.tsx";
+import TicketPriorityEdit from "../views/ticket-priority/TicketPriority.edit.tsx";
+import Profile from "../views/profile/Profile.tsx";
+import ResetPassword from "../views/reset-password/reset.password.tsx";
+import ChangePassword from "../views/change-password/changePassword.tsx";
+import Projects from "../views/projects/Projects.tsx";
+import ProjectNew from "../views/projects/Project.new.tsx";
+import ProjecEdit from "../views/projects/Project.edit.tsx";
+import Tickets from "../views/tickets/Tickets.tsx";
 
 //Routes with login
 export const routesAuthorized = () => {
@@ -31,13 +38,20 @@ export const routesAuthorized = () => {
   return createBrowserRouter([
     {
       path: "/",
-      element: <_Layout />,
+      element: <Layout />,
       children: [
         {
           path: "",
           element:
             <ProtectedRoute name="Home">
               <Home />,
+            </ProtectedRoute>
+        },
+        {
+          path: paths.profile,
+          element:
+            <ProtectedRoute name="Profile">
+              <Profile />
             </ProtectedRoute>
         },
         {
@@ -51,7 +65,7 @@ export const routesAuthorized = () => {
           path: paths.newUser,
           element:
             <ProtectedRoute name="Users">
-              <NewUsers />
+              <UsersNew />
             </ProtectedRoute>
         },
         {
@@ -63,7 +77,7 @@ export const routesAuthorized = () => {
           path: paths.editUserWithId,
           element:
             <ProtectedRoute name="Users">
-              <EditUsers />
+              <UsersEdit />
             </ProtectedRoute>
         },
         {
@@ -77,7 +91,7 @@ export const routesAuthorized = () => {
           path: paths.newRol,
           element:
             <ProtectedRoute name="Roles">
-              <NewRol />
+              <RolNew />
             </ProtectedRoute>
         },
         {
@@ -89,7 +103,7 @@ export const routesAuthorized = () => {
           path: paths.editRolWithId,
           element:
             <ProtectedRoute name="Roles">
-              <EditRoles />
+              <RolEdit />
             </ProtectedRoute>
         },
         {
@@ -103,7 +117,7 @@ export const routesAuthorized = () => {
           path: paths.newMenus,
           element:
             <ProtectedRoute name="Menus">
-              <NewMenu />
+              <MenuNew />
             </ProtectedRoute>
         },
         {
@@ -115,7 +129,7 @@ export const routesAuthorized = () => {
           path: paths.editMenusWithId,
           element:
             <ProtectedRoute name="Menus">
-              <EditMenu />
+              <MenuEdit />
             </ProtectedRoute>
         },
         {
@@ -129,7 +143,7 @@ export const routesAuthorized = () => {
           path: paths.newTicketType,
           element:
             <ProtectedRoute name="TicketTypes">
-              <NewTicketType />
+              <TicketTypeNew />
             </ProtectedRoute>
         },
         {
@@ -141,7 +155,7 @@ export const routesAuthorized = () => {
           path: paths.EditTicketTypeWithId,
           element:
             <ProtectedRoute name="TicketTypes">
-              <EditTicketType />
+              <TicketTypeEdit />
             </ProtectedRoute>
         },
         {
@@ -155,7 +169,7 @@ export const routesAuthorized = () => {
           path: paths.newTicketStatus,
           element:
             <ProtectedRoute name="TicketStatus">
-              <NewTicketStatus />
+              <TicketStatusNew />
             </ProtectedRoute>
         },
         {
@@ -167,7 +181,7 @@ export const routesAuthorized = () => {
           path: paths.EditTicketStatusWithId,
           element:
             <ProtectedRoute name="TicketStatus">
-              <EditTicketStatus />
+              <TicketStatusEdit />
             </ProtectedRoute>
         },
         {
@@ -181,7 +195,7 @@ export const routesAuthorized = () => {
           path: paths.newTicketPriorities,
           element:
             <ProtectedRoute name="TicketPriority">
-              <NewTicketPriority />
+              <TicketPriorityNew />
             </ProtectedRoute>
         },
         {
@@ -193,7 +207,59 @@ export const routesAuthorized = () => {
           path: paths.EditTicketPrioritiesWithId,
           element:
             <ProtectedRoute name="TicketPriority">
-              <EditTicketPriority />
+              <TicketPriorityEdit />
+            </ProtectedRoute>
+        },
+        {
+          path: paths.Projects,
+          element:
+            <ProtectedRoute name="Projects">
+              <Projects />
+            </ProtectedRoute>
+        },
+        {
+          path: paths.newProject,
+          element:
+            <ProtectedRoute name="Projects">
+              <ProjectNew />
+            </ProtectedRoute>
+        },
+        {
+          path: paths.editProject,
+          element:
+            <Navigate to={paths.Projects}></Navigate>
+        },
+        {
+          path: paths.editProjectWithId,
+          element:
+            <ProtectedRoute name="Projects">
+              <ProjecEdit />
+            </ProtectedRoute>
+        },
+        {
+          path: paths.Tickets,
+          element:
+            <ProtectedRoute name="Tickets">
+              <Tickets />
+            </ProtectedRoute>
+        },
+        {
+          path: paths.newTicket,
+          element:
+            <ProtectedRoute name="Tickets">
+              <ProjectNew />
+            </ProtectedRoute>
+        },
+        {
+          path: paths.editTicket,
+          element:
+            <Navigate to={paths.Projects}></Navigate>
+        },
+        {
+          path: paths.editTicketWithId,
+          element:
+            <ProtectedRoute name="Tickets">
+              <ProjecEdit />
             </ProtectedRoute>
         }
       ],
@@ -207,11 +273,19 @@ export const routesUnauthorized = () => {
   return createBrowserRouter([
     {
       path: "/",
-      element: <_LayoutLogin />,
+      element: <LayoutLogin />,
+    },
+    {
+      path: paths.resetPassword,
+      element: <ResetPassword />
+    },
+    {
+      path: paths.changePassword,
+      element: <ChangePassword />
     },
     {
       path: "*",
-      element: <_LayoutLogin />
+      element: <LayoutLogin />
     }
   ]);
 };

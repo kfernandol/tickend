@@ -126,6 +126,9 @@
   <data name="FieldMaxLength" xml:space="preserve">
     <value>{0} field has a maximum of {1} characters</value>
   </data>
+  <data name="FieldMinLength" xml:space="preserve">
+    <value>{0} field has a minimum of {1} characters</value>
+  </data>
   <data name="FieldRange" xml:space="preserve">
     <value>{0} field must be between {1} and {2}</value>
   </data>

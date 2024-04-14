@@ -11,13 +11,16 @@ namespace TicketsSupport.ApplicationCore.DTOs
     public class CreateMenuRequest
     {
         [Required(ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldRequired))]
+        [MaxLength(100, ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldMaxLength))]
         [Display(Name = "MenuName", ResourceType = typeof(PropertiesLocalitation))]
         public string Name { get; set; }
 
         [Required(ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldRequired))]
+        [MaxLength(300, ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldMaxLength))]
         [Display(Name = "MenuUrl", ResourceType = typeof(PropertiesLocalitation))]
         public string Url { get; set; }
 
+        [MaxLength(300, ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldMaxLength))]
         [Display(Name = "MenuIcon", ResourceType = typeof(PropertiesLocalitation))]
         public string? Icon { get; set; }
 

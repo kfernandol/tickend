@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,7 +59,9 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
         public async Task<UserResponse> GetUserById(int id)
         {
-            var user = this._context.Users.Where(x => x.Active == true).FirstOrDefault(x => x.Id == id);
+            var user = this._context.Users.Include(x => x.RolNavigation)
+                                          .Where(x => x.Active == true)
+                                          .FirstOrDefault(x => x.Id == id);
 
             if (user != null)
                 return this._mapper.Map<UserResponse>(user);
@@ -68,7 +71,8 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
         public async Task<List<UserResponse>> GetUsers()
         {
-            return this._context.Users.Where(x => x.Active == true)
+            return this._context.Users.Include(x => x.RolNavigation)
+                                      .Where(x => x.Active == true)
                                       .Select(x => this._mapper.Map<UserResponse>(x))
                                       .ToList();
         }

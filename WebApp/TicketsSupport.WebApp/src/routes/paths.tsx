@@ -1,7 +1,8 @@
-import { useEffect } from "react";
-
 export const paths = {
   home: "/",
+  profile: "/Profile",
+  resetPassword: "/ResetPassword",
+  changePassword: "/ChangePassword/:hash",
   users: "/Users",
   newUser: "/Users/New",
   editUser: "/Users/Edit/",
@@ -26,4 +27,12 @@ export const paths = {
   newTicketPriorities: "/Ticket/Priorities/New",
   EditTicketPriorities: "/Ticket/Priorities/Edit",
   EditTicketPrioritiesWithId: "/Ticket/Priorities/Edit/:id",
+  Projects: "/Projects",
+  newProject: "/Projects/New",
+  editProject: "/Projects/Edit",
+  editProjectWithId: "/Projects/Edit/:id",
+  Tickets: "/Tickets",
+  newTicket: "/Ticket/New",
+  editTicket: "/Ticket/Edit",
+  editTicketWithId: "/Ticket/Edit/:id"
 };

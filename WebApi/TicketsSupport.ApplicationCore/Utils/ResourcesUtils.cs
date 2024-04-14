@@ -27,5 +27,11 @@ namespace TicketsSupport.ApplicationCore.Utils
             var resourceManager = new ResourceManager("TicketsSupport.ApplicationCore.Resources.Responses.Messages.ResponseMessages", Assembly.GetExecutingAssembly());
             return resourceManager?.GetString(nameInResource);
         }
+
+        public static string? GetEmailResetPassword(string nameInResource)
+        {
+            var resourceManager = new ResourceManager("TicketsSupport.ApplicationCore.Resources.Emails.ResetPassword.ResetPassword", Assembly.GetExecutingAssembly());
+            return resourceManager?.GetString(nameInResource);
+        }
     }
 }

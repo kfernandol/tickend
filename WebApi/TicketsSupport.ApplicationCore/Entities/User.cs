@@ -29,5 +29,11 @@ public partial class User
 
     public bool Active { get; set; }
 
+    public virtual ICollection<ProjectXclient> ProjectXclients { get; set; } = new List<ProjectXclient>();
+
+    public virtual ICollection<ProjectXdeveloper> ProjectXdevelopers { get; set; } = new List<ProjectXdeveloper>();
+
     public virtual Rol? RolNavigation { get; set; }
+
+    public virtual ICollection<UserRestorePassword> UserRestorePasswords { get; set; } = new List<UserRestorePassword>();
 }

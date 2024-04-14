@@ -8,23 +8,23 @@ import { ProgressSpinner } from "primereact/progressspinner";
 const RoutesGuard = memo(() => {
     const authenticated = useSelector((state: RootState) => state.auth);
 
-    function Loading() {
-        return (
-            <>
-                <div className="absolute top-50 bottom-50 left-50 right-50">
-                    <ProgressSpinner />
-                </div>
-            </>
-        )
-    }
+    const Loading = () => (
+        <div className="absolute top-50 bottom-50 left-50 right-50">
+            <ProgressSpinner />
+        </div>
+    );
 
     return (
-        <>
-            <Suspense fallback={<Loading />}>
-                <RouterProvider router={authenticated.token !== null && authenticated.token !== "" ? routesAuthorized() : routesUnauthorized()}></RouterProvider>
-            </Suspense>
-        </>
+        <Suspense fallback={<Loading />}>
+            <RouterProvider
+                router={
+                    authenticated.token !== null && authenticated.token !== ""
+                        ? routesAuthorized()
+                        : routesUnauthorized()
+                }
+            />
+        </Suspense>
     );
 });
 
-export { RoutesGuard };
+export default RoutesGuard;

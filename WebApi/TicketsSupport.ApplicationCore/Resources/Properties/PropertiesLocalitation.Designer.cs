@@ -88,6 +88,15 @@ namespace TicketsSupport.ApplicationCore.Resources.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} field has a minimum of {1} characters.
+        /// </summary>
+        public static string FieldMinLength {
+            get {
+                return ResourceManager.GetString("FieldMinLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} field must be between {1} and {2}.
         /// </summary>
         public static string FieldRange {

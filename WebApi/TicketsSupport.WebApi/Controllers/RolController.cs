@@ -32,7 +32,7 @@ namespace TicketsSupport.WebApi.Controllers
         /// <returns></returns>
         [AuthorizeMenu("Roles")]
         [HttpGet, MapToApiVersion(1.0)]
-        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(RolResponse))]
+        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(List<RolResponse>))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> GetRoles()

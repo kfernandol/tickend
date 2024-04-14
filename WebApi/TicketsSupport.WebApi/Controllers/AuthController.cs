@@ -54,5 +54,49 @@ namespace TicketsSupport.Server.Controllers
             return Ok(authResponse);
         }
 
+        /// <summary>
+        /// User reset password
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [Route("reset-password")]
+        [HttpPut, MapToApiVersion(1.0)]
+        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
+        [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
+        public async Task<IActionResult> ResetPassword(ResetPasswordRequest request)
+        {
+            var resetResponse = await _authRepository.ResetPassword(request);
+
+            if (resetResponse)
+                return Ok(new BasicResponse { Success = true, Message = "Reset completed" });
+
+            else
+                return Ok(new BasicResponse { Success = false, Message = "Error" });
+
+        }
+
+        /// <summary>
+        /// Change passwword user
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [Route("change-password")]
+        [HttpPut, MapToApiVersion(1.0)]
+        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
+        [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
+        public async Task<IActionResult> ChangePassword(ChangePasswordRequest request)
+        {
+            var resetResponse = await _authRepository.ChangePassword(request);
+
+            if (resetResponse)
+                return Ok(new BasicResponse { Success = true, Message = "Change password completed" });
+
+            else
+                return Ok(new BasicResponse { Success = false, Message = "Error" });
+
+        }
+
     }
 }

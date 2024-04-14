@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { LegacyRef, useEffect, useRef, useState } from 'react'
 import { FilterMatchMode } from 'primereact/api';
 import { paths } from '../../routes/paths';
@@ -14,7 +15,7 @@ import { ProgressSpinner } from 'primereact/progressspinner';
 import { useDelete, useGet } from "../../services/api_services";
 import { useTranslation } from 'react-i18next';
 //models
-import { BasicResponse, ErrorResponse } from '../../models/responses/basic.response';
+import { BasicResponse, ErrorResponse, ErrorsResponse } from '../../models/responses/basic.response';
 import { MenusResponse } from '../../models/responses/menus.response';
 import { Badge } from 'primereact/badge';
 
@@ -28,36 +29,45 @@ export default function Menus() {
     //Api Request
     const { SendDeleteRequest, deleteResponse, errorDelete, httpCodeDelete } = useDelete<BasicResponse>();
     const { SendGetRequest, getResponse, loadingGet } = useGet<MenusResponse[]>();
-    const [menus, setMenus] = useState<any>([]);
-    let deleteUserId = "";
+    const [menus, setMenus] = useState<{
+        id: number,
+        name: string,
+        icon: React.JSX.Element,
+        url: string,
+        parentId: string | undefined,
+        position: string | number,
+        show: React.JSX.Element,
+    }[]>();
 
     //Translations
     const { t } = useTranslation();
-    const GlobalConfirmationDeleteText = t("GlobalConfirmationDeleteText");
-    const GlobalConfirmation = t("GlobalConfirmation");
-    const GlobalButtonDelete = t("GlobalButtonDelete");
-    const GlobalButtonCancel = t("GlobalButtonCancel");
-    const GlobalSearch = t("GlobalSearch");
-    const GlobalTextTrue = t("GlobalTextTrue");
-    const GlobalTextFalse = t("GlobalTextFalse");
-    const TableTitle = t("MenusTableTitle");
-    const TableDeleteTitle = t("MenusTableDeleteTitle");
-    const CardTitleNewElement = t("MenusCardTitleNewMenu");
-    const TableHeaderNew = t("MenusTableHeaderNewMenu")
-    const TableHeaderId = t("MenusTableHeaderId");
-    const TableHeaderName = t("MenusTableHeaderName");
-    const TableHeaderActions = t("MenusTableHeaderActions");
-    const TableHeaderUrl = t("MenusTableHeaderUrl");
-    const TableHeaderIcon = t("MenusTableHeaderIcon");
-    const TableHeaderPosition = t("MenusTableHeaderPosition");
-    const TableHeaderParentId = t("MenusTableHeaderParentId");
-    const TableHeaderShow = t("MenusTableHeaderShow");
+    const GlobalConfirmationDeleteText = t("deleteConfirmation.description", { 0: t("navigation.Users") });
+    const GlobalConfirmation = t("deleteConfirmation.title");
+    const GlobalButtonDelete = t("buttons.delete");
+    const GlobalButtonCancel = t("common.cardFormButtons.cancel");
+    const GlobalSearch = t("placeholders.search");
+    const TableDeleteTitle = t("deleteConfirmation.title");
+    const GlobalTextTrue = t("boolean.true");
+    const GlobalTextFalse = t("boolean.false");
+    const TableTitle = t("menus.tableTitle");
+    const TableHeaderNew = t("menus.labels.new")
+    const TableHeaderId = t("common.labels.id");
+    const TableHeaderName = t("common.labels.name");
+    const TableHeaderActions = t("common.labels.actions");
+    const TableHeaderUrl = t("menus.labels.url");
+    const TableHeaderIcon = t("menus.labels.icon");
+    const TableHeaderPosition = t("menus.labels.position");
+    const TableHeaderParentId = t("menus.labels.parentId");
+    const TableHeaderShow = t("menus.labels.show");
 
+    //Links
+    const NewItemUrl = paths.newMenus;
+    const EditItemUrl = paths.editMenusWithId;
 
     //Send Request
     useEffect(() => {
         SendGetRequest("v1/menus");
-    }, [deleteResponse])
+    }, [])
 
     //Get Response
     useEffect(() => {
@@ -75,39 +85,33 @@ export default function Menus() {
 
             setMenus(menus);
         }
-    }, [getResponse, t]);
+    }, [getResponse]);
 
     //Notification Api Response
     useEffect(() => {
-        //Delete user complete
         if (httpCodeDelete === 200) {
-            toast?.current?.show({ severity: 'error', summary: TableDeleteTitle, detail: deleteResponse?.message, life: 3000 });
+            toast?.current?.show({ severity: 'success', summary: TableDeleteTitle, detail: deleteResponse?.message, life: 3000 });
+            setTimeout(() => SendGetRequest("v1/menus"), 3000);
         }
-        //Bad Request
-        else if (httpCodeDelete == 400) {
-            const errorResponse: ErrorResponse = errorDelete?.response?.data as ErrorResponse;
-
-            if (errorResponse) {
-                const errorsJson: string[] = JSON.parse(errorResponse.details);
-                //ErrorResponse with list errors
-                if (errorsJson) {
-                    const errorsHtml = Object.values(errorsJson).flat().map((error, index) => {
-                        return <li>{index + 1}. {error}</li>;
-                    });
-
-                    toast?.current?.show({ severity: 'error', summary: CardTitleNewElement, detail: <ul id='errors-toast'>{errorsHtml}</ul>, life: 3000 });
-                } else {
-                    toast?.current?.show({ severity: 'error', summary: CardTitleNewElement, detail: errorResponse.details, life: 3000 });
-                }
+        if (errorDelete && httpCodeDelete !== 0) {
+            if ('errors' in errorDelete) {//Is Errors Response
+                const errors = errorDelete as ErrorsResponse;
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const errorsHtml = Object.entries(errors.errors).map(([_field, errors], index) => (
+                    errors.map((error, errorIndex) => (
+                        <li key={`${index}-${errorIndex}`}>{error}</li>
+                    ))
+                )).flat();
+                toast?.current?.show({ severity: 'error', summary: TableDeleteTitle, detail: <ul id='errors-toast' className='pl-0'>{errorsHtml}</ul>, life: 50000 });
+            } else if ('details' in errorDelete) {//Is Error Response
+                const error = errorDelete as ErrorResponse;
+                toast?.current?.show({
+                    severity: 'error', summary: TableDeleteTitle, detail: error.details, life: 3000
+                });
             }
         }
-        else {
-            const response = errorDelete?.response?.data as ErrorResponse;
-            if (response) {
-                toast?.current?.show({ severity: 'error', summary: CardTitleNewElement, detail: response.details, life: 3000 });
-            }
-        }
-    }, [deleteResponse, errorDelete, httpCodeDelete, t])
+
+    }, [errorDelete, httpCodeDelete, deleteResponse])
 
 
     //Table Search Filter
@@ -132,7 +136,7 @@ export default function Menus() {
                 <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder={GlobalSearch} />
             </span>
             {/* Add new */}
-            <Link to={paths.newMenus}>
+            <Link to={NewItemUrl}>
                 <Button icon="pi pi-plus" severity='success'>
                     <span className='pl-2'>{TableHeaderNew}</span>
                 </Button>
@@ -141,7 +145,7 @@ export default function Menus() {
     );
 
     const ActionsTableTemplate = (rowData: { id: string; }) => {
-        const editUrlPath = paths.editMenusWithId.slice(0, paths.editMenusWithId.length - 3);
+        const editUrlPath = EditItemUrl.slice(0, EditItemUrl.length - 3);
         return <>
             <div className='flex gap-2'>
                 <Link to={editUrlPath + rowData.id}>
@@ -154,20 +158,14 @@ export default function Menus() {
 
     //Confirm Delete User Dialog
     const confirmDelete = (id: string) => {
-        deleteUserId = id;
         confirmDialog({
             message: GlobalConfirmationDeleteText,
             header: GlobalConfirmation,
             icon: 'pi pi-exclamation-triangle',
             defaultFocus: 'accept',
-            accept: acceptDelete,
+            accept: () => SendDeleteRequest("v1/menus/" + id),
         });
     };
-
-    //Accept Delete user
-    function acceptDelete() {
-        SendDeleteRequest("v1/menus/" + deleteUserId);
-    }
 
     return (
         <>
@@ -221,7 +219,6 @@ export default function Menus() {
                                         severity='danger'
                                         onClick={(event) => {
                                             hide(event);
-                                            acceptDelete();
                                         }}
                                         className="w-8rem"
                                     ></Button>

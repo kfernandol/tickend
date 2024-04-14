@@ -2,9 +2,11 @@
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Web;
 using TicketsSupport.ApplicationCore.Configuration;
 using TicketsSupport.ApplicationCore.DTOs;
 using TicketsSupport.ApplicationCore.Entities;
@@ -12,6 +14,7 @@ using TicketsSupport.ApplicationCore.Exceptions;
 using TicketsSupport.ApplicationCore.Interfaces;
 using TicketsSupport.ApplicationCore.Utils;
 using TicketsSupport.Infrastructure.Persistence.Contexts;
+using TicketsSupport.Infrastructure.Services.Email;
 
 namespace TicketsSupport.Infrastructure.Persistence.Repositories
 {
@@ -19,10 +22,14 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
     {
         private readonly TS_DatabaseContext _context;
         private readonly ConfigJWT _configJWT;
-        public AuthRepository(TS_DatabaseContext context, IOptions<ConfigJWT> configJWT)
+        private readonly ResetPasswordConfig _resetPasswordConfig;
+        private readonly IEmailSender _emailSender;
+        public AuthRepository(TS_DatabaseContext context, IOptions<ConfigJWT> configJWT, IOptions<ResetPasswordConfig> resetPasswordConfig, IEmailSender emailSender)
         {
             _context = context;
             _configJWT = configJWT.Value;
+            _emailSender = emailSender;
+            _resetPasswordConfig = resetPasswordConfig.Value;
         }
 
         public async Task<AuthResponse> AuthUserAsync(AuthRequest request)
@@ -126,6 +133,80 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
             return AuthResponse;
 
+        }
+
+        public async Task<bool> ResetPassword(ResetPasswordRequest request)
+        {
+            try
+            {
+                var HashReset = TokenUtils.GenerateRandomHash();
+                var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == request.Email);
+
+                if (user != null)
+                {
+                    UserRestorePassword restorePassword = new UserRestorePassword();
+
+                    restorePassword.UserId = user.Id;
+                    restorePassword.Hash = HashReset;
+                    restorePassword.CreateDate = DateTime.Now;
+                    restorePassword.ExpirationDate = DateTime.Now.AddDays(1);
+
+                    _context.Add(restorePassword);
+                    await _context.SaveChangesAsync();
+
+                    var resetPasswordLink = $"{_resetPasswordConfig.WebAppUrl}/ChangePassword/{HttpUtility.UrlEncode(HashReset)}";
+
+                    Dictionary<string, string> EmailData = new Dictionary<string, string>
+                    {
+                        {"FullName", $"{user.FirstName} {user.LastName}"},
+                        {"ResetLink", resetPasswordLink},
+                    };
+
+                    await _emailSender.SendEmail(request.Email, EmailTemplate.ResetPassword, EmailData);
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error reset password");
+                return false;
+            }
+        }
+
+        public async Task<bool> ChangePassword(ChangePasswordRequest request)
+        {
+            try
+            {
+                var restorePassword = await _context.UserRestorePasswords.Include(x => x.User)
+                                                                         .FirstOrDefaultAsync(x => x.Hash == request.Hash && x.Used == false);
+
+                if (restorePassword == null)
+                    throw new NotFoundException(ExceptionMessage.Invalid("Restore Password"));
+
+                if (DateTime.Now >= restorePassword.ExpirationDate)
+                    throw new InvalidException(ExceptionMessage.Invalid("Token reset expired"));
+
+
+
+                //Change password
+                var passwordHashed = HashUtils.HashPassword(request.Password);
+                restorePassword.User.Password = passwordHashed.hashedPassword;
+                restorePassword.User.Salt = passwordHashed.salt;
+
+                //Mark Hash used
+                restorePassword.Used = true;
+
+                _context.Update(restorePassword);
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error change password");
+                return false;
+            }
         }
     }
 }

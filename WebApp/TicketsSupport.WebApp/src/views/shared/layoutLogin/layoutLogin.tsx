@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from "react";
 //Css
 import "./layoutLogin.css"
@@ -10,24 +11,42 @@ import { InputText } from "primereact/inputtext";
 import { Checkbox } from "primereact/checkbox";
 import LaguageSelect from "../../../components/lenguajeSelect/languageSelect"
 import ButtonSubmitLogin from "../../../components/buttonSubmitLogin/buttonSubmitLogin";
+import BackgroundAnimated from "../../../components/backgroundAnimated/backgroundAnimated";
 //models
-import { AuthRequest } from "../../../models/requests/auth/auth.request";
+import { AuthRequest } from "../../../models/requests/auth.request";
+//redux
+import { useDispatch } from "react-redux";
+import { login } from "../../../redux/Slices/AuthSlice";
 //hooks
 import { Controller } from "react-hook-form";
-import useLoginForm from "../../../hooks/form/useLoginForm";
-import { useDispatch } from "react-redux";
-import { login } from "../../../redux/AuthSlice";
 import { useAuthAPI } from "../../../services/api_services";
-import BackgroundAnimated from "../../../components/backgroundAnimated/backgroundAnimated";
+import useCustomForm from "../../../hooks/useCustomForm";
+import { LoginFormModel } from "../../../models/forms/login.form";
+import { Link } from "react-router-dom";
+import { paths } from "../../../routes/paths";
 
 function LayoutLogin() {
+  //Form
+  const { control, handleSubmit, setError, errors, watch, ErrorMessageHtml } = useCustomForm<LoginFormModel>({ username: "", password: "", keepLogin: false });
   //hooks
-  const { t } = useTranslation();
-  const { control, handleSubmit, setError, errors, watch, getFormErrorMessage } = useLoginForm();
-  const { SendAuthRequest, loadingAuth, authResponse, errorAuth } = useAuthAPI();
   const dispatch = useDispatch();
+  //Api Request
+  const { SendAuthRequest, loadingAuth, authResponse, errorAuth } = useAuthAPI();
+  //Translation
+  const { t } = useTranslation();
+  const LoginTitle = t('auth.login.title');
+  const LoginSubTitle = t("auth.login.subtitle");
+  const UsernameRequired = t("auth.login.usernameRequired");
+  const PasswordRequired = t("auth.login.passwordRequired");
+  const Username = t("auth.login.labels.username");
+  const Password = t("auth.login.labels.password");
+  const KeepMeLogin = t("auth.login.keepMeLogin");
+  const LoginSubmit = t("auth.login.submit");
+  const RestorePassword = t("auth.login.restorePassword");
+  const DataInvalid = t("auth.login.loginInvalid")
 
-  const onSubmit = (data: { username: string; password: string; }) => {
+  //Submit Form
+  const onSubmitLogin = (data: LoginFormModel) => {
     const loginData: AuthRequest = {
       username: data.username,
       password: data.password,
@@ -35,10 +54,10 @@ function LayoutLogin() {
     SendAuthRequest("v1/auth/token", loginData);
   };
 
+  //Api Response
   useEffect(() => {
     if (authResponse) {
-      const keepLogin = watch("keepLogin");
-      authResponse.KeepLogged = keepLogin;
+      authResponse.KeepLogged = watch("keepLogin");
       dispatch(login(authResponse));
     }
   }, [authResponse]);
@@ -51,7 +70,7 @@ function LayoutLogin() {
       });
       setError("password", {
         type: "manual",
-        message: "Usuario o contraseña invalido"
+        message: DataInvalid
       })
     }
 
@@ -67,16 +86,16 @@ function LayoutLogin() {
           <div className="grid h-full justify-content-center align-items-center">
             <div className="col-10 sm:col-10 lg:col-4 bg-red h-23rem login-container">
               {/* Header Login */}
-              <h6 className="text-white text-3xl font-normal p-0 m-2">{t("loginTitle")}</h6>
-              <h6 className="text-gray-300 text-sm font-light p-0 my-2 mx-2">{t("loginSubtitle")}</h6>
+              <h6 className="text-white text-3xl font-normal p-0 m-2">{LoginTitle}</h6>
+              <h6 className="text-gray-300 text-sm font-light p-0 my-2 mx-2">{LoginSubTitle}</h6>
               {/* Form login */}
               <div className="flex justify-content-center">
-                <form onSubmit={handleSubmit(onSubmit)} className="w-11 flex flex-column gap-1 align-items-center mt-3">
+                <form onSubmit={handleSubmit(onSubmitLogin)} className="w-11 flex flex-column gap-1 align-items-center mt-3">
                   <Controller
                     name="username"
                     control={control}
                     rules={{
-                      required: t("usernameRequired"),
+                      required: UsernameRequired,
                       maxLength: { value: 50, message: "El maximo de caracteres es de 50" },
                       minLength: { value: 5, message: "El minimo de caracteres es 5" }
                     }}
@@ -91,10 +110,10 @@ function LayoutLogin() {
                             className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
                             style={{ backgroundColor: "transparent" }}
                             onChange={(e) => field.onChange(e.target.value)}
-                            placeholder={t("username")}
+                            placeholder={Username}
                           />
                         </span>
-                        {getFormErrorMessage(field.name)}
+                        {ErrorMessageHtml(field.name)}
                       </>
                     )}
                   />
@@ -102,7 +121,7 @@ function LayoutLogin() {
                     name="password"
                     control={control}
                     rules={{
-                      required: t("passwordRequired"),
+                      required: PasswordRequired,
                       maxLength: { value: 25, message: "El maximo de caracteres es 25" },
                       minLength: { value: 5, message: "El minimo de caracteres es 5" }
                     }}
@@ -117,10 +136,10 @@ function LayoutLogin() {
                             type="password"
                             className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
                             onChange={(e) => field.onChange(e.target.value)}
-                            placeholder={t("password")}
+                            placeholder={Password}
                           />
                         </span>
-                        {getFormErrorMessage(field.name)}
+                        {ErrorMessageHtml(field.name)}
                       </>
                     )}
                   />
@@ -139,16 +158,18 @@ function LayoutLogin() {
                               onChange={(e) => field.onChange(e.checked)}
                             />
                             <label htmlFor={field.name} className="ml-2 text-sm text-white">
-                              {t("keepMeLogin")}
+                              {KeepMeLogin}
                             </label>
                           </div>
-                          <Button className="text-sm" label={t("restorePassword")} style={{ color: "#45B9FF" }} link />
+                          <Link to={paths.resetPassword}>
+                            <Button type="button" className="text-sm" label={RestorePassword} style={{ color: "#45B9FF" }} link />
+                          </Link>
                         </div>
-                        {getFormErrorMessage(field.name)}
+                        {ErrorMessageHtml(field.name)}
                       </>
                     )}
                   />
-                  <ButtonSubmitLogin label={t("loginSubmit")} loading={loadingAuth} />
+                  <ButtonSubmitLogin label={LoginSubmit} loading={loadingAuth} />
                 </form>
               </div>
             </div>
