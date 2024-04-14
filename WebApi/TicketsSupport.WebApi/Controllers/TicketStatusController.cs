@@ -48,7 +48,7 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(TicketStatusResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> GetMenuById(int id)
+        public async Task<IActionResult> GetTicketStatusById(int id)
         {
             var ticketStatus = await _ticketStatusRepository.GetTicketStatusById(id);
             return Ok(ticketStatus);
@@ -63,7 +63,7 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> Create(CreateTicketStatusRequest request)
+        public async Task<IActionResult> CreateTicketStatus(CreateTicketStatusRequest request)
         {
             await _ticketStatusRepository.CreateTicketStatus(request);
             return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementAdded"), ResourcesUtils.GetResponseMessage("TicketStatus")) });
@@ -79,7 +79,7 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> Update(int id, UpdateTicketStatusRequest request)
+        public async Task<IActionResult> UpdateTicketStatus(int id, UpdateTicketStatusRequest request)
         {
             await _ticketStatusRepository.UpdateTicketStatus(id, request);
             return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementUpdated"), ResourcesUtils.GetResponseMessage("TicketStatus")) });
@@ -95,7 +95,7 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteTicketStatusById(int id)
         {
             await _ticketStatusRepository.DeleteTicketStatusById(id);
             return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementDeleted"), ResourcesUtils.GetResponseMessage("TicketStatus")) });

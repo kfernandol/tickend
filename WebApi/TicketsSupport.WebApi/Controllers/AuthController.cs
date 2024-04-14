@@ -32,7 +32,7 @@ namespace TicketsSupport.Server.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(AuthResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> Auth(AuthRequest request)
+        public async Task<IActionResult> AuthUserAsync(AuthRequest request)
         {
             var authResponse = await _authRepository.AuthUserAsync(request);
             return Ok(authResponse);
@@ -48,7 +48,7 @@ namespace TicketsSupport.Server.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(AuthResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> RefreshToken(RefreshTokenRequest request)
+        public async Task<IActionResult> AuthRefreshToken(RefreshTokenRequest request)
         {
             var authResponse = await _authRepository.AuthRefreshToken(request.RefreshToken, request.Username);
             return Ok(authResponse);

@@ -33,7 +33,7 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(List<TicketPriorityResponse>))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> GetTicketPriorities()
+        public async Task<IActionResult> GetTicketPriority()
         {
             var ticketPriorities = await _ticketPriorityRepository.GetTicketPriority();
             return Ok(ticketPriorities);
@@ -48,7 +48,7 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(TicketPriorityResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> GetMenuById(int id)
+        public async Task<IActionResult> GetTicketPriorityById(int id)
         {
             var ticketPriority = await _ticketPriorityRepository.GetTicketPriorityById(id);
             return Ok(ticketPriority);
@@ -63,7 +63,7 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> Create(CreateTicketPriorityRequest request)
+        public async Task<IActionResult> CreateTicketPriority(CreateTicketPriorityRequest request)
         {
             await _ticketPriorityRepository.CreateTicketPriority(request);
             return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementAdded"), ResourcesUtils.GetResponseMessage("TicketPriority")) });
@@ -79,7 +79,7 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> Update(int id, UpdateTicketPriorityRequest request)
+        public async Task<IActionResult> UpdateTicketPriority(int id, UpdateTicketPriorityRequest request)
         {
             await _ticketPriorityRepository.UpdateTicketPriority(id, request);
             return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementUpdated"), ResourcesUtils.GetResponseMessage("TicketPriority")) });
@@ -95,7 +95,7 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteTicketPriorityById(int id)
         {
             await _ticketPriorityRepository.DeleteTicketPriorityById(id);
             return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementDeleted"), ResourcesUtils.GetResponseMessage("TicketPriority")) });
