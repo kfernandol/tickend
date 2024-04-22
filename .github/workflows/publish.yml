@@ -30,7 +30,7 @@ jobs:
         runs-on: debian-latest
         steps:
             - name: Install sshpass
-                run: sudo apt-get Install -y sshpass
+                run: sudo apt-get install -y sshpass
                 
             - name: Install Docker Compose
                 run: |
