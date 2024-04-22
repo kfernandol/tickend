@@ -22,8 +22,8 @@ jobs:
                 
             - name: Build image
               run:  |
-                docker build . --tag ghcr.io/KFernandoL/Tickend:latest
-                docker push ghcr.io/KFernandoL/Tickend:latest
+                docker build . --tag ghcr.io/kfernandol/tickend:latest
+                docker push ghcr.io/kfernandol/tickend:latest
     
     deploy:
         needs: create-docker-image
@@ -41,8 +41,8 @@ jobs:
               run: |
                    sshpass -p ${{secrets.AUTH_PASS}} ssh -o StrictHostKeyChecking=no ${{secrets.AUTH_SERVER}} << EOF
                     cd /home/Projects/NET/Tickend/
-                    docker login ghcr.io -u EFernandoBL -p ${{secrets.TOKEN_DEPLOY}}
-                    docker pull ghcr.io/KFernandoL/Tickend:latest
+                    docker login ghcr.io -u kfernandol -p ${{secrets.TOKEN_DEPLOY}}
+                    docker pull ghcr.io/kfernandol/tickend:latest
                     docker stop tickend && docker rm tickend
                     docker-compose down
                     docker-compose up -d
