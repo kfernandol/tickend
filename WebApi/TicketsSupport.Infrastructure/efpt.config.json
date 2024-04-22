@@ -1,15 +1,15 @@
 ﻿{
    "CodeGenerationMode": 4,
    "ContextClassName": "TS_DatabaseContext",
-   "ContextNamespace": null,
+   "ContextNamespace": "Infrastructure.Persistence.Contexts",
    "DefaultDacpacSchema": null,
    "FilterSchemas": false,
    "IncludeConnectionString": false,
-   "ModelNamespace": null,
+   "ModelNamespace": "ApplicationCore.Entities",
    "OutputContextPath": "Persistence\/Contexts",
-   "OutputPath": "Models",
+   "OutputPath": "",
    "PreserveCasingWithRegex": true,
-   "ProjectRootNamespace": "TicketsSupport.Infrastructure",
+   "ProjectRootNamespace": "TicketsSupport",
    "Schemas": null,
    "SelectedHandlebarsLanguage": 2,
    "SelectedToBeGenerated": 1,
@@ -49,6 +49,10 @@
       },
       {
          "Name": "[dbo].[Rol]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Ticket]",
          "ObjectType": 0
       },
       {

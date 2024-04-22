@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
+using System.Security.Claims;
 using TicketsSupport.ApplicationCore.Authorization.Role;
 using TicketsSupport.ApplicationCore.Commons;
 using TicketsSupport.ApplicationCore.DTOs;
@@ -35,7 +36,8 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> GetTicketPriority()
         {
-            var ticketPriorities = await _ticketPriorityRepository.GetTicketPriority();
+            string? username = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            var ticketPriorities = await _ticketPriorityRepository.GetTicketPriority(username);
             return Ok(ticketPriorities);
         }
 
@@ -51,6 +53,21 @@ namespace TicketsSupport.WebApi.Controllers
         public async Task<IActionResult> GetTicketPriorityById(int id)
         {
             var ticketPriority = await _ticketPriorityRepository.GetTicketPriorityById(id);
+            return Ok(ticketPriority);
+        }
+
+        /// <summary>
+        /// Tickets Priority By Project
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("byproject/{id}"), MapToApiVersion(1.0)]
+        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(TicketTypeResponse))]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
+        [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
+        public async Task<IActionResult> GetTicketPriorityByProject(int id)
+        {
+            var ticketPriority = await _ticketPriorityRepository.GetTicketPriorityByProject(id);
             return Ok(ticketPriority);
         }
 

@@ -175,16 +175,44 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             throw new NotFoundException(ExceptionMessage.NotFound("Project", $"{id}"));
         }
 
-        public async Task<List<ProjectResponse>> GetProjects()
+        public async Task<List<ProjectResponse>> GetProjects(string? username)
         {
-            return await this._context.Projects.Include(x => x.ProjectXclients)
-                                               .Include(x => x.ProjectXticketPriorities)
-                                               .Include(x => x.ProjectXticketTypes)
-                                               .Include(x => x.ProjectXticketStatuses)
-                                               .Include(x => x.ProjectXdevelopers)
-                                               .Where(x => x.Active == true)
-                                               .Select(x => this._mapper.Map<ProjectResponse>(x))
-                                               .ToListAsync();
+            User? user = await _context.Users.Include(x => x.RolNavigation)
+                                             .FirstOrDefaultAsync(x => x.Username == username);
+
+            List<Project>? result = new List<Project>();
+            if (user?.RolNavigation?.PermissionLevel == PermissionLevel.Administrator)
+            {
+                result = await _context.Projects.Include(x => x.ProjectXclients)
+                                                .Include(x => x.ProjectXticketPriorities)
+                                                .Include(x => x.ProjectXticketTypes)
+                                                .Include(x => x.ProjectXticketStatuses)
+                                                .Include(x => x.ProjectXdevelopers)
+                                                .Where(x => x.Active == true)
+                                                .ToListAsync();
+
+
+            }
+            else
+            {
+                result = await _context.Projects.Include(x => x.ProjectXclients)
+                                                    .ThenInclude(x => x.Client)
+                                                .Include(x => x.ProjectXticketPriorities)
+                                                .Include(x => x.ProjectXticketTypes)
+                                                .Include(x => x.ProjectXticketStatuses)
+                                                .Include(x => x.ProjectXdevelopers)
+                                                    .ThenInclude(x => x.Developer)
+                                                .Where(x => x.Active == true &&
+                                                            (x.ProjectXclients.Any(c => c.Client.Username == username) || x.ProjectXdevelopers.Any(d => d.Developer.Username == username)))
+                                                .ToListAsync();
+            }
+
+            result = result.DistinctBy(x => x.Id).ToList();
+
+            if (result != null)
+                return _mapper.Map<List<ProjectResponse>>(result);
+
+            throw new NotFoundException(ExceptionMessage.NotFound("Ticket Priority by username", $"{username}"));
         }
 
         public async Task<ProjectResponse> UpdateProject(int id, UpdateProjectRequest request)

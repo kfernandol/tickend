@@ -16,63 +16,48 @@ namespace TicketsSupport.WebApi.Controllers
     [Authorize]
     [ApiController]
     [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/ticket/status")]
-    public class TicketStatusController : Controller
+    [Route("api/v{version:apiVersion}/tickets")]
+    public class TicketController : Controller
     {
-        private readonly ITicketStatusRepository _ticketStatusRepository;
+        private readonly ITicketRepository _ticketRepository;
 
-        public TicketStatusController(ITicketStatusRepository ticketStatusRepository)
+        public TicketController(ITicketRepository ticketRepository)
         {
-            _ticketStatusRepository = ticketStatusRepository;
+            _ticketRepository = ticketRepository;
         }
 
         /// <summary>
-        /// Get all ticket status
+        /// Get all tickets
         /// </summary>
         /// <returns></returns>
         [HttpGet, MapToApiVersion(1.0)]
-        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(List<TicketStatusResponse>))]
+        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(List<TicketResponse>))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> GetTicketStatus()
+        public async Task<IActionResult> GetTickets()
         {
             string? username = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-            var ticketStatus = await _ticketStatusRepository.GetTicketStatus(username);
-            return Ok(ticketStatus);
+            var tickets = await _ticketRepository.GetTickets(username);
+            return Ok(tickets);
         }
 
         /// <summary>
-        /// Get ticket status by id
+        /// Get ticket by id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}"), MapToApiVersion(1.0)]
-        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(TicketStatusResponse))]
+        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(TicketResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> GetTicketStatusById(int id)
+        public async Task<IActionResult> GetTicketById(int id)
         {
-            var ticketStatus = await _ticketStatusRepository.GetTicketStatusById(id);
-            return Ok(ticketStatus);
+            var ticket = await _ticketRepository.GetTicketById(id);
+            return Ok(ticket);
         }
 
         /// <summary>
-        /// Tickets Status By Project
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpGet("byproject/{id}"), MapToApiVersion(1.0)]
-        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(TicketTypeResponse))]
-        [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
-        [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> GetTicketStatusByProject(int id)
-        {
-            var ticketStatus = await _ticketStatusRepository.GetTicketStatusByProject(id);
-            return Ok(ticketStatus);
-        }
-
-        /// <summary>
-        /// Create new ticket status
+        /// Create new ticket
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
@@ -80,14 +65,15 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> CreateTicketStatus(CreateTicketStatusRequest request)
+        public async Task<IActionResult> CreateTicket(CreateTicketRequest request)
         {
-            await _ticketStatusRepository.CreateTicketStatus(request);
-            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementAdded"), ResourcesUtils.GetResponseMessage("TicketStatus")) });
+            string? username = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            await _ticketRepository.CreateTicket(username, request);
+            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementAdded"), ResourcesUtils.GetResponseMessage("Ticket")) });
         }
 
         /// <summary>
-        /// Update ticket status
+        /// Update ticket
         /// </summary>
         /// <param name="id"></param>
         /// <param name="request"></param>
@@ -96,14 +82,14 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> UpdateTicketStatus(int id, UpdateTicketStatusRequest request)
+        public async Task<IActionResult> UpdateTicket(int id, UpdateTicketRequest request)
         {
-            await _ticketStatusRepository.UpdateTicketStatus(id, request);
-            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementUpdated"), ResourcesUtils.GetResponseMessage("TicketStatus")) });
+            await _ticketRepository.UpdateTicket(id, request);
+            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementUpdated"), ResourcesUtils.GetResponseMessage("Ticket")) });
         }
 
         /// <summary>
-        /// Delete ticket status
+        /// Delete ticket
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -112,10 +98,10 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> DeleteTicketStatusById(int id)
+        public async Task<IActionResult> DeleteTicketById(int id)
         {
-            await _ticketStatusRepository.DeleteTicketStatusById(id);
-            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementDeleted"), ResourcesUtils.GetResponseMessage("TicketStatus")) });
+            await _ticketRepository.DeleteTicketById(id);
+            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementDeleted"), ResourcesUtils.GetResponseMessage("Ticket")) });
         }
     }
 }

@@ -138,6 +138,9 @@
   <data name="Rol" xml:space="preserve">
     <value>Rol</value>
   </data>
+  <data name="Ticket" xml:space="preserve">
+    <value>Ticket</value>
+  </data>
   <data name="TicketPriority" xml:space="preserve">
     <value>Prioridad de ticket</value>
   </data>

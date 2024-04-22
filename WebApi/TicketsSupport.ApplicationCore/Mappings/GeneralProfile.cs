@@ -45,6 +45,10 @@ namespace TicketsSupport.ApplicationCore.Mappings
                 .ForMember(dest => dest.TicketTypes, opt => opt.MapFrom(src => src.ProjectXticketTypes.Select(x => x.TicketTypeId)))
                 .ForMember(dest => dest.Clients, opt => opt.MapFrom(src => src.ProjectXclients.Select(x => x.ClientId)))
                 .ForMember(dest => dest.Developers, opt => opt.MapFrom(src => src.ProjectXdevelopers.Select(x => x.DeveloperId)));
+
+            //Tickets
+            CreateMap<CreateTicketRequest, Ticket>();
+            CreateMap<Ticket, TicketResponse>();
         }
     }
 }

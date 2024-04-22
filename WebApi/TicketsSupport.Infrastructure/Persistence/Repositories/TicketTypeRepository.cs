@@ -45,11 +45,45 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 throw new NotFoundException(ExceptionMessage.NotFound("Ticket Type", $"{id}"));
         }
 
-        public async Task<List<TicketTypeResponse>> GetTicketType()
+        public async Task<List<TicketTypeResponse>> GetTicketType(string? username)
         {
-            return await _context.TicketTypes.Where(x => x.Active == true)
-                                             .Select(x => _mapper.Map<TicketTypeResponse>(x))
-                                             .ToListAsync();
+            User? user = await _context.Users.Include(x => x.RolNavigation)
+                                             .FirstOrDefaultAsync(x => x.Username == username);
+
+            List<TicketType>? result = new List<TicketType>();
+            if (user?.RolNavigation?.PermissionLevel == PermissionLevel.Administrator)
+            {
+                result = await _context.ProjectXticketTypes.Include(x => x.TicketType)
+                                                                   .Include(x => x.Project)
+                                                                       .ThenInclude(x => x.ProjectXclients)
+                                                                       .ThenInclude(x => x.Client)
+                                                                   .Include(x => x.Project)
+                                                                       .ThenInclude(x => x.ProjectXdevelopers)
+                                                                       .ThenInclude(x => x.Developer)
+                                                                    .Select(x => x.TicketType)
+                                                                   .ToListAsync();
+            }
+            else
+            {
+                result = await _context.ProjectXticketTypes.Include(x => x.TicketType)
+                                                                    .Include(x => x.Project)
+                                                                        .ThenInclude(x => x.ProjectXclients)
+                                                                        .ThenInclude(x => x.Client)
+                                                                    .Include(x => x.Project)
+                                                                        .ThenInclude(x => x.ProjectXdevelopers)
+                                                                        .ThenInclude(x => x.Developer)
+                                                                    .Where(x => x.Project.ProjectXclients.Any(c => c.Client.Username == username) ||
+                                                                                x.Project.ProjectXdevelopers.Any(d => d.Developer.Username == username))
+                                                                    .Select(x => x.TicketType)
+                                                                    .ToListAsync();
+            }
+
+            result = result.Where(x => x.Active == true).DistinctBy(x => x.Id).ToList();
+
+            if (result != null)
+                return _mapper.Map<List<TicketTypeResponse>>(result);
+
+            throw new NotFoundException(ExceptionMessage.NotFound("Ticket Type by username", $"{username}"));
         }
 
         public async Task<TicketTypeResponse> GetTicketTypeById(int id)
@@ -60,6 +94,23 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 return _mapper.Map<TicketTypeResponse>(ticketType);
 
             throw new NotFoundException(ExceptionMessage.NotFound("Ticket Type", $"{id}"));
+        }
+
+        public async Task<List<TicketTypeResponse>> GetTicketTypeByProject(int projectId)
+        {
+            var ticketType = await _context.Projects.Include(x => x.ProjectXticketTypes)
+                                                             .ThenInclude(x => x.TicketType)
+                                                         .Where(x => x.Id == projectId &&
+                                                                     x.ProjectXticketTypes.Any(p => p.TicketType.Active))
+                                                         .SelectMany(x => x.ProjectXticketTypes
+                                                             .Where(p => p.TicketType.Active)
+                                                             .Select(p => p.TicketType))
+                                                         .ToListAsync();
+
+            if (ticketType != null)
+                return this._mapper.Map<List<TicketTypeResponse>>(ticketType);
+
+            throw new NotFoundException(ExceptionMessage.NotFound("Ticket TicketType by Project", $"{projectId}"));
         }
 
         public async Task<TicketTypeResponse> UpdateTicketType(int id, UpdateTicketTypeRequest request)

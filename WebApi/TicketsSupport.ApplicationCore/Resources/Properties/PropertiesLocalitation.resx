@@ -120,6 +120,9 @@
   <data name="Color" xml:space="preserve">
     <value>Color</value>
   </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
   <data name="FieldInvalid" xml:space="preserve">
     <value>{0} field is invalid</value>
   </data>
@@ -171,11 +174,20 @@
   <data name="PermissionLevel" xml:space="preserve">
     <value>Permission level</value>
   </data>
+  <data name="Project" xml:space="preserve">
+    <value>Project</value>
+  </data>
   <data name="Rol" xml:space="preserve">
     <value>Rol</value>
   </data>
   <data name="RolName" xml:space="preserve">
     <value>Rol name</value>
+  </data>
+  <data name="TicketType" xml:space="preserve">
+    <value>Ticket type</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Title</value>
   </data>
   <data name="Username" xml:space="preserve">
     <value>Username</value>

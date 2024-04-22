@@ -75,6 +75,7 @@
     <Build Include="Tables\UserRestorePassword.sql" />
     <Build Include="Tables\ProjectXDeveloper.sql" />
     <Build Include="Tables\ProjectXClients.sql" />
+    <Build Include="Tables\Ticket.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DefaultInserts\DefaultInserts.sql" />

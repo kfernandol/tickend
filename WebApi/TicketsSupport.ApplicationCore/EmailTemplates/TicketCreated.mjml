@@ -1,0 +1,72 @@
+<mjml>
+  <mj-body background-color="#ebeff2">
+    <mj-section background-color="#ebeff2" padding="6px 0">
+      <mj-column>
+        <mj-image width="200px" src="https://www.online-image-editor.com//styles/2014/images/example_image.png" />
+      </mj-column>
+    </mj-section>
+    <mj-section background-color="#ffffff" padding="6px 0">
+      <mj-column>
+
+        <mj-text font-family="Helvetica" color="#000" font-weight="400" font-size=18px>
+
+          <h1 style="font-weight: normal;">{{Saludation}}, <span style="font-weight: bold;">{{FullName}}</span>
+          </h1>
+
+          <p>
+            {{Message}}
+          </p>
+          <p style="padding:0; margin: 0; font-weight: bold; padding-top: 15px; text-align: center;">
+            {{DetailsTicketText}}
+          </p>
+        </mj-text>
+        <mj-table width="100%" align="center" padding-top="0" padding-bottom="15px">
+          <tr style="border-bottom:1px solid #ecedee;text-align:left;padding:0px 0;">
+            <th style="text-align:center; width:50px;"></th>
+            <th style="text-align:center;"></th>
+          </tr>
+          <tr>
+            <td style="width:80px; font-weight: bold;">{{TicketTableTitle}}:</td>
+            <td style="text-align:center;">{{TicketTitle}}</td>
+          </tr>
+          <tr>
+            <td style=" width:80px; font-weight: bold;">{{TicketTableCreate}}:</td>
+            <td style="text-align:center;">{{TicketCreateDate}}</td>
+          </tr>
+          <tr>
+            <td style=" width:80px; font-weight: bold;">{{TicketTableProject}}</td>
+            <td style="text-align:center;">{{TicketProject}}</td>
+          </tr>
+          <tr>
+            <td style=" width:80px; font-weight: bold;">{{TicketTableType}}</td>
+            <td style="text-align:center;">{{TicketType}}</td>
+          </tr>
+          <tr>
+            <td style=" width:80px; font-weight: bold;">{{TicketTableCreateBy}}</td>
+            <td style="text-align:center;">{{CreateBy}}</td>
+          </tr>
+        </mj-table>
+        <mj-button font-family="Helvetica" background-color="#000" color="white" height=25px padding=10px>
+          <a style="color: #fff;text-decoration:none;" href="{{ViewTicketLink}}">
+            {{ViewTicketBtn}}
+          </a>
+        </mj-button>
+        <mj-text font-family="Helvetica" color="#898788" font-weight="500" font-size=14px>
+          <p>
+            Thanks you,
+            <p>
+              Xdev Team
+            </p>
+          </p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section background-color="#ebeff2" padding="6px 0">
+      <mj-column>
+        <mj-text font-family="Helvetica" align="center">
+          <p> &copy; XDev | Guatemala <p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-body>
+</mjml>

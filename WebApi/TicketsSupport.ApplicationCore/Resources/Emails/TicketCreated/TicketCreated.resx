@@ -117,79 +117,34 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Color" xml:space="preserve">
-    <value>Color</value>
+  <data name="Create" xml:space="preserve">
+    <value>Create</value>
   </data>
-  <data name="Description" xml:space="preserve">
-    <value>Descripcion</value>
+  <data name="CreateBy" xml:space="preserve">
+    <value>Create By</value>
   </data>
-  <data name="FieldInvalid" xml:space="preserve">
-    <value>{0} es invalido</value>
+  <data name="DetailsTicket" xml:space="preserve">
+    <value>Details ticket</value>
   </data>
-  <data name="FieldMaxLength" xml:space="preserve">
-    <value>{0} tiene un maximo de {1} caracteres</value>
-  </data>
-  <data name="FieldMinLength" xml:space="preserve">
-    <value>{0} tiene un minimo de {1} caracteres</value>
-  </data>
-  <data name="FieldRange" xml:space="preserve">
-    <value>{0} tiene que estar entre {1} y {2}</value>
-  </data>
-  <data name="FieldRequired" xml:space="preserve">
-    <value>{0} es requerido</value>
-  </data>
-  <data name="FirstName" xml:space="preserve">
-    <value>Nombre</value>
-  </data>
-  <data name="Icon" xml:space="preserve">
-    <value>Icono</value>
-  </data>
-  <data name="LastName" xml:space="preserve">
-    <value>Apellido</value>
-  </data>
-  <data name="MenuIcon" xml:space="preserve">
-    <value>Icono del menu</value>
-  </data>
-  <data name="MenuName" xml:space="preserve">
-    <value>Nombre del menu</value>
-  </data>
-  <data name="MenuParent" xml:space="preserve">
-    <value>Menu padre</value>
-  </data>
-  <data name="MenuPosition" xml:space="preserve">
-    <value>Posicion del menu</value>
-  </data>
-  <data name="MenuShow" xml:space="preserve">
-    <value>Visibilidad del menu</value>
-  </data>
-  <data name="MenuUrl" xml:space="preserve">
-    <value>Url del menu</value>
-  </data>
-  <data name="Name" xml:space="preserve">
-    <value>Nombre</value>
-  </data>
-  <data name="Password" xml:space="preserve">
-    <value>Contraseña</value>
-  </data>
-  <data name="PermissionLevel" xml:space="preserve">
-    <value>Nivel de permiso</value>
+  <data name="Message" xml:space="preserve">
+    <value>Please be informed that a support ticket has been created.</value>
   </data>
   <data name="Project" xml:space="preserve">
-    <value>Proyecto</value>
+    <value>Project</value>
   </data>
-  <data name="Rol" xml:space="preserve">
-    <value>Rol</value>
+  <data name="Saludation" xml:space="preserve">
+    <value>Hi</value>
   </data>
-  <data name="RolName" xml:space="preserve">
-    <value>Nombre de rol</value>
-  </data>
-  <data name="TicketType" xml:space="preserve">
-    <value>Tipo de Ticket</value>
+  <data name="Subject" xml:space="preserve">
+    <value>Nuevo ticket creado</value>
   </data>
   <data name="Title" xml:space="preserve">
-    <value>Titulo</value>
+    <value>Title</value>
   </data>
-  <data name="Username" xml:space="preserve">
-    <value>Nombre de usuario</value>
+  <data name="Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="ViewTicket" xml:space="preserve">
+    <value>View Ticket</value>
   </data>
 </root>

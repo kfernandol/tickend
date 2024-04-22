@@ -32,6 +32,8 @@ public partial class TS_DatabaseContext : DbContext
 
     public virtual DbSet<Rol> Rols { get; set; }
 
+    public virtual DbSet<Ticket> Tickets { get; set; }
+
     public virtual DbSet<TicketPriority> TicketPriorities { get; set; }
 
     public virtual DbSet<TicketStatus> TicketStatuses { get; set; }
@@ -161,6 +163,37 @@ public partial class TS_DatabaseContext : DbContext
                 .IsRequired()
                 .HasMaxLength(150)
                 .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<Ticket>(entity =>
+        {
+            entity.ToTable("Ticket");
+
+            entity.Property(e => e.DateCreated).HasColumnType("datetime");
+            entity.Property(e => e.DateUpdated).HasColumnType("datetime");
+            entity.Property(e => e.Description)
+                .IsRequired()
+                .IsUnicode(false);
+            entity.Property(e => e.Title)
+                .IsRequired()
+                .HasMaxLength(150)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.CreateByNavigation).WithMany(p => p.Tickets)
+                .HasForeignKey(d => d.CreateBy)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            entity.HasOne(d => d.Project).WithMany(p => p.Tickets)
+                .HasForeignKey(d => d.ProjectId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            entity.HasOne(d => d.TicketPriority).WithMany(p => p.Tickets).HasForeignKey(d => d.TicketPriorityId);
+
+            entity.HasOne(d => d.TicketStatus).WithMany(p => p.Tickets).HasForeignKey(d => d.TicketStatusId);
+
+            entity.HasOne(d => d.TicketType).WithMany(p => p.Tickets)
+                .HasForeignKey(d => d.TicketTypeId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
         });
 
         modelBuilder.Entity<TicketPriority>(entity =>

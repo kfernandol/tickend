@@ -127,7 +127,7 @@ builder.Services.AddInfrastructure(builder.Configuration);
 //Add Configurations
 builder.Services.Configure<ConfigJWT>(builder.Configuration.GetSection("JWT"));
 builder.Services.Configure<EmailConfig>(builder.Configuration.GetSection("EmailService"));
-builder.Services.Configure<ResetPasswordConfig>(builder.Configuration.GetSection("ResetPassword"));
+builder.Services.Configure<WebApp>(builder.Configuration.GetSection("WebApp"));
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
     var supportedCultures = new List<CultureInfo>

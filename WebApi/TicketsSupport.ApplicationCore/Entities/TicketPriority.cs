@@ -14,4 +14,6 @@ public partial class TicketPriority
     public bool Active { get; set; }
 
     public virtual ICollection<ProjectXticketPriority> ProjectXticketPriorities { get; set; } = new List<ProjectXticketPriority>();
+
+    public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 }

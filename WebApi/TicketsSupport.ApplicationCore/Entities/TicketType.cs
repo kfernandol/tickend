@@ -16,4 +16,6 @@ public partial class TicketType
     public bool Active { get; set; }
 
     public virtual ICollection<ProjectXticketType> ProjectXticketTypes { get; set; } = new List<ProjectXticketType>();
+
+    public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 }

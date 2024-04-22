@@ -112,7 +112,8 @@
     "cancel": "Cancel",
     "accept": "Accept",
     "save": "Save",
-    "delete": "Delete"
+    "delete": "Delete",
+    "updated": "Updated"
   },
   "boolean": {
     "true": "True",
@@ -212,12 +213,18 @@
     "labels": {
       "new": "New Ticket",
       "title": "Title",
+      "description": "Description",
       "project": "Project",
       "priority": "Priority",
       "type": "Type",
       "status": "Status",
       "dateCreated": "Date Created",
-      "dateUpdated": "Last Updated"
+      "dateUpdated": "Last Updated",
+      "closed": "Closed",
+      "properties": "Properties"
+    },
+    "status": {
+      "open": "open"
     }
   }
 }

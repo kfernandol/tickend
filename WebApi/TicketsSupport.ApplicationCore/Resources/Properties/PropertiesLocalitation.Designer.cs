@@ -70,6 +70,15 @@ namespace TicketsSupport.ApplicationCore.Resources.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Description.
+        /// </summary>
+        public static string Description {
+            get {
+                return ResourceManager.GetString("Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} field is invalid.
         /// </summary>
         public static string FieldInvalid {
@@ -223,6 +232,15 @@ namespace TicketsSupport.ApplicationCore.Resources.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project.
+        /// </summary>
+        public static string Project {
+            get {
+                return ResourceManager.GetString("Project", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Rol.
         /// </summary>
         public static string Rol {
@@ -237,6 +255,24 @@ namespace TicketsSupport.ApplicationCore.Resources.Properties {
         public static string RolName {
             get {
                 return ResourceManager.GetString("RolName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ticket type.
+        /// </summary>
+        public static string TicketType {
+            get {
+                return ResourceManager.GetString("TicketType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Title.
+        /// </summary>
+        public static string Title {
+            get {
+                return ResourceManager.GetString("Title", resourceCulture);
             }
         }
         
