@@ -8,5 +8,6 @@
     <ProfileVersionNumber>1</ProfileVersionNumber>
     <BlockOnPossibleDataLoss>False</BlockOnPossibleDataLoss>
     <GenerateSmartDefaults>True</GenerateSmartDefaults>
+    <BackupDatabaseBeforeChanges>True</BackupDatabaseBeforeChanges>
   </PropertyGroup>
 </Project>

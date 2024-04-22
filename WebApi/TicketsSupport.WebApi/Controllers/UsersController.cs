@@ -68,7 +68,7 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> Create(CreateUserRequest request)
+        public async Task<IActionResult> CreateUser(CreateUserRequest request)
         {
             await _userRepository.CreateUser(request);
             return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementAdded"), ResourcesUtils.GetResponseMessage("User")) });
@@ -85,7 +85,7 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> Update(int id, UpdateUserRequest request)
+        public async Task<IActionResult> UpdateUser(int id, UpdateUserRequest request)
         {
             await _userRepository.UpdateUser(id, request);
             return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementUpdated"), ResourcesUtils.GetResponseMessage("User")) });
@@ -102,7 +102,7 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteUserById(int id)
         {
             await _userRepository.DeleteUserById(id);
             return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementDeleted"), ResourcesUtils.GetResponseMessage("User")) });
@@ -118,7 +118,7 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> Update(int id, UpdateProfileRequest request)
+        public async Task<IActionResult> UpdateProfile(int id, UpdateProfileRequest request)
         {
             await _profileRepository.UpdateProfile(id, request);
             return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementUpdated"), ResourcesUtils.GetResponseMessage("Profile")) });

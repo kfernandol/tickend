@@ -22,14 +22,14 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
     {
         private readonly TS_DatabaseContext _context;
         private readonly ConfigJWT _configJWT;
-        private readonly ResetPasswordConfig _resetPasswordConfig;
+        private readonly WebApp _webAppConfig;
         private readonly IEmailSender _emailSender;
-        public AuthRepository(TS_DatabaseContext context, IOptions<ConfigJWT> configJWT, IOptions<ResetPasswordConfig> resetPasswordConfig, IEmailSender emailSender)
+        public AuthRepository(TS_DatabaseContext context, IOptions<ConfigJWT> configJWT, IOptions<WebApp> webAppConfig, IEmailSender emailSender)
         {
             _context = context;
             _configJWT = configJWT.Value;
             _emailSender = emailSender;
-            _resetPasswordConfig = resetPasswordConfig.Value;
+            _webAppConfig = webAppConfig.Value;
         }
 
         public async Task<AuthResponse> AuthUserAsync(AuthRequest request)
@@ -154,7 +154,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                     _context.Add(restorePassword);
                     await _context.SaveChangesAsync();
 
-                    var resetPasswordLink = $"{_resetPasswordConfig.WebAppUrl}/ChangePassword/{HttpUtility.UrlEncode(HashReset)}";
+                    var resetPasswordLink = $"{_webAppConfig.Url}/ChangePassword/{HttpUtility.UrlEncode(HashReset)}";
 
                     Dictionary<string, string> EmailData = new Dictionary<string, string>
                     {

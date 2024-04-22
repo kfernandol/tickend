@@ -35,5 +35,7 @@ public partial class User
 
     public virtual Rol? RolNavigation { get; set; }
 
+    public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
+
     public virtual ICollection<UserRestorePassword> UserRestorePasswords { get; set; } = new List<UserRestorePassword>();
 }

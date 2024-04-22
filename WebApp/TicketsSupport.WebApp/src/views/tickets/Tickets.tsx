@@ -1,30 +1,42 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import { paths } from '../../routes/paths';
 //Components
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Toast } from 'primereact/toast';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { Tag } from 'primereact/tag';
 import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
 import { MultiSelect } from 'primereact/multiselect';
 import { Button } from 'primereact/button';
-import { InputText } from 'primereact/inputtext';
 import { FilterMatchMode, FilterOperator } from 'primereact/api';
+import { Badge } from 'primereact/badge';
+import { Tooltip } from 'primereact/tooltip';
 //Hooks
 import { useGet } from '../../services/api_services';
 import { useTranslation } from 'react-i18next';
+import { Link, useNavigate } from 'react-router-dom';
 //Models
 import { MenusResponse } from '../../models/responses/menus.response';
+import { ProjectResponse } from '../../models/responses/project.response';
+import { TicketStatusResponse } from '../../models/responses/ticketStatus.response';
+import { TicketTypeResponse } from '../../models/responses/ticketType.response';
+import { TicketPriorityResponse } from '../../models/responses/ticketPriority.response';
+import { TicketResponse } from '../../models/responses/ticket.response';
 
 export default function Tickets() {
+    const [Tickets, setTickets] = useState<TicketResponse[]>([]);
+    const [Projects, setProjects] = useState<ProjectResponse[]>([]);
+    const [TicketPriorities, setTicketPriorities] = useState<TicketPriorityResponse[]>([]);
+    const [TicketStatus, setTicketStatus] = useState<TicketStatusResponse[]>([]);
+    const [TicketType, setTicketType] = useState<TicketTypeResponse[]>([]);
 
     //Hooks
     const toast = useRef<Toast>(null);
-    const { SendGetRequest, getResponse, loadingGet } = useGet<MenusResponse[]>();
+    const { SendGetRequest, loadingGet } = useGet<MenusResponse[] | TicketResponse[]>();
+    const navigate = useNavigate();
     //Translate
     const { t } = useTranslation();
-    const GlobalSearch = t("placeholders.search");
     const TableTitle = t('tickets.tableTitle');
     const TableHeaderNew = t('tickets.labels.new');
     const title = t('tickets.labels.title');
@@ -34,84 +46,155 @@ export default function Tickets() {
     const status = t('tickets.labels.status');
     const dateCreated = t('tickets.labels.dateCreated');
     const dateUpdated = t('tickets.labels.dateUpdated');
+    const statusOpen = t('tickets.status.open');
+    //Links
+    const NewItemUrl = paths.newTicket;
+    const EditItemUrl = paths.editTicketWithId;
+
+    //Send Request
+    useEffect(() => {
+        const requests = [
+            SendGetRequest("v1/tickets"),
+            SendGetRequest("v1/projects"),
+            SendGetRequest("v1/ticket/priorities"),
+            SendGetRequest("v1/ticket/status"),
+            SendGetRequest("v1/ticket/types"),
+        ];
+
+        Promise.all(requests)
+            .then((responses) => {
+                responses.forEach((response) => {
+                    switch (response.url) {
+                        case "v1/tickets":
+                            setTickets(response.data as TicketResponse[]);
+                            break;
+                        case "v1/projects":
+                            setProjects(response.data as ProjectResponse[]);
+                            break;
+                        case "v1/ticket/priorities":
+                            setTicketPriorities(response.data as TicketPriorityResponse[]);
+                            break;
+                        case "v1/ticket/status":
+                            setTicketStatus(response.data as TicketStatusResponse[]);
+                            break;
+                        case "v1/ticket/types":
+                            setTicketType(response.data as TicketTypeResponse[]);
+                            break;
+                        default:
+                            break;
+                    }
+                });
+            })
+            .catch((error) => {
+                console.error("Error en las solicitudes:", error);
+            });
+    }, [])
 
     //Table Filters
-    const [globalFilterValue, setGlobalFilterValue] = useState('');
     const [filters, setFilters] = useState({
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-        'country.name': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-        representative: { value: null, matchMode: FilterMatchMode.IN },
+        title: { value: null, matchMode: FilterMatchMode.EQUALS },
+        project: { value: null, matchMode: FilterMatchMode.EQUALS },
+        type: { value: null, matchMode: FilterMatchMode.EQUALS },
         status: { value: null, matchMode: FilterMatchMode.EQUALS },
-        verified: { value: null, matchMode: FilterMatchMode.EQUALS },
-        date: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
+        priority: { value: null, matchMode: FilterMatchMode.EQUALS },
+        dateCreated: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
+        dateUpdated: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
     });
-    const [representatives] = useState([
-        { name: 'Amy Elsner', image: 'amyelsner.png' },
-        { name: 'Anna Fali', image: 'annafali.png' },
-        { name: 'Asiya Javayant', image: 'asiyajavayant.png' },
-        { name: 'Bernardo Dominic', image: 'bernardodominic.png' },
-        { name: 'Elwin Sharvill', image: 'elwinsharvill.png' },
-        { name: 'Ioni Bowcher', image: 'ionibowcher.png' },
-        { name: 'Ivan Magalhaes', image: 'ivanmagalhaes.png' },
-        { name: 'Onyama Limba', image: 'onyamalimba.png' },
-        { name: 'Stephen Shaw', image: 'stephenshaw.png' },
-        { name: 'XuXue Feng', image: 'xuxuefeng.png' }
-    ]);
-    const [statuses] = useState(['unqualified', 'qualified', 'new', 'negotiation', 'renewal']);
-    const getSeverity = (status) => {
-        switch (status) {
-            case 'unqualified':
-                return 'danger';
 
-            case 'qualified':
-                return 'success';
+    const projectBodyTemplate = (rowData) => {
+        const project = Projects.find(x => x.id === rowData.projectId);
+        return (
+            <>
+                <div className="flex align-items-center gap-2">
+                    <img alt={project?.name} src={`data:image/*;base64,${project?.photo}`} width="32" />
+                    <span>{project?.name}</span>
+                </div>
+            </>
+        );
+    };
 
-            case 'new':
-                return 'info';
+    const projectItemTemplate = (option) => {
+        return (
+            <>
+                {option.photo !== null && option.photo !== "" ?
+                    (
+                        <div className="flex align-items-center gap-2">
+                            <img alt={option.name} src={`data:image/*;base64,${option.photo}`} width="32" />
+                            <span>{option.name}</span>
+                        </div>
+                    )
+                    :
+                    (
+                        <>
+                            <div className="flex align-items-center gap-2">
+                                <img alt={option.name} src={`/src/assets/imgs/project-default.png`} width="32" />
+                                <span>{option.name}</span>
+                            </div>
+                        </>
+                    )}
 
-            case 'negotiation':
-                return 'warning';
+            </>
+        );
+    };
 
-            case 'renewal':
-                return null;
+    const typeBodyTemplate = (rowData) => {
+        const type = TicketType.find(x => x.id === rowData.ticketTypeId);
+        if (type) {
+            return <>
+                <i className={type?.icon + " ticketTooltip"} style={{ color: type?.iconColor }} data-pr-tooltip={type?.name} data-pr-position="right" />
+            </>
+        } else {
+            return <>
+                <Badge style={{ backgroundColor: '#bbb' }}></Badge>
+            </>
         }
     };
 
-    const representativeBodyTemplate = (rowData) => {
-        const representative = rowData.representative;
-
-        return (
-            <div className="flex align-items-center gap-2">
-                <img alt={representative.name} src={`https://primefaces.org/cdn/primereact/images/avatar/${representative.image}`} width="32" />
-                <span>{representative.name}</span>
-            </div>
-        );
-    };
-
-    const representativesItemTemplate = (option) => {
-        return (
-            <div className="flex align-items-center gap-2">
-                <img alt={option.name} src={`https://primefaces.org/cdn/primereact/images/avatar/${option.image}`} width="32" />
-                <span>{option.name}</span>
-            </div>
-        );
-    };
-
     const statusBodyTemplate = (rowData) => {
-        return <Tag value={rowData.status} severity={getSeverity(rowData.status)} />;
+        const status = TicketStatus.find(x => x.id === rowData.ticketStatusId);
+        if (status) {
+            return <>
+                <Badge value={status?.name} style={{ backgroundColor: status?.color }}></Badge>
+            </>
+        } else {
+            return <>
+                <Badge value={statusOpen} style={{ backgroundColor: '#008bff' }}></Badge>
+            </>
+        }
+
     };
+
+    const priorityBodyTemplate = (rowData) => {
+        const priority = TicketPriorities.find(x => x.id === rowData.ticketPriorityId);
+        if (priority) {
+            return <>
+                <Badge value={priority?.name} style={{ backgroundColor: priority?.color }}></Badge>
+            </>
+        } else {
+            return <>
+                <Badge style={{ backgroundColor: '#bbb' }}></Badge>
+            </>
+        }
+
+    }
 
     const statusItemTemplate = (option) => {
-        return <Tag value={option} severity={getSeverity(option)} />;
+        return <Badge value={option.name} style={{ backgroundColor: option.color }}></Badge>;
     };
 
-    const representativeRowFilterTemplate = (options) => {
+    const priorityItemTemplate = (option) => {
+        return <>
+            <i className={option.icon} style={{ color: option.iconColor }}></i><span className='ml-2'>{option.name}</span>
+        </>;
+    }
+
+    const projectRowFilterTemplate = (options) => {
         return (
             <MultiSelect
                 value={options.value}
-                options={representatives}
-                itemTemplate={representativesItemTemplate}
+                options={Projects}
+                itemTemplate={projectItemTemplate}
                 onChange={(e) => options.filterApplyCallback(e.value)}
                 optionLabel="name"
                 placeholder="Any"
@@ -123,50 +206,67 @@ export default function Tickets() {
     };
 
     const statusRowFilterTemplate = (options) => {
-        console.log(options)
+        const status = TicketStatus.find(x => x.id === options.value);
         return (
-            <Dropdown value={options.value} options={statuses} onChange={(e) => options.filterApplyCallback(e.value)} itemTemplate={statusItemTemplate} placeholder="Select One" className="p-column-filter" showClear style={{ minWidth: '10rem' }} />
+            <Dropdown value={status?.name} options={TicketStatus} onChange={(e) => options.filterApplyCallback(e.value?.name)} itemTemplate={statusItemTemplate} placeholder="Status" className="p-column-filter" showClear style={{ minWidth: '10rem' }} />
         );
     };
 
-    const dateFilterTemplate = (options) => {
-        console.log(options)
-        return <Calendar value={options.value} onChange={(e) => options.filterCallback(e.value, options.index)} dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />;
-    };
-
-    const dateBodyTemplate = (options) => {
-        const date = new Date(options.date)
-        return date.toLocaleDateString("en-US");
+    const priorityRowFilterTemplate = (options) => {
+        return (
+            <Dropdown value={options.value?.name} options={TicketPriorities} onChange={(e) => options.filterApplyCallback(e.value?.name)} itemTemplate={statusItemTemplate} placeholder="Type" className="p-column-filter" showClear style={{ minWidth: '10rem' }} />
+        );
     }
 
-    //Table Search Filter
-    const onGlobalFilterChange = (e) => {
-        const value = e.target.value;
-        const _filters = { ...filters };
+    const TypeRowFilterTemplate = (options) => {
+        return (
+            <Dropdown value={options.value?.name} options={TicketType} onChange={(e) => options.filterApplyCallback(e.value?.name)} itemTemplate={priorityItemTemplate} placeholder="Priority" className="p-column-filter" showClear style={{ minWidth: '10rem' }} />
+        );
+    }
 
-        _filters['global'].value = value;
-
-        setFilters(_filters);
-        setGlobalFilterValue(value);
+    const dateFilterTemplate = (options) => {
+        return <Calendar value={options?.value} onChange={(e) => options.filterCallback(e.value, options.index)} dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />;
     };
+
+    const dateCreatedBodyTemplate = (options) => {
+        const date = new Date(options.dateCreated)
+
+        if (date && options.dateCreated) {
+            return `${date.toLocaleDateString("en-US")} ${date.toLocaleTimeString("en-US")}`;
+        } else {
+            return ''
+        }
+    }
+
+    const dateUpdatedBodyTemplate = (options) => {
+        const date = new Date(options.dateUpdated)
+
+        if (date && options.dateUpdated) {
+            return `${date.toLocaleDateString("en-US")} ${date.toLocaleTimeString("en-US")}`;
+        } else {
+            return ''
+        }
+    }
 
     const TableHeader = () => {
         return (
             <div className="flex flex-wrap justify-content-between align-items-center gap-2 p-2" >
                 {/* Table Title */}
                 <span className='text-2xl text-white'>{TableTitle}</span>
-                {/* Filter */}
-                <span className="p-input-icon-left">
-                    <i className="pi pi-search" />
-                    <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder={GlobalSearch} />
-                </span>
                 {/* Add new */}
-                <Button icon="pi pi-plus" severity='success'>
-                    <span className='pl-2'>{TableHeaderNew}</span>
-                </Button>
+                <Link to={NewItemUrl}>
+                    <Button icon="pi pi-plus" severity='success'>
+                        <span className='pl-2'>{TableHeaderNew}</span>
+                    </Button>
+                </Link>
             </div>
         )
     }
+
+    const handleSelectionChange = (e) => {
+        const url = EditItemUrl.slice(0, EditItemUrl.length - 3) + e.value.id;
+        navigate(url, { replace: true });
+    };
 
     return (
         <>
@@ -178,46 +278,27 @@ export default function Tickets() {
                 :
                 <>
                     <Toast ref={toast} />
+                    <Tooltip target=".ticketTooltip" />
                     <div className="card" style={{ backgroundColor: "#17212f5D" }}>
-                        <DataTable value={[
-                            {
-                                id: 1000,
-                                name: 'James Butt',
-                                country: {
-                                    name: 'Algeria',
-                                    code: 'dz'
-                                },
-                                company: 'Benton, John B Jr',
-                                date: new Date(),
-                                status: 'unqualified',
-                                verified: true,
-                                activity: 17,
-                                representative: {
-                                    name: 'Ioni Bowcher',
-                                    image: 'ionibowcher.png'
-                                },
-                                balance: 70663
-                            },]}
+                        <DataTable value={Tickets}
                             paginator
                             rows={10}
                             dataKey="id"
-                            size={'small'}
                             filters={filters}
                             filterDisplay="row"
                             header={TableHeader}
                             loading={loadingGet}
-                            globalFilterFields={['name', 'country.name', 'representative.name', 'status']}
                             emptyMessage="No customers found."
                             selectionMode="single"
-                            onSelectionChange={(e) => console.log(e.value)}>
-                            <Column field="name" header={title} filter filterPlaceholder="Search by name" style={{ minWidth: '18rem' }} />
-                            <Column header={project} filterField="representative" showFilterMenu={false} filterMenuStyle={{ width: '11rem' }} style={{ maxWidth: '11rem' }}
-                                body={representativeBodyTemplate} filter filterElement={representativeRowFilterTemplate} />
-                            <Column field="status" header={type} showFilterMenu={false} filterMenuStyle={{ width: '5rem' }} style={{ maxWidth: '11rem' }} body={statusBodyTemplate} filter filterElement={statusRowFilterTemplate} />
-                            <Column field="status" header={priority} showFilterMenu={false} filterMenuStyle={{ width: '5rem' }} style={{ maxWidth: '11rem' }} body={statusBodyTemplate} filter filterElement={statusRowFilterTemplate} />
-                            <Column field="status" header={status} showFilterMenu={false} filterMenuStyle={{ width: '5rem' }} style={{ maxWidth: '11rem' }} body={statusBodyTemplate} filter filterElement={statusRowFilterTemplate} />
-                            <Column field="date" dataType="date" header={dateCreated} showFilterMenu={false} filterMenuStyle={{ width: '14rem' }} style={{ maxWidth: '11rem' }} body={dateBodyTemplate} filter filterElement={dateFilterTemplate} />
-                            <Column field="date" dataType="date" header={dateUpdated} showFilterMenu={false} filterMenuStyle={{ width: '14rem' }} style={{ maxWidth: '11rem' }} body={dateBodyTemplate} filter filterElement={dateFilterTemplate} />
+                            onSelectionChange={(e) => handleSelectionChange(e)}>
+                            <Column field="title" header={title} filter filterPlaceholder="Search by name" style={{ minWidth: '18rem', maxWidth: '350px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }} />
+                            <Column header={project} filterField="projectId" showFilterMenu={false} filterMenuStyle={{ width: '11rem' }} style={{ maxWidth: '11rem' }}
+                                body={projectBodyTemplate} filter filterElement={projectRowFilterTemplate} />
+                            <Column field="ticketTypeId" header={type} showFilterMenu={false} filterMenuStyle={{ width: '5rem' }} style={{ maxWidth: '11rem' }} body={typeBodyTemplate} filter filterElement={TypeRowFilterTemplate} />
+                            <Column field="ticketPriorityId" header={priority} showFilterMenu={false} filterMenuStyle={{ width: '5rem' }} style={{ maxWidth: '11rem' }} body={priorityBodyTemplate} filter filterElement={priorityRowFilterTemplate} />
+                            <Column field="ticketStatusId" header={status} showFilterMenu={false} filterMenuStyle={{ width: '5rem' }} style={{ maxWidth: '11rem' }} body={statusBodyTemplate} filter filterElement={statusRowFilterTemplate} />
+                            <Column field="dateCreated" dataType="date" header={dateCreated} showFilterMenu={false} filterMenuStyle={{ width: '14rem' }} style={{ maxWidth: '11rem' }} body={dateCreatedBodyTemplate} filter filterElement={dateFilterTemplate} />
+                            <Column field="dateUpdated" dataType="date" header={dateUpdated} showFilterMenu={false} filterMenuStyle={{ width: '14rem' }} style={{ maxWidth: '11rem' }} body={dateUpdatedBodyTemplate} filter filterElement={dateFilterTemplate} />
                         </DataTable>
                     </div>
                 </>

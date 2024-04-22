@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using TicketsSupport.ApplicationCore.DTOs;
 using TicketsSupport.ApplicationCore.Entities;
 using TicketsSupport.ApplicationCore.Exceptions;
@@ -43,11 +44,45 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 throw new NotFoundException(ExceptionMessage.NotFound("Ticket Priority", $"{id}"));
         }
 
-        public async Task<List<TicketPriorityResponse>> GetTicketPriority()
+        public async Task<List<TicketPriorityResponse>> GetTicketPriority(string? username)
         {
-            return this._context.TicketPriorities.Where(x => x.Active == true)
-                                                .Select(x => this._mapper.Map<TicketPriorityResponse>(x))
-                                                .ToList();
+            User? user = await _context.Users.Include(x => x.RolNavigation)
+                                             .FirstOrDefaultAsync(x => x.Username == username);
+
+            List<TicketPriority>? result = new List<TicketPriority>();
+            if (user?.RolNavigation?.PermissionLevel == PermissionLevel.Administrator)
+            {
+                result = await _context.ProjectXticketPriorities.Include(x => x.TicketPriority)
+                                                                   .Include(x => x.Project)
+                                                                       .ThenInclude(x => x.ProjectXclients)
+                                                                       .ThenInclude(x => x.Client)
+                                                                   .Include(x => x.Project)
+                                                                       .ThenInclude(x => x.ProjectXdevelopers)
+                                                                       .ThenInclude(x => x.Developer)
+                                                                    .Select(x => x.TicketPriority)
+                                                                   .ToListAsync();
+            }
+            else
+            {
+                result = await _context.ProjectXticketPriorities.Include(x => x.TicketPriority)
+                                                                    .Include(x => x.Project)
+                                                                        .ThenInclude(x => x.ProjectXclients)
+                                                                        .ThenInclude(x => x.Client)
+                                                                    .Include(x => x.Project)
+                                                                        .ThenInclude(x => x.ProjectXdevelopers)
+                                                                        .ThenInclude(x => x.Developer)
+                                                                    .Where(x => x.Project.ProjectXclients.Any(c => c.Client.Username == username) ||
+                                                                                x.Project.ProjectXdevelopers.Any(d => d.Developer.Username == username))
+                                                                    .Select(x => x.TicketPriority)
+                                                                    .ToListAsync();
+            }
+
+            result = result.Where(x => x.Active == true).DistinctBy(x => x.Id).ToList();
+
+            if (result != null)
+                return _mapper.Map<List<TicketPriorityResponse>>(result);
+
+            throw new NotFoundException(ExceptionMessage.NotFound("Ticket Priority by username", $"{username}"));
         }
 
         public async Task<TicketPriorityResponse> GetTicketPriorityById(int id)
@@ -58,6 +93,24 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 return this._mapper.Map<TicketPriorityResponse>(ticketPriority);
 
             throw new NotFoundException(ExceptionMessage.NotFound("Ticket Priority", $"{id}"));
+        }
+
+        public async Task<List<TicketPriorityResponse>> GetTicketPriorityByProject(int projectId)
+        {
+            var ticketPriorities = await _context.Projects.Include(x => x.ProjectXticketPriorities)
+                                                             .ThenInclude(x => x.TicketPriority)
+                                                         .Where(x => x.Id == projectId &&
+                                                                     x.ProjectXticketPriorities.Any(p => p.TicketPriority.Active))
+                                                         .SelectMany(x => x.ProjectXticketPriorities
+                                                             .Where(p => p.TicketPriority.Active)
+                                                             .Select(p => p.TicketPriority))
+                                                         .ToListAsync();
+
+
+            if (ticketPriorities != null)
+                return this._mapper.Map<List<TicketPriorityResponse>>(ticketPriorities);
+
+            throw new NotFoundException(ExceptionMessage.NotFound("Ticket Priority by Project", $"{projectId}"));
         }
 
         public async Task<TicketPriorityResponse> UpdateTicketPriority(int id, UpdateTicketPriorityRequest request)

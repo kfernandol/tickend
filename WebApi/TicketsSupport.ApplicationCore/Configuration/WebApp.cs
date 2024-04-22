@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace TicketsSupport.ApplicationCore.Configuration
 {
-    public class ResetPasswordConfig
+    public class WebApp
     {
-        public string WebAppUrl { get; set; }
+        public string Url { get; set; }
     }
 }

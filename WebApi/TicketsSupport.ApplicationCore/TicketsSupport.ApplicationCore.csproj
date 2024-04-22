@@ -23,6 +23,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ResetPassword.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Emails\TicketCreated\TicketCreated.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>TicketCreated.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="Resources\Exceptions\Details\ExceptionDetails.en.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ExceptionDetails.en.Designer.cs</LastGenOutput>
@@ -66,6 +70,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>ResetPassword.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Emails\TicketCreated\TicketCreated.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>TicketCreated.resx</DependentUpon>
     </Compile>
     <Compile Update="Resources\Exceptions\Details\ExceptionDetails_es.Designer.cs">
       <DesignTime>True</DesignTime>

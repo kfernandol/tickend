@@ -111,7 +111,8 @@
     "cancel": "Cancelar",
     "accept": "Aceptar",
     "save": "Guardar",
-    "delete": "Eliminar"
+    "delete": "Eliminar",
+    "updated": "Actualizar"
   },
   "boolean": {
     "true": "Verdadero",
@@ -212,11 +213,17 @@
       "new": "Nuevo Ticket",
       "title": "Titulo",
       "project": "Proyecto",
+      "description": "Descripcion",
       "priority": "Prioridad",
       "type": "Tipo",
       "status": "Estado",
       "dateCreated": "Fecha de Creacion",
-      "dateUpdated": "Ultima Actualización"
+      "dateUpdated": "Ultima Actualización",
+      "closed": "Cerrado",
+      "properties": "Propiedades"
+    },
+    "status": {
+      "open": "Abierto"
     }
   }
 }

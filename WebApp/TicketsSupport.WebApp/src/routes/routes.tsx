@@ -31,6 +31,8 @@ import Projects from "../views/projects/Projects.tsx";
 import ProjectNew from "../views/projects/Project.new.tsx";
 import ProjecEdit from "../views/projects/Project.edit.tsx";
 import Tickets from "../views/tickets/Tickets.tsx";
+import TicketsNew from "../views/tickets/Tickets.new.tsx";
+import TicketsEdit from "../views/tickets/Tickets.edit.tsx";
 
 //Routes with login
 export const routesAuthorized = () => {
@@ -247,19 +249,19 @@ export const routesAuthorized = () => {
           path: paths.newTicket,
           element:
             <ProtectedRoute name="Tickets">
-              <ProjectNew />
+              <TicketsNew />
             </ProtectedRoute>
         },
         {
           path: paths.editTicket,
           element:
-            <Navigate to={paths.Projects}></Navigate>
+            <Navigate to={paths.Tickets}></Navigate>
         },
         {
           path: paths.editTicketWithId,
           element:
             <ProtectedRoute name="Tickets">
-              <ProjecEdit />
+              <TicketsEdit />
             </ProtectedRoute>
         }
       ],

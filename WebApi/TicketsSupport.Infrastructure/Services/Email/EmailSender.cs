@@ -35,9 +35,15 @@ namespace TicketsSupport.Infrastructure.Services.Email
             switch (template)
             {
                 case EmailTemplate.ResetPassword:
-                    var data = await GetHtmlResetPassword(From, templatePath);
-                    templateHtml = data.templateHtml;
-                    subject = data.subject;
+                    var ResetPassword = await GetHtmlResetPassword(From, templatePath);
+                    templateHtml = ResetPassword.templateHtml;
+                    subject = ResetPassword.subject;
+                    break;
+
+                case EmailTemplate.TicketCreate:
+                    var TicketCreate = await GetHtmlTicketCreated(From, templatePath);
+                    templateHtml = TicketCreate.templateHtml;
+                    subject = TicketCreate.subject;
                     break;
             }
 
@@ -83,6 +89,36 @@ namespace TicketsSupport.Infrastructure.Services.Email
             var subject = ResourcesUtils.GetEmailResetPassword("Subject");
 
             return (templateHtml, subject);
+        }
+
+        private async Task<(string templateHtml, string subject)> GetHtmlTicketCreated(string From, string TemplatePath)
+        {
+            string templatePath = Path.Combine(TemplatePath, "TicketCreated.html");
+            string templateHtml = File.ReadAllText(templatePath);
+
+            Dictionary<string, string> templateDefaultValues = new Dictionary<string, string>
+            {
+                {"Saludation", ResourcesUtils.GetEmailTicketCreate("Saludation")},
+                {"Message", ResourcesUtils.GetEmailTicketCreate("Message")},
+                {"DetailsTicketText", ResourcesUtils.GetEmailTicketCreate("DetailsTicket")},
+                {"TicketTableTitle", ResourcesUtils.GetEmailTicketCreate("Title")},
+                {"TicketTableCreate", ResourcesUtils.GetEmailTicketCreate("Create")},
+                {"TicketTableProject", ResourcesUtils.GetEmailTicketCreate("Project")},
+                {"TicketTableType", ResourcesUtils.GetEmailTicketCreate("Type")},
+                {"TicketTableCreateBy", ResourcesUtils.GetEmailTicketCreate("CreateBy")},
+                {"ViewTicketBtn", ResourcesUtils.GetEmailTicketCreate("ViewTicket")},
+                {"WarningMessage", ResourcesUtils.GetEmailTicketCreate("WarningMessage")},
+            };
+
+            foreach (var data in templateDefaultValues)
+            {
+                templateHtml = templateHtml.Replace("{{" + data.Key + "}}", data.Value);
+            }
+
+            var subject = ResourcesUtils.GetEmailTicketCreate("Subject");
+
+            return (templateHtml, subject);
+
         }
     }
 }

@@ -9,5 +9,6 @@ namespace TicketsSupport
     public enum EmailTemplate
     {
         ResetPassword,
+        TicketCreate
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
+using System.Security.Claims;
 using TicketsSupport.ApplicationCore.Authorization.Menu;
 using TicketsSupport.ApplicationCore.Authorization.Role;
 using TicketsSupport.ApplicationCore.Commons;
@@ -34,9 +35,10 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(List<ProjectResponse>))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> GetUsers()
+        public async Task<IActionResult> GetProjects()
         {
-            var projects = await _projectRepository.GetProjects();
+            string? username = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            var projects = await _projectRepository.GetProjects(username);
             return Ok(projects);
         }
 
@@ -50,7 +52,7 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(ProjectResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> GetUserById(int id)
+        public async Task<IActionResult> GetProjectById(int id)
         {
             var project = await _projectRepository.GetProjectById(id);
             return Ok(project);
@@ -66,7 +68,7 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> Create(CreateProjectRequest request)
+        public async Task<IActionResult> CreateProject(CreateProjectRequest request)
         {
             await _projectRepository.CreateProject(request);
             return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementAdded"), ResourcesUtils.GetResponseMessage("Project")) });
@@ -83,7 +85,7 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> Update(int id, UpdateProjectRequest request)
+        public async Task<IActionResult> UpdateProject(int id, UpdateProjectRequest request)
         {
             await _projectRepository.UpdateProject(id, request);
             return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementUpdated"), ResourcesUtils.GetResponseMessage("Project")) });
@@ -100,7 +102,7 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteProjectById(int id)
         {
             await _projectRepository.DeleteProjectById(id);
             return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementDeleted"), ResourcesUtils.GetResponseMessage("Project")) });

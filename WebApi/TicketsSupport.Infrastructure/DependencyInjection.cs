@@ -26,6 +26,7 @@ namespace TicketsSupport.Infrastructure
             services.AddScoped<IRolRepository, RolRepository>();
             services.AddScoped<IMenuRepository, MenuRepository>();
             services.AddScoped<IProjectRepository, ProjectRepository>();
+            services.AddScoped<ITicketRepository, TicketRepository>();
             services.AddScoped<ITicketPriorityRepository, TicketPriorityRepository>();
             services.AddScoped<ITicketStatusRepository, TicketStatusRepository>();
             services.AddScoped<ITicketTypeRepository, TicketTypeRepository>();

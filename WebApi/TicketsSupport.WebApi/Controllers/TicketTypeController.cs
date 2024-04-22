@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
+using System.Security.Claims;
 using TicketsSupport.ApplicationCore.Authorization.Role;
 using TicketsSupport.ApplicationCore.Commons;
 using TicketsSupport.ApplicationCore.DTOs;
@@ -33,9 +35,10 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(List<TicketTypeResponse>))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> GetTicketStatus()
+        public async Task<IActionResult> GetTicketType()
         {
-            var ticketType = await _ticketTypeRepository.GetTicketType();
+            string? username = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            var ticketType = await _ticketTypeRepository.GetTicketType(username);
             return Ok(ticketType);
         }
 
@@ -48,10 +51,25 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(TicketTypeResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> GetMenuById(int id)
+        public async Task<IActionResult> GetTicketTypeById(int id)
         {
             var ticketType = await _ticketTypeRepository.GetTicketTypeById(id);
             return Ok(ticketType);
+        }
+
+        /// <summary>
+        /// Tickets Type By User
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("byproject/{id}"), MapToApiVersion(1.0)]
+        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(TicketTypeResponse))]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
+        [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
+        public async Task<IActionResult> GetTicketTypeByProject(int id)
+        {
+            var ticketTypes = await _ticketTypeRepository.GetTicketTypeByProject(id);
+            return Ok(ticketTypes);
         }
 
         /// <summary>
@@ -63,7 +81,7 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> Create(CreateTicketTypeRequest request)
+        public async Task<IActionResult> CreateTicketType(CreateTicketTypeRequest request)
         {
             await _ticketTypeRepository.CreateTicketType(request);
             return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementAdded"), ResourcesUtils.GetResponseMessage("TicketType")) });
@@ -79,7 +97,7 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> Update(int id, UpdateTicketTypeRequest request)
+        public async Task<IActionResult> UpdateTicketType(int id, UpdateTicketTypeRequest request)
         {
             await _ticketTypeRepository.UpdateTicketType(id, request);
             return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementUpdated"), ResourcesUtils.GetResponseMessage("TicketType")) });
@@ -95,7 +113,7 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteTicketTypeById(int id)
         {
             await _ticketTypeRepository.DeleteTicketTypeById(id);
             return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementDeleted"), ResourcesUtils.GetResponseMessage("TicketType")) });
