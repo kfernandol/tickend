@@ -30,15 +30,15 @@ jobs:
         runs-on: debian-latest
         steps:
             - name: Install sshpass
-                run: sudo apt-get install -y sshpass
+              run: sudo apt-get install -y sshpass
                 
             - name: Install Docker Compose
-                run: |
+              run: |
                 sudo apt-get update
                 sudo apt-get install -y docker.io docker-compose
             
             - name: SSH into Server
-                run: |
+              run: |
                    sshpass -p ${{secrets.AUTH_PASS}} ssh -o StrictHostKeyChecking=no ${{secrets.AUTH_SERVER}} << EOF
                     cd /home/Projects/NET/Tickend/
                     docker login ghcr.io -u EFernandoBL -p ${{secrets.TOKEN_DEPLOY}}
