@@ -18,7 +18,7 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["WebApi/TicketsSupport.WebApi/TicketsSupport.WebApi.csproj", "WebApi/TicketsSupport.WebApi/"]
 COPY ["WebApp/TicketsSupport.WebApp/TicketsSupport.WebApp.esproj", "WebApp/TicketsSupport.WebApp/"]
-RUN dotnet restore ".WebApi/TicketsSupport.WebApi/TicketsSupport.WebApi.csproj"
+RUN dotnet restore "./WebApi/TicketsSupport.WebApi/TicketsSupport.WebApi.csproj"
 COPY . .
 WORKDIR "/src/WebApi/TicketsSupport.WebApi"
 RUN dotnet build "./TicketsSupport.WebApi.csproj" -c $BUILD_CONFIGURATION -o /app/build
