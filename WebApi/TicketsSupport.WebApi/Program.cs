@@ -179,19 +179,19 @@ app.UseStaticFiles();
 app.UseRequestLocalization();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+//if (app.Environment.IsDevelopment())
+//{
+app.UseSwagger();
+app.UseSwaggerUI(options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
+    foreach (var description in app.DescribeApiVersions())
     {
-        foreach (var description in app.DescribeApiVersions())
-        {
-            options.SwaggerEndpoint(
-                url: $"/swagger/{description.GroupName}/swagger.json",
-                name: description.GroupName);
-        }
-    });
-}
+        options.SwaggerEndpoint(
+            url: $"/swagger/{description.GroupName}/swagger.json",
+            name: description.GroupName);
+    }
+});
+//}
 
 //Exceptions show
 app.UseExceptionHandler(errorApp =>
