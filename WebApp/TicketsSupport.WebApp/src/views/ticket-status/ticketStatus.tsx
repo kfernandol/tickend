@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { LegacyRef, useEffect, useRef, useState } from 'react'
 import { FilterMatchMode } from 'primereact/api';
 import { paths } from '../../routes/paths';
@@ -24,7 +23,7 @@ export default function TicketStatus() {
     //Table Filters
     const [globalFilterValue, setGlobalFilterValue] = useState('');
     const [filters, setFilters] = useState({
-        global: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     });
     //Api Request
     const { SendDeleteRequest, deleteResponse, errorDelete, httpCodeDelete } = useDelete<BasicResponse>();
@@ -101,14 +100,14 @@ export default function TicketStatus() {
 
 
     //Table Search Filter
-    const onGlobalFilterChange = (e) => {
+    const onGlobalFilterChange = (e: { target: { value: null | string; }; }) => {
         const value = e.target.value;
         const _filters = { ...filters };
 
-        _filters['global'].value = value;
+        _filters['global'].value = value as null;
 
         setFilters(_filters);
-        setGlobalFilterValue(value);
+        setGlobalFilterValue(value !== null ? value : '');
     };
 
 
