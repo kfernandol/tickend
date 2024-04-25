@@ -1,10 +1,9 @@
 import { Dropdown } from 'primereact/dropdown';
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 //icons
-import { ChevronDownIcon } from 'primereact/icons/chevrondown';
-import { ChevronRightIcon } from 'primereact/icons/chevronright';
+import { ChevronDownIcon, ChevronDownIconProps } from 'primereact/icons/chevrondown';
 //css
 import '../../assets/css/flags.css'
 //models
@@ -43,20 +42,7 @@ function LenguajeSelect() {
         i18next.changeLanguage(language.code)
     }, [language, selectedLanguage])
 
-    const selectedLanguageTemplate = (option, props) => {
-        if (option) {
-            return (
-                <div className="flex align-items-center">
-                    <img alt={option.name} src="/src/assets/imgs/flags_placeholder.png" className={`mr-2 flag flag-${option.flag.toLowerCase()}`} style={{ width: '18px' }} />
-                    <div>{option.name}</div>
-                </div>
-            );
-        }
-
-        return <span>{props.placeholder}</span>;
-    };
-
-    const languageOptionTemplate = (option) => {
+    const languageOptionTemplate = (option: { name: string, flag: string }) => {
         return (
             <div className="flex align-items-center">
                 <img alt={option.name} src="/src/assets/imgs/flags_placeholder.png" className={`mr-2 flag flag-${option.flag.toLowerCase()}`} style={{ width: '18px' }} />
@@ -68,9 +54,9 @@ function LenguajeSelect() {
     return (
         <div className='absolute bottom-0 right-0'>
             <Dropdown value={selectedLanguage} onChange={(e) => setSelectedLanguage(e.value)} options={languages} optionLabel="name" placeholder="Select a Country"
-                valueTemplate={selectedLanguageTemplate} itemTemplate={languageOptionTemplate} className="w-full md:w-14rem"
-                dropdownIcon={(opts) => {
-                    return opts.iconProps['data-pr-overlay-visible'] ? <ChevronRightIcon {...opts.iconProps} /> : <ChevronDownIcon {...opts.iconProps} />;
+                itemTemplate={languageOptionTemplate} className="w-full md:w-14rem"
+                dropdownIcon={(opts: { iconProps: ChevronDownIconProps }) => {
+                    return <ChevronDownIcon {...opts.iconProps} />;
                 }}
             />
         </div>

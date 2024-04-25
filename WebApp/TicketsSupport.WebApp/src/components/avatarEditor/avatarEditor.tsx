@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
+import { ChangeEvent, useEffect, useRef, useState } from 'react'
 //css
 import "./avatarEditor.css";
 //components
@@ -15,7 +14,7 @@ type Props = {
 export default function AvatarEditor(props: Props) {
     const SizeLimitBits = 8000000; //5 MB
     //hooks
-    const [AvatarIMG, setAvatarIMG] = useState<any>("/src/assets/imgs/avatar-default.png");
+    const [AvatarIMG, setAvatarIMG] = useState<string | ArrayBuffer | null>("/src/assets/imgs/avatar-default.png");
     const toast = useRef<Toast>(null);
     //translation
     const { t } = useTranslation();
@@ -54,7 +53,7 @@ export default function AvatarEditor(props: Props) {
             <Toast ref={toast} />
             <Avatar
                 id='AvatarProfileChange'
-                image={AvatarIMG}
+                image={AvatarIMG !== null ? AvatarIMG as string : ''}
                 className="p-1"
                 style={{ width: '250px', height: "250px" }}
                 shape="circle"

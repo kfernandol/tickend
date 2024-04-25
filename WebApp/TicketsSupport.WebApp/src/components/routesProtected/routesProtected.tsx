@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 //hooks
 import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
@@ -10,8 +9,12 @@ import { AuthToken } from '../../models/tokens/token.model';
 import { MenusResponse } from '../../models/responses/menus.response';
 import { RootState } from '../../redux/store';
 
+interface props {
+    name: string,
+    children: React.ReactNode
+}
 
-function ProtectedRoute({ children, name }) {
+function ProtectedRoute(props: props) {
 
     //Redux Data
     const authenticated = useSelector((state: RootState) => state.auth);
@@ -33,11 +36,11 @@ function ProtectedRoute({ children, name }) {
     }, [getResponse])
 
     if (Menus) {
-        if (!Menus.find(x => x.name == name) && ((name === "Home" || name === "Prifle") && authenticated.token === "")) {
+        if (!Menus.find(x => x.name == props.name) && ((props.name === "Home" || props.name === "Prifle") && authenticated.token === "")) {
             return <Navigate to="/unauthorized" replace />;
         }
 
-        return children;
+        return props.children;
     }
 
 }

@@ -1,4 +1,4 @@
-import React, { Suspense, memo } from "react";
+import { Suspense, memo } from "react";
 import { useSelector } from "react-redux";
 import { RouterProvider } from "react-router-dom";
 import { RootState } from "../../redux/store";

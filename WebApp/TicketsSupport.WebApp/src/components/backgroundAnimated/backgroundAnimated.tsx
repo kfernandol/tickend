@@ -1,4 +1,3 @@
-import React from 'react'
 import "./backgroundAnimated.css"
 
 function BackgroundAnimated() {
