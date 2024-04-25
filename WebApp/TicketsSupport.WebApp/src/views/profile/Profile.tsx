@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 //components
 import { classNames } from 'primereact/utils';
 import { Controller } from 'react-hook-form';
