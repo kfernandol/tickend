@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { LegacyRef, useEffect, useRef, useState } from 'react'
 import { FilterMatchMode } from 'primereact/api';
 import { paths } from '../../routes/paths';
@@ -115,14 +114,14 @@ export default function Menus() {
 
 
     //Table Search Filter
-    const onGlobalFilterChange = (e) => {
+    const onGlobalFilterChange = (e: { target: { value: string | null } }) => {
         const value = e.target.value;
         const _filters = { ...filters };
 
-        _filters['global'].value = value;
+        _filters['global'].value = value as null;
 
         setFilters(_filters);
-        setGlobalFilterValue(value);
+        setGlobalFilterValue(value !== null ? value : '');
     };
 
 

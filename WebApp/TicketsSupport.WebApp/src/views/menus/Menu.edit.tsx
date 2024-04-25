@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { paths } from '../../routes/paths';
 import { classNames } from 'primereact/utils';
 import { PrimeIcons } from 'primereact/api';
@@ -137,7 +135,7 @@ export default function MenuEdit() {
         SendPutRequest("v1/menus/" + id, menuData)
     };
 
-    const onClickIcon = (icon) => {
+    const onClickIcon = (icon: string) => {
         setValue("icon", icon)
     }
 
@@ -230,7 +228,7 @@ export default function MenuEdit() {
                                 <>
                                     <label htmlFor={field.name} className={classNames({ 'p-error': errors.name })}></label>
                                     <span className="p-float-label">
-                                        <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
+                                        <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => { field.onChange(e.target.value); setFilterIcon(e.target.value) }} />
                                         <label htmlFor={field.name}>{CardFormIcon}</label>
                                     </span>
                                     {ErrorMessageHtml(field.name)}

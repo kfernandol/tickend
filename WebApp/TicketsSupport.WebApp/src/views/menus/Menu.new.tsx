@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { paths } from '../../routes/paths';
 import { classNames } from 'primereact/utils';
 import { PrimeIcons } from 'primereact/api';
@@ -119,7 +117,7 @@ export default function MenuNew() {
         SendPostRequest("v1/menus/", menuData)
     };
 
-    const onClickIcon = (icon) => {
+    const onClickIcon = (icon: string) => {
         setValue("icon", icon)
     }
 
@@ -223,7 +221,7 @@ export default function MenuNew() {
 
                     <Card className='w-full'>
                         <div className='grid text-center' style={{ maxHeight: "250px", overflowY: "auto" }}>
-                            {Object.entries(PrimeIcons).filter(([key, value]) => key.toLowerCase().includes(FilterIcon.toLowerCase())).map(([key, value]) => (
+                            {Object.entries(PrimeIcons).filter(([key]) => key.toLowerCase().includes(FilterIcon.toLowerCase())).map(([key, value]) => (
                                 <div key={`${key}-${value}`} className='col-3 md:col-1 mb-5'>
                                     <Button onClick={() => onClickIcon(value)} type='button' icon={value} rounded text severity="info" aria-label="Bookmark" />
                                 </div>
