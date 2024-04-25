@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { paths } from '../../routes/paths';
 import { classNames } from 'primereact/utils';
 //Components
@@ -13,7 +11,7 @@ import { Dropdown } from 'primereact/dropdown';
 import { Toast } from 'primereact/toast';
 //Hooks
 import { useTranslation } from 'react-i18next'
-import { useGet, usePost, usePut } from '../../services/api_services';
+import { useGet, usePost } from '../../services/api_services';
 import useCustomForm from '../../hooks/useCustomForm';
 //Models
 import { UserRequestPost } from '../../models/requests/users.request';
