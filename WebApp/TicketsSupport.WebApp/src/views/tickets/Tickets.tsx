@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { paths } from '../../routes/paths';
 //Components
 import { ProgressSpinner } from 'primereact/progressspinner';
@@ -23,6 +23,7 @@ import { TicketStatusResponse } from '../../models/responses/ticketStatus.respon
 import { TicketTypeResponse } from '../../models/responses/ticketType.response';
 import { TicketPriorityResponse } from '../../models/responses/ticketPriority.response';
 import { TicketResponse } from '../../models/responses/ticket.response';
+import { Nullable } from 'primereact/ts-helpers';
 
 export default function Tickets() {
     const [Tickets, setTickets] = useState<TicketResponse[]>([]);
@@ -91,7 +92,7 @@ export default function Tickets() {
     }, [])
 
     //Table Filters
-    const [filters, setFilters] = useState({
+    const filters = {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
         title: { value: null, matchMode: FilterMatchMode.EQUALS },
         project: { value: null, matchMode: FilterMatchMode.EQUALS },
@@ -100,9 +101,9 @@ export default function Tickets() {
         priority: { value: null, matchMode: FilterMatchMode.EQUALS },
         dateCreated: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
         dateUpdated: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
-    });
+    };
 
-    const projectBodyTemplate = (rowData) => {
+    const projectBodyTemplate = (rowData: { projectId: number; }) => {
         const project = Projects.find(x => x.id === rowData.projectId);
         return (
             <>
@@ -114,7 +115,7 @@ export default function Tickets() {
         );
     };
 
-    const projectItemTemplate = (option) => {
+    const projectItemTemplate = (option: { name: string, photo: string }) => {
         return (
             <>
                 {option.photo !== null && option.photo !== "" ?
@@ -138,7 +139,7 @@ export default function Tickets() {
         );
     };
 
-    const typeBodyTemplate = (rowData) => {
+    const typeBodyTemplate = (rowData: { ticketTypeId: number }) => {
         const type = TicketType.find(x => x.id === rowData.ticketTypeId);
         if (type) {
             return <>
@@ -151,7 +152,7 @@ export default function Tickets() {
         }
     };
 
-    const statusBodyTemplate = (rowData) => {
+    const statusBodyTemplate = (rowData: { ticketStatusId: number }) => {
         const status = TicketStatus.find(x => x.id === rowData.ticketStatusId);
         if (status) {
             return <>
@@ -165,7 +166,7 @@ export default function Tickets() {
 
     };
 
-    const priorityBodyTemplate = (rowData) => {
+    const priorityBodyTemplate = (rowData: { ticketPriorityId: number }) => {
         const priority = TicketPriorities.find(x => x.id === rowData.ticketPriorityId);
         if (priority) {
             return <>
@@ -179,17 +180,17 @@ export default function Tickets() {
 
     }
 
-    const statusItemTemplate = (option) => {
+    const statusItemTemplate = (option: { name: string, color: string }) => {
         return <Badge value={option.name} style={{ backgroundColor: option.color }}></Badge>;
     };
 
-    const priorityItemTemplate = (option) => {
+    const priorityItemTemplate = (option: { icon: string, iconColor: string, name: string }) => {
         return <>
             <i className={option.icon} style={{ color: option.iconColor }}></i><span className='ml-2'>{option.name}</span>
         </>;
     }
 
-    const projectRowFilterTemplate = (options) => {
+    const projectRowFilterTemplate = (options: { value: string, filterApplyCallback: (value: number) => void }) => {
         return (
             <MultiSelect
                 value={options.value}
@@ -205,30 +206,30 @@ export default function Tickets() {
         );
     };
 
-    const statusRowFilterTemplate = (options) => {
+    const statusRowFilterTemplate = (options: { value: number, filterApplyCallback(name: string): void }) => {
         const status = TicketStatus.find(x => x.id === options.value);
         return (
             <Dropdown value={status?.name} options={TicketStatus} onChange={(e) => options.filterApplyCallback(e.value?.name)} itemTemplate={statusItemTemplate} placeholder="Status" className="p-column-filter" showClear style={{ minWidth: '10rem' }} />
         );
     };
 
-    const priorityRowFilterTemplate = (options) => {
+    const priorityRowFilterTemplate = (options: { value: { name: string }, filterApplyCallback: (value: { name: string }) => void }) => {
         return (
             <Dropdown value={options.value?.name} options={TicketPriorities} onChange={(e) => options.filterApplyCallback(e.value?.name)} itemTemplate={statusItemTemplate} placeholder="Type" className="p-column-filter" showClear style={{ minWidth: '10rem' }} />
         );
     }
 
-    const TypeRowFilterTemplate = (options) => {
+    const TypeRowFilterTemplate = (options: { value: { name: string }, filterApplyCallback(name: string): void }) => {
         return (
             <Dropdown value={options.value?.name} options={TicketType} onChange={(e) => options.filterApplyCallback(e.value?.name)} itemTemplate={priorityItemTemplate} placeholder="Priority" className="p-column-filter" showClear style={{ minWidth: '10rem' }} />
         );
     }
 
-    const dateFilterTemplate = (options) => {
+    const dateFilterTemplate = (options: { value: Date, index: number, filterCallback(value: Nullable<Date>, index: number): void }) => {
         return <Calendar value={options?.value} onChange={(e) => options.filterCallback(e.value, options.index)} dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />;
     };
 
-    const dateCreatedBodyTemplate = (options) => {
+    const dateCreatedBodyTemplate = (options: { dateCreated: string }) => {
         const date = new Date(options.dateCreated)
 
         if (date && options.dateCreated) {
@@ -238,7 +239,7 @@ export default function Tickets() {
         }
     }
 
-    const dateUpdatedBodyTemplate = (options) => {
+    const dateUpdatedBodyTemplate = (options: { dateUpdated: string }) => {
         const date = new Date(options.dateUpdated)
 
         if (date && options.dateUpdated) {
@@ -263,7 +264,7 @@ export default function Tickets() {
         )
     }
 
-    const handleSelectionChange = (e) => {
+    const handleSelectionChange = (e: { value: { id: number } }) => {
         const url = EditItemUrl.slice(0, EditItemUrl.length - 3) + e.value.id;
         navigate(url, { replace: true });
     };

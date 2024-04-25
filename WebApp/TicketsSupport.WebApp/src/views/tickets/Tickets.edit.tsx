@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { paths } from '../../routes/paths';
 import { classNames } from 'primereact/utils';
 //Components
@@ -33,7 +31,7 @@ export default function TicketsEdit() {
     const { control, ErrorMessageHtml, errors, handleSubmit, reset, setValue, getValues, watch } = useCustomForm<TicketForm>({ Title: '', Description: '', Priority: 0, Project: 0, Status: 0, Type: 0, });
     //Request API
     const { SendPutRequest, putResponse, loadingPut, errorPut, httpCodePut } = usePut<BasicResponse>();
-    const { SendGetRequest, loadingGet, getResponse, httpCodeGet, errorGet } = useGet<ProjectResponse>();
+    const { SendGetRequest } = useGet<ProjectResponse>();
     const [Ticket, setTicket] = useState<TicketResponse>();
     const [Projects, setProjects] = useState<ProjectResponse[]>();
     const [TicketType, setTicketType] = useState<TicketTypeResponse[]>();
@@ -194,7 +192,7 @@ export default function TicketsEdit() {
                                         }
 
                                     }}
-                                render={({ field, fieldState }) => (
+                                render={({ field }) => (
                                     <>
                                         <label htmlFor={field.name} className={classNames({ 'p-error': errors.Description })}></label>
                                         <Editor
@@ -343,7 +341,7 @@ export default function TicketsEdit() {
                                 <Controller
                                     name="Closed"
                                     control={control}
-                                    render={({ field, fieldState }) => (
+                                    render={({ field }) => (
                                         <>
                                             <div className='flex align-items-center'>
                                                 <label htmlFor={field.name} className={classNames({ 'p-error': errors.Closed })}></label>

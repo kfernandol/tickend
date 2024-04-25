@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { paths } from '../../routes/paths';
 import { classNames } from 'primereact/utils';
 //Components
@@ -27,10 +25,10 @@ export default function TicketsNew() {
     const toast = useRef<Toast>(null);
     const navigate = useNavigate();
     //Form
-    const { control, ErrorMessageHtml, errors, handleSubmit, reset, setValue, getValues, watch } = useCustomForm<TicketForm>({ Title: '', Description: '', Priority: 0, Project: 0, Status: 0, Type: 0 });
+    const { control, ErrorMessageHtml, errors, handleSubmit, reset, getValues, watch } = useCustomForm<TicketForm>({ Title: '', Description: '', Priority: 0, Project: 0, Status: 0, Type: 0 });
     //Request API
     const { SendPostRequest, postResponse, loadingPost, errorPost, httpCodePost } = usePost<BasicResponse>();
-    const { SendGetRequest, loadingGet, getResponse, httpCodeGet, errorGet } = useGet<ProjectResponse>();
+    const { SendGetRequest } = useGet<ProjectResponse>();
     const [Projects, setProjects] = useState<ProjectResponse[]>();
     const [TicketType, setTicketType] = useState<TicketTypeResponse[]>();
     //Translation
@@ -105,6 +103,7 @@ export default function TicketsNew() {
         }
         if (errorPost && httpCodePost !== 0) {
             if ('errors' in errorPost) {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const errorsHtml = Object.entries(errorPost.errors).map(([_field, errors], index) => (
                     errors.map((error, errorIndex) => (
                         <li key={`${index}-${errorIndex}`}>{error}</li>
@@ -182,7 +181,7 @@ export default function TicketsNew() {
                                     }
 
                                 }}
-                            render={({ field, fieldState }) => (
+                            render={({ field }) => (
                                 <>
                                     <label htmlFor={field.name} className={classNames({ 'p-error': errors.Description })}></label>
                                     <Editor value={field.value} onTextChange={(e) => field.onChange(e.htmlValue)} style={{ height: '700px' }} placeholder={CardFormDescription} />
