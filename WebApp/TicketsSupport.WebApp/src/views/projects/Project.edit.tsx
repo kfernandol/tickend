@@ -1,7 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { paths } from '../../routes/paths';
 import { classNames } from 'primereact/utils';
 //Components
@@ -15,7 +12,7 @@ import AvatarEditor from '../../components/avatarEditor/avatarEditor';
 import { MultiSelect } from 'primereact/multiselect';
 //Hooks
 import { useTranslation } from 'react-i18next'
-import { useGet, usePost, usePut } from '../../services/api_services';
+import { useGet, usePut } from '../../services/api_services';
 import useCustomForm from '../../hooks/useCustomForm';
 //Models
 import { BasicResponse } from '../../models/responses/basic.response';
@@ -50,8 +47,8 @@ export default function ProjectEdit() {
     const [Priorities, setPriorities] = useState<{ name: string, value: number, color: string }[]>([{ name: "", value: 0, color: "" }]);
     const [Statuses, setStatuses] = useState<{ name: string, value: number, color: string }[]>([{ name: "", value: 0, color: "" }]);
     const [Types, setTypes] = useState<{ name: string, value: number, color: string }[]>([{ name: "", value: 0, color: "" }]);
-    const [Developers, setDevelopers] = useState<{ name: string, value: number }[]>([{ name: "", value: 0 }]);
-    const [Clients, setClients] = useState<{ name: string, value: number }[]>([{ name: "", value: 0 }]);
+    const [Developers, setDevelopers] = useState<{ name: string, color: string, value: number }[]>([{ name: "", value: 0, color: '' }]);
+    const [Clients, setClients] = useState<{ name: string, color: string, value: number }[]>([{ name: "", value: 0, color: '' }]);
     const [Project, setProject] = useState<ProjectResponse>();
 
     //Translations
@@ -75,7 +72,7 @@ export default function ProjectEdit() {
     const returnToTable = paths.Projects;
 
     //Submit Form
-    const onSubmit = async (data: ProjectForm) => {
+    const onSubmit = async () => {
 
         const formData = new FormData();
 
@@ -152,12 +149,14 @@ export default function ProjectEdit() {
                         const resp = response.data as UserResponse[];
 
                         const clients = resp.filter(x => x.levelPermission === "User").map(x => ({
+                            color: '',
                             name: `${x.firstName} ${x.lastName}`,
                             value: x.id
                         }));
                         setClients(clients);
 
                         const developers = resp.filter(x => x.levelPermission === "Developer").map(x => ({
+                            color: '',
                             name: `${x.firstName} ${x.lastName}`,
                             value: x.id
                         }));
@@ -198,7 +197,7 @@ export default function ProjectEdit() {
     }, [errorPut, httpCodePut, putResponse])
 
 
-    const MultiSelectedItem = (e: number, data: any) => {
+    const MultiSelectedItem = (e: number, data: { value: number, name: string, color: string }[]) => {
         const item = data.find(x => x.value == e);
         return (
             <span style={{ color: `${item?.color}` }}>{item?.name}, </span>
@@ -281,7 +280,7 @@ export default function ProjectEdit() {
                         <Controller
                             name="ticketPriorities"
                             control={control}
-                            render={({ field, fieldState }) => (
+                            render={({ field }) => (
                                 <>
                                     <span className="p-float-label w-full">
                                         <MultiSelect id={field.name} name="value" selectedItemTemplate={(e) => MultiSelectedItem(e, Priorities)} className='w-full py-1' value={field.value} filter options={Priorities} onChange={(e) => field.onChange(e.value)} optionLabel="name" placeholder={SelectPriorities} maxSelectedLabels={10} />
@@ -298,7 +297,7 @@ export default function ProjectEdit() {
                         <Controller
                             name="ticketStatus"
                             control={control}
-                            render={({ field, fieldState }) => (
+                            render={({ field }) => (
                                 <>
                                     <span className="p-float-label w-full">
                                         <MultiSelect
@@ -326,7 +325,7 @@ export default function ProjectEdit() {
                         <Controller
                             name="ticketTypes"
                             control={control}
-                            render={({ field, fieldState }) => (
+                            render={({ field }) => (
                                 <>
                                     <span className="p-float-label w-full">
                                         <MultiSelect
@@ -354,7 +353,7 @@ export default function ProjectEdit() {
                         <Controller
                             name="clients"
                             control={control}
-                            render={({ field, fieldState }) => (
+                            render={({ field }) => (
                                 <>
                                     <span className="p-float-label w-full">
                                         <MultiSelect
@@ -382,7 +381,7 @@ export default function ProjectEdit() {
                         <Controller
                             name="developers"
                             control={control}
-                            render={({ field, fieldState }) => (
+                            render={({ field }) => (
                                 <>
                                     <span className="p-float-label w-full">
                                         <MultiSelect
