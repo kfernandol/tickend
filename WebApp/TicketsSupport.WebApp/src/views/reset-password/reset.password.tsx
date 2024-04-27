@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 //componets
 import BackgroundAnimated from '../../components/backgroundAnimated/backgroundAnimated';
 import LaguageSelect from "../../components/lenguajeSelect/languageSelect";

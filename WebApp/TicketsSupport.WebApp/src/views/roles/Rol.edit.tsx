@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { paths } from '../../routes/paths';
 import { classNames } from 'primereact/utils';
 //Components
@@ -10,7 +9,7 @@ import { Button } from 'primereact/button';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Dropdown } from 'primereact/dropdown';
 import { Toast } from 'primereact/toast';
-import { Checkbox } from 'primereact/checkbox';
+import { Checkbox, CheckboxChangeEvent } from 'primereact/checkbox';
 //Hooks
 import { useTranslation } from 'react-i18next'
 import { useGet, usePut } from '../../services/api_services';
@@ -141,7 +140,7 @@ export default function RolEdit() {
         SendPutRequest("v1/roles/" + id, rolData)
     };
 
-    const onMenuChange = (e) => {
+    const onMenuChange = (e: CheckboxChangeEvent) => {
         let _selectedMenu = [...SelectedMenus];
 
         if (e.checked)

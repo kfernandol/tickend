@@ -1,4 +1,3 @@
-import React from "react";
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import { paths } from "./paths";
 //components
@@ -37,257 +36,257 @@ import TicketsEdit from "../views/tickets/Tickets.edit.tsx";
 //Routes with login
 export const routesAuthorized = () => {
 
-  return createBrowserRouter([
-    {
-      path: "/",
-      element: <Layout />,
-      children: [
+    return createBrowserRouter([
         {
-          path: "",
-          element:
-            <ProtectedRoute name="Home">
-              <Home />,
-            </ProtectedRoute>
+            path: "/",
+            element: <Layout />,
+            children: [
+                {
+                    path: "",
+                    element:
+                        <ProtectedRoute name="Home">
+                            <Home />,
+                        </ProtectedRoute>
+                },
+                {
+                    path: paths.profile,
+                    element:
+                        <ProtectedRoute name="Profile">
+                            <Profile />
+                        </ProtectedRoute>
+                },
+                {
+                    path: paths.users,
+                    element:
+                        <ProtectedRoute name="Users">
+                            <Users />
+                        </ProtectedRoute>,
+                },
+                {
+                    path: paths.newUser,
+                    element:
+                        <ProtectedRoute name="Users">
+                            <UsersNew />
+                        </ProtectedRoute>
+                },
+                {
+                    path: paths.editUser,
+                    element:
+                        <Navigate to={paths.users}></Navigate>
+                },
+                {
+                    path: paths.editUserWithId,
+                    element:
+                        <ProtectedRoute name="Users">
+                            <UsersEdit />
+                        </ProtectedRoute>
+                },
+                {
+                    path: paths.roles,
+                    element:
+                        <ProtectedRoute name="Roles">
+                            <Roles />
+                        </ProtectedRoute>,
+                },
+                {
+                    path: paths.newRol,
+                    element:
+                        <ProtectedRoute name="Roles">
+                            <RolNew />
+                        </ProtectedRoute>
+                },
+                {
+                    path: paths.editRol,
+                    element:
+                        <Navigate to={paths.roles}></Navigate>
+                },
+                {
+                    path: paths.editRolWithId,
+                    element:
+                        <ProtectedRoute name="Roles">
+                            <RolEdit />
+                        </ProtectedRoute>
+                },
+                {
+                    path: paths.menus,
+                    element:
+                        <ProtectedRoute name="Menus">
+                            <Menus />
+                        </ProtectedRoute>,
+                },
+                {
+                    path: paths.newMenus,
+                    element:
+                        <ProtectedRoute name="Menus">
+                            <MenuNew />
+                        </ProtectedRoute>
+                },
+                {
+                    path: paths.editMenus,
+                    element:
+                        <Navigate to={paths.menus}></Navigate>
+                },
+                {
+                    path: paths.editMenusWithId,
+                    element:
+                        <ProtectedRoute name="Menus">
+                            <MenuEdit />
+                        </ProtectedRoute>
+                },
+                {
+                    path: paths.ticketTypes,
+                    element:
+                        <ProtectedRoute name="TicketTypes">
+                            <TicketTypes />
+                        </ProtectedRoute>,
+                },
+                {
+                    path: paths.newTicketType,
+                    element:
+                        <ProtectedRoute name="TicketTypes">
+                            <TicketTypeNew />
+                        </ProtectedRoute>
+                },
+                {
+                    path: paths.EditTicketType,
+                    element:
+                        <Navigate to={paths.ticketTypes}></Navigate>
+                },
+                {
+                    path: paths.EditTicketTypeWithId,
+                    element:
+                        <ProtectedRoute name="TicketTypes">
+                            <TicketTypeEdit />
+                        </ProtectedRoute>
+                },
+                {
+                    path: paths.ticketStatus,
+                    element:
+                        <ProtectedRoute name="TicketStatus">
+                            <TicketStatus />
+                        </ProtectedRoute>,
+                },
+                {
+                    path: paths.newTicketStatus,
+                    element:
+                        <ProtectedRoute name="TicketStatus">
+                            <TicketStatusNew />
+                        </ProtectedRoute>
+                },
+                {
+                    path: paths.EditTicketStatus,
+                    element:
+                        <Navigate to={paths.ticketStatus}></Navigate>
+                },
+                {
+                    path: paths.EditTicketStatusWithId,
+                    element:
+                        <ProtectedRoute name="TicketStatus">
+                            <TicketStatusEdit />
+                        </ProtectedRoute>
+                },
+                {
+                    path: paths.ticketPriorities,
+                    element:
+                        <ProtectedRoute name="TicketPriority">
+                            <TicketPriority />
+                        </ProtectedRoute>,
+                },
+                {
+                    path: paths.newTicketPriorities,
+                    element:
+                        <ProtectedRoute name="TicketPriority">
+                            <TicketPriorityNew />
+                        </ProtectedRoute>
+                },
+                {
+                    path: paths.EditTicketPriorities,
+                    element:
+                        <Navigate to={paths.ticketPriorities}></Navigate>
+                },
+                {
+                    path: paths.EditTicketPrioritiesWithId,
+                    element:
+                        <ProtectedRoute name="TicketPriority">
+                            <TicketPriorityEdit />
+                        </ProtectedRoute>
+                },
+                {
+                    path: paths.Projects,
+                    element:
+                        <ProtectedRoute name="Projects">
+                            <Projects />
+                        </ProtectedRoute>
+                },
+                {
+                    path: paths.newProject,
+                    element:
+                        <ProtectedRoute name="Projects">
+                            <ProjectNew />
+                        </ProtectedRoute>
+                },
+                {
+                    path: paths.editProject,
+                    element:
+                        <Navigate to={paths.Projects}></Navigate>
+                },
+                {
+                    path: paths.editProjectWithId,
+                    element:
+                        <ProtectedRoute name="Projects">
+                            <ProjecEdit />
+                        </ProtectedRoute>
+                },
+                {
+                    path: paths.Tickets,
+                    element:
+                        <ProtectedRoute name="Tickets">
+                            <Tickets />
+                        </ProtectedRoute>
+                },
+                {
+                    path: paths.newTicket,
+                    element:
+                        <ProtectedRoute name="Tickets">
+                            <TicketsNew />
+                        </ProtectedRoute>
+                },
+                {
+                    path: paths.editTicket,
+                    element:
+                        <Navigate to={paths.Tickets}></Navigate>
+                },
+                {
+                    path: paths.editTicketWithId,
+                    element:
+                        <ProtectedRoute name="Tickets">
+                            <TicketsEdit />
+                        </ProtectedRoute>
+                }
+            ],
         },
-        {
-          path: paths.profile,
-          element:
-            <ProtectedRoute name="Profile">
-              <Profile />
-            </ProtectedRoute>
-        },
-        {
-          path: paths.users,
-          element:
-            <ProtectedRoute name="Users">
-              <Users />
-            </ProtectedRoute>,
-        },
-        {
-          path: paths.newUser,
-          element:
-            <ProtectedRoute name="Users">
-              <UsersNew />
-            </ProtectedRoute>
-        },
-        {
-          path: paths.editUser,
-          element:
-            <Navigate to={paths.users}></Navigate>
-        },
-        {
-          path: paths.editUserWithId,
-          element:
-            <ProtectedRoute name="Users">
-              <UsersEdit />
-            </ProtectedRoute>
-        },
-        {
-          path: paths.roles,
-          element:
-            <ProtectedRoute name="Roles">
-              <Roles />
-            </ProtectedRoute>,
-        },
-        {
-          path: paths.newRol,
-          element:
-            <ProtectedRoute name="Roles">
-              <RolNew />
-            </ProtectedRoute>
-        },
-        {
-          path: paths.editRol,
-          element:
-            <Navigate to={paths.roles}></Navigate>
-        },
-        {
-          path: paths.editRolWithId,
-          element:
-            <ProtectedRoute name="Roles">
-              <RolEdit />
-            </ProtectedRoute>
-        },
-        {
-          path: paths.menus,
-          element:
-            <ProtectedRoute name="Menus">
-              <Menus />
-            </ProtectedRoute>,
-        },
-        {
-          path: paths.newMenus,
-          element:
-            <ProtectedRoute name="Menus">
-              <MenuNew />
-            </ProtectedRoute>
-        },
-        {
-          path: paths.editMenus,
-          element:
-            <Navigate to={paths.menus}></Navigate>
-        },
-        {
-          path: paths.editMenusWithId,
-          element:
-            <ProtectedRoute name="Menus">
-              <MenuEdit />
-            </ProtectedRoute>
-        },
-        {
-          path: paths.ticketTypes,
-          element:
-            <ProtectedRoute name="TicketTypes">
-              <TicketTypes />
-            </ProtectedRoute>,
-        },
-        {
-          path: paths.newTicketType,
-          element:
-            <ProtectedRoute name="TicketTypes">
-              <TicketTypeNew />
-            </ProtectedRoute>
-        },
-        {
-          path: paths.EditTicketType,
-          element:
-            <Navigate to={paths.ticketTypes}></Navigate>
-        },
-        {
-          path: paths.EditTicketTypeWithId,
-          element:
-            <ProtectedRoute name="TicketTypes">
-              <TicketTypeEdit />
-            </ProtectedRoute>
-        },
-        {
-          path: paths.ticketStatus,
-          element:
-            <ProtectedRoute name="TicketStatus">
-              <TicketStatus />
-            </ProtectedRoute>,
-        },
-        {
-          path: paths.newTicketStatus,
-          element:
-            <ProtectedRoute name="TicketStatus">
-              <TicketStatusNew />
-            </ProtectedRoute>
-        },
-        {
-          path: paths.EditTicketStatus,
-          element:
-            <Navigate to={paths.ticketStatus}></Navigate>
-        },
-        {
-          path: paths.EditTicketStatusWithId,
-          element:
-            <ProtectedRoute name="TicketStatus">
-              <TicketStatusEdit />
-            </ProtectedRoute>
-        },
-        {
-          path: paths.ticketPriorities,
-          element:
-            <ProtectedRoute name="TicketPriority">
-              <TicketPriority />
-            </ProtectedRoute>,
-        },
-        {
-          path: paths.newTicketPriorities,
-          element:
-            <ProtectedRoute name="TicketPriority">
-              <TicketPriorityNew />
-            </ProtectedRoute>
-        },
-        {
-          path: paths.EditTicketPriorities,
-          element:
-            <Navigate to={paths.ticketPriorities}></Navigate>
-        },
-        {
-          path: paths.EditTicketPrioritiesWithId,
-          element:
-            <ProtectedRoute name="TicketPriority">
-              <TicketPriorityEdit />
-            </ProtectedRoute>
-        },
-        {
-          path: paths.Projects,
-          element:
-            <ProtectedRoute name="Projects">
-              <Projects />
-            </ProtectedRoute>
-        },
-        {
-          path: paths.newProject,
-          element:
-            <ProtectedRoute name="Projects">
-              <ProjectNew />
-            </ProtectedRoute>
-        },
-        {
-          path: paths.editProject,
-          element:
-            <Navigate to={paths.Projects}></Navigate>
-        },
-        {
-          path: paths.editProjectWithId,
-          element:
-            <ProtectedRoute name="Projects">
-              <ProjecEdit />
-            </ProtectedRoute>
-        },
-        {
-          path: paths.Tickets,
-          element:
-            <ProtectedRoute name="Tickets">
-              <Tickets />
-            </ProtectedRoute>
-        },
-        {
-          path: paths.newTicket,
-          element:
-            <ProtectedRoute name="Tickets">
-              <TicketsNew />
-            </ProtectedRoute>
-        },
-        {
-          path: paths.editTicket,
-          element:
-            <Navigate to={paths.Tickets}></Navigate>
-        },
-        {
-          path: paths.editTicketWithId,
-          element:
-            <ProtectedRoute name="Tickets">
-              <TicketsEdit />
-            </ProtectedRoute>
-        }
-      ],
-    },
-  ]);
+    ]);
 };
 
 
 //Routes without login
 export const routesUnauthorized = () => {
-  return createBrowserRouter([
-    {
-      path: "/",
-      element: <LayoutLogin />,
-    },
-    {
-      path: paths.resetPassword,
-      element: <ResetPassword />
-    },
-    {
-      path: paths.changePassword,
-      element: <ChangePassword />
-    },
-    {
-      path: "*",
-      element: <LayoutLogin />
-    }
-  ]);
+    return createBrowserRouter([
+        {
+            path: "/",
+            element: <LayoutLogin />,
+        },
+        {
+            path: paths.resetPassword,
+            element: <ResetPassword />
+        },
+        {
+            path: paths.changePassword,
+            element: <ChangePassword />
+        },
+        {
+            path: "*",
+            element: <LayoutLogin />
+        }
+    ]);
 };

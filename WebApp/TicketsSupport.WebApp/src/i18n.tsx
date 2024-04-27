@@ -1,4 +1,4 @@
-import React from 'react';
+import { ReactNode, useEffect } from 'react';
 import i18next from 'i18next';
 //hooks
 import { initReactI18next, useTranslation } from 'react-i18next';
@@ -10,8 +10,10 @@ import { useSelector } from 'react-redux';
 import enTranslations from './locales/en.json';
 import esTranslations from './locales/es.json';
 
-
-function LanguageComponent({ children }) {
+interface props {
+    children: ReactNode
+}
+function LanguageComponent(props: props) {
     const language = useSelector((state: RootState) => state.language);
     i18next
         .use(initReactI18next)
@@ -33,14 +35,14 @@ function LanguageComponent({ children }) {
             },
         });
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (language) {
             i18next.changeLanguage(language.code)
         }
     }, [language]);
 
 
-    return children;
+    return props.children;
 }
 
 export { LanguageComponent, i18next, useTranslation };

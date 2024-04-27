@@ -1,4 +1,3 @@
-import React from "react";
 import { DefaultValues, FieldValues, useForm } from "react-hook-form";
 
 export default function useCustomForm<T extends FieldValues>(defaultValues: DefaultValues<T>) {
@@ -15,7 +14,11 @@ export default function useCustomForm<T extends FieldValues>(defaultValues: Defa
 
     const ErrorMessageHtml = (name: keyof T) => {
         const error = errors[name];
-        return error ? <small className="p-error">{error.message?.toString()}</small> : <small className="p-error">&nbsp;</small>;
+        return error ? (
+            <small className="p-error">{`${error.message}`}</small>
+        ) : (
+            <small className="p-error">&nbsp;</small>
+        );
     };
 
     return {
