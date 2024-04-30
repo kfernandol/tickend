@@ -364,3 +364,4 @@ FodyWeavers.xsd
 
 #SSL Cert
 /WebApp/TicketsSupport.WebApp/ssl
+/WebApp/TicketsSupport.WebApp/.env
