@@ -4,7 +4,7 @@ import { paths } from "./paths";
 import ProtectedRoute from "../components/routesProtected/routesProtected";
 import Home from "../views/home/home";
 import Layout from "../views/shared/layout/Layout.tsx";
-import LayoutLogin from "../views/shared/LayoutLogin/layoutLogin.tsx";
+import LayoutLogin from "../views/shared/layoutLogin/layoutLogin.tsx";
 import Users from "../views/users/User.tsx";
 import UsersNew from "../views/users/User.new.tsx";
 import UsersEdit from "../views/users/User.edit.tsx";
