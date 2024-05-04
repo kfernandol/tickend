@@ -25,7 +25,9 @@
     "TicketStatus": "Estados de ticket",
     "TicketTypes": "Tipos de ticket",
     "TicketPriority": "Prioridades de ticket",
+    "ProjectsP": "Proyectos",
     "Projects": "Proyectos",
+    "TicketP": "Tickets",
     "Ticket": "Ticket"
   },
   "sidebar": {

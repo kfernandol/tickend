@@ -27,7 +27,9 @@
     "TicketPriority": "Ticket Priorities",
     "Profile": "Profiles",
     "Projects": "Projects",
-    "Ticket": "Ticket"
+    "ProjectsP": "Projects",
+    "TicketsP": "Tickets",
+    "Ticket": "Tickets"
   },
   "sidebar": {
     "logout": "Logout"
