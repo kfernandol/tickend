@@ -77,8 +77,9 @@ function Header() {
         if (getResponse) {
             if ('firstName' in getResponse) {
                 const response = getResponse as UserResponse;
-                setAvatarIMG(`data:image/*;base64,${response.photo}`)
                 setFullName(response.firstName + " " + response.lastName);
+                if (response.photo != "")
+                    setAvatarIMG(`data:image/*;base64,${response.photo}`)
             } else {
                 setAvatarIMG("src/assets/imgs/avatar-default.png")
             }
