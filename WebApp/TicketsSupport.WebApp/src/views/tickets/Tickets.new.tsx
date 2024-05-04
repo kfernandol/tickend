@@ -25,7 +25,7 @@ export default function TicketsNew() {
     const toast = useRef<Toast>(null);
     const navigate = useNavigate();
     //Form
-    const { control, ErrorMessageHtml, errors, handleSubmit, reset, getValues, watch } = useCustomForm<TicketForm>({ Title: '', Description: '', Priority: 0, Project: 0, Status: 0, Type: 0 });
+    const { control, ErrorMessageHtml, errors, handleSubmit, reset, getValues, watch } = useCustomForm<TicketForm>({ Title: '', Description: '', Priority: 0, Project: null, Status: 0, Type: null });
     //Request API
     const { SendPostRequest, postResponse, loadingPost, errorPost, httpCodePost } = usePost<BasicResponse>();
     const { SendGetRequest } = useGet<ProjectResponse>();
@@ -80,7 +80,7 @@ export default function TicketsNew() {
                 responses.forEach((response) => {
                     switch (response.url) {
                         case "v1/ticket/types/byproject/" + ProjectId:
-                            setTicketType(response.data as TicketTypeResponse[]);
+                                setTicketType(response.data as TicketTypeResponse[]);
                             break;
                         default:
                             break;
@@ -123,8 +123,8 @@ export default function TicketsNew() {
         const TicketRequest: TicketRequest = {
             title: data.Title,
             description: data.Description,
-            projectId: data.Project,
-            ticketTypeId: data.Type
+            projectId: data.Project as number,
+            ticketTypeId: data.Type as number
         };
 
         SendPostRequest("v1/tickets", TicketRequest)
@@ -198,15 +198,7 @@ export default function TicketsNew() {
                             control={control}
                             rules={
                                 {
-                                    maxLength: {
-                                        value: 7,
-                                        message: ErrorMaxCaracter.replace("{{0}}", "7")
-                                    },
-                                    minLength: {
-                                        value: 7,
-                                        message: ErrorMinCaracter.replace("{{0}}", "7")
-                                    }
-
+                                    required: ErrorRequired
                                 }}
                             render={({ field, fieldState }) => (
                                 <>
@@ -237,15 +229,7 @@ export default function TicketsNew() {
                             control={control}
                             rules={
                                 {
-                                    maxLength: {
-                                        value: 7,
-                                        message: ErrorMaxCaracter.replace("{{0}}", "7")
-                                    },
-                                    minLength: {
-                                        value: 7,
-                                        message: ErrorMinCaracter.replace("{{0}}", "7")
-                                    }
-
+                                    required: ErrorRequired
                                 }}
                             render={({ field, fieldState }) => (
                                 <>

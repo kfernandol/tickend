@@ -28,7 +28,7 @@ export default function TicketsEdit() {
     const navigate = useNavigate();
     const { id } = useParams();
     //Form
-    const { control, ErrorMessageHtml, errors, handleSubmit, reset, setValue, getValues, watch } = useCustomForm<TicketForm>({ Title: '', Description: '', Priority: 0, Project: 0, Status: 0, Type: 0, });
+    const { control, ErrorMessageHtml, errors, handleSubmit, reset, setValue, getValues, watch } = useCustomForm<TicketForm>({ Title: '', Description: '', Priority: null, Project: null, Status: null, Type: null, });
     //Request API
     const { SendPutRequest, putResponse, loadingPut, errorPut, httpCodePut } = usePut<BasicResponse>();
     const { SendGetRequest } = useGet<ProjectResponse>();
@@ -152,8 +152,8 @@ export default function TicketsEdit() {
         const TicketRequest: TicketRequest = {
             title: data.Title,
             description: data.Description,
-            projectId: data.Project,
-            ticketTypeId: data.Type,
+            projectId: data.Project as number,
+            ticketTypeId: data.Type as number,
             ticketPriorityId: data.Priority,
             ticketStatusId: data.Status,
             isClosed: data.Closed
