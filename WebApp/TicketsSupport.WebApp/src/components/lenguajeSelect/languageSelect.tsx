@@ -2,6 +2,7 @@ import { Dropdown } from 'primereact/dropdown';
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
+import { i18next, useTranslation } from "../../i18n";
 //icons
 import { ChevronDownIcon, ChevronDownIconProps } from 'primereact/icons/chevrondown';
 //css
@@ -9,38 +10,41 @@ import '../../assets/css/flags.css'
 //models
 import { Languages } from '../../models/combobox/languages';
 import { changeLanguage } from '../../redux/Slices/LanguageSlice';
-import { i18next } from "../../i18n";
 
-//List Languages
-const languages: Array<Languages> = [
-    {
-        name: 'Español',
-        code: 'es',
-        flag: 'gt'
-    },
-    {
-        name: "Ingles",
-        code: 'en',
-        flag: 'us'
-    }
-]
+
 
 function LenguajeSelect() {
     const language = useSelector((state: RootState) => state.language);
-    const [selectedLanguage, setSelectedLanguage] = useState<Languages>({ name: language.name, code: language.code, flag: language.flag });
     const dispatch = useDispatch();
 
-    useEffect(() => {
-        if (selectedLanguage) {
-            i18next.changeLanguage(selectedLanguage.code)
-            dispatch(changeLanguage(selectedLanguage));
-        }
-
-    }, [selectedLanguage]);
+    //Translations
+    const { t } = useTranslation();
+    const SpanishTxt = t("languages.es");
+    const EnglishTxt = t("languages.en");
 
     useEffect(() => {
         i18next.changeLanguage(language.code)
-    }, [language, selectedLanguage])
+        console.log(language)
+    }, [language])
+
+    //List Languages
+    const languages: Array<Languages> = [
+        {
+            name: SpanishTxt,
+            code: 'es',
+            flag: 'gt'
+        },
+        {
+            name: EnglishTxt,
+            code: 'en',
+            flag: 'us'
+        }
+    ]
+
+    const HandlerOnChangeLanguage = (languageCode: string) => {
+        const languageSelected = languages.find(x => x.code == languageCode)
+        dispatch(changeLanguage(languageSelected))
+    }
 
     const languageOptionTemplate = (option: { name: string, flag: string }) => {
         return (
@@ -53,7 +57,7 @@ function LenguajeSelect() {
 
     return (
         <div className='absolute bottom-0 right-0'>
-            <Dropdown value={selectedLanguage} onChange={(e) => setSelectedLanguage(e.value)} options={languages} optionLabel="name" placeholder="Select a Country"
+            <Dropdown value={language.code} onChange={(e) => HandlerOnChangeLanguage(e.value)} options={languages} optionLabel="name" optionValue="code" placeholder="Select a Country"
                 itemTemplate={languageOptionTemplate} className="w-full md:w-14rem"
                 dropdownIcon={(opts: { iconProps: ChevronDownIconProps }) => {
                     return <ChevronDownIcon {...opts.iconProps} />;
