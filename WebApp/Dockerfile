@@ -7,13 +7,12 @@ RUN mkdir ssl
 # Generate cert and key
 WORKDIR app/ssl
 RUN dotnet dev-certs https --export-path /app/ssl/cert.pem --format Pem --no-password
-#RUN dotnet dev-certs https --export-path /app/ssl/key.pem --format Pem --no-password --trust
 
 FROM node:20.11.1 AS prod
 WORKDIR /app
 
 #CONFIGURATION
-EXPOSE 8080
+EXPOSE 8082
 
 #COPY CERT AND KEY
 COPY --from=cert-gen /app/ssl/cert.pem /app/ssl/cert.pem
@@ -26,6 +25,5 @@ RUN npm install
 
 #COPY PROJECT AND BUILD
 COPY TicketsSupport.WebApp/ .
-RUN npm run build
 
-CMD ["npm", "run", "preview"]
+CMD ["npm", "run", "prod"]

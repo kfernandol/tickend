@@ -1,0 +1,4 @@
+TicketsSupport.WebApp/node_modules
+TicketsSupport.WebApp/.vscode
+TicketsSupport.WebApp/dist
+**/*.env
