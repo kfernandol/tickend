@@ -21,6 +21,7 @@ function LenguajeSelect() {
     const { t } = useTranslation();
     const SpanishTxt = t("languages.es");
     const EnglishTxt = t("languages.en");
+    const SelectLanguageTxt = t("selects.languages");
 
     useEffect(() => {
         i18next.changeLanguage(language.code)
@@ -57,7 +58,7 @@ function LenguajeSelect() {
 
     return (
         <div className='absolute bottom-0 right-0'>
-            <Dropdown value={language.code} onChange={(e) => HandlerOnChangeLanguage(e.value)} options={languages} optionLabel="name" optionValue="code" placeholder="Select a Country"
+            <Dropdown value={language.code} onChange={(e) => HandlerOnChangeLanguage(e.value)} options={languages} optionLabel="name" optionValue="code" placeholder={SelectLanguageTxt}
                 itemTemplate={languageOptionTemplate} className="w-full md:w-14rem"
                 dropdownIcon={(opts: { iconProps: ChevronDownIconProps }) => {
                     return <ChevronDownIcon {...opts.iconProps} />;
