@@ -1,7 +1,6 @@
-import { LegacyRef, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { FilterMatchMode } from 'primereact/api';
 import { paths } from '../../routes/paths';
-import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { Toast } from 'primereact/toast';
 //components
 import { DataTable } from 'primereact/datatable';
@@ -11,7 +10,6 @@ import { InputText } from 'primereact/inputtext';
 import { Link } from 'react-router-dom';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 //hooks
 import { useDelete, useGet } from "../../services/api_services";
 import { useTranslation } from 'react-i18next';
@@ -123,7 +121,7 @@ export default function Projects() {
             id: x.id,
             name: x.name,
             description: x.description,
-            photo: <Avatar image={`data:image/*;base64,${x.photo}`} size='large' />,
+            photo: x.photo !== null && x.photo !== "" ? <Avatar image={`data:image/*;base64,${x.photo}`} size='large' /> : <Avatar image={'/src/assets/imgs/project-default.png'} size='large' />,
             ticketStatus: TicketStatus.map(status => { const IncludeItem = x.ticketStatus.includes(status.id); return IncludeItem === false ? "" : `${status.name}, `; }),
             ticketPriorities: TicketPriorities.map(priority => { const IncludeItem = x.ticketPriorities.includes(priority.id); return IncludeItem === false ? "" : `${priority.name}, `; }),
             ticketTypes: TicketType.map(type => { const IncludeItem = x.ticketTypes.includes(type.id); return IncludeItem === false ? "" : `${type.name}, `; }),
