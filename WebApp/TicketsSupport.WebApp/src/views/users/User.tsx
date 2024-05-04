@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 //models
 import { UserResponse } from '../../models/responses/users.response';
 import { BasicResponse, ErrorResponse, ErrorsResponse } from '../../models/responses/basic.response';
+import { RolesResponse } from '../../models/responses/roles.response';
 
 export default function Users() {
     const toast = useRef<Toast>(null);
@@ -28,9 +29,10 @@ export default function Users() {
     });
 
     //Api Request
-    const { SendGetRequest, getResponse, loadingGet } = useGet<UserResponse[]>();
+    const { SendGetRequest, loadingGet } = useGet<UserResponse[]>();
     const { SendDeleteRequest, deleteResponse, errorDelete, httpCodeDelete } = useDelete<BasicResponse>();
     const [users, setUsers] = useState<UserResponse[]>([]);
+    const [roles, setRoles] = useState<RolesResponse[]>([]);
 
     //Translation
     const { t } = useTranslation();
@@ -54,6 +56,16 @@ export default function Users() {
     //Links
     const NewItemUrl = paths.newUser;
     const EditItemUrl = paths.editUserWithId;
+
+    const [TableData, setTableData] = useState<{
+        id: number,
+        photo: string,
+        username: string,
+        firstname: string,
+        lastname: string,
+        email: string,
+        rol: string | undefined,
+    }[]>();
 
     //Notification delete
     useEffect(() => {
@@ -84,7 +96,8 @@ export default function Users() {
     //Send Request
     useEffect(() => {
         const requests = [
-            SendGetRequest("v1/users")
+            SendGetRequest("v1/users"),
+            SendGetRequest("v1/roles")
         ];
 
         Promise.all(requests)
@@ -93,6 +106,9 @@ export default function Users() {
                     switch (response.url) {
                         case "v1/users":
                             setUsers(response.data as UserResponse[]);
+                            break;
+                        case "v1/roles":
+                            setRoles(response.data as RolesResponse[]);
                             break;
                         default:
                             break;
@@ -104,6 +120,21 @@ export default function Users() {
             });
         
     }, [])
+
+    //Process Request
+    useEffect(() => {
+        const tableData = users.map((user) => ({
+            id: user.id,
+            photo: user.photo,
+            username: user.username,
+            firstname: user.firstName,
+            lastname: user.lastName,
+            email: user.email,
+            rol: roles.find(x => x.id == user.rolId)?.name
+        }))
+
+        setTableData(tableData);
+    }, [users, roles])
 
 
     //Confirm Delete User Dialog
@@ -186,7 +217,7 @@ export default function Users() {
                     <Toast ref={toast} />
                     <div className="card" style={{ backgroundColor: "#17212f5D" }}>
                         <DataTable
-                            value={users}
+                            value={TableData}
                             header={header}
                             style={{ backgroundColor: "#17212f5D" }}
                             dataKey="id"
@@ -200,10 +231,10 @@ export default function Users() {
                             <Column field="id" header={TableHeaderId} sortable />
                             <Column body={imageBodyTemplate} header={TableHeaderPhoto} />
                             <Column field="username" header={TableHeaderUsername} sortable />
-                            <Column field="firstName" header={TableHeaderFirstName} sortable />
-                            <Column field="lastName" header={TableHeaderLastName} sortable />
+                            <Column field="firstname" header={TableHeaderFirstName} sortable />
+                            <Column field="lastname" header={TableHeaderLastName} sortable />
                             <Column field="email" header={TableHeaderEmail} sortable />
-                            <Column field="rolId" header={TableHeaderRol} sortable />
+                            <Column field="rol" header={TableHeaderRol} sortable />
                             <Column header={TableHeaderActions} body={actionsBodyTemplate} sortable />
                         </DataTable>
                     </div>
