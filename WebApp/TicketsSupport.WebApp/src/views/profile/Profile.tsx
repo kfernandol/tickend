@@ -44,7 +44,7 @@ export default function Profile() {
     const ErrorMinCaracter = t('errors.minLength');
     const CardButtonSave = t('buttons.save');
     const labelLastName = t("profile.labels.lastName");
-    const ErrorNoMatch = t("errors.noMatch");
+    const ErrorNoMatch = t("errors.noMatch", { 0: t("users.labels.password") });
     const CardTitle = t("common.cardTitles.edit", { 0: t("navigation.Profile") });
     const labelEmail = t("profile.labels.email");
     const labelPassword = t("profile.labels.password");
@@ -186,8 +186,11 @@ export default function Profile() {
                                     minLength: {
                                         value: 5,
                                         message: ErrorMinCaracter.replace("{{0}}", "5")
+                                    },
+                                    validate: (value) => {
+                                        const { confirmPassword } = getValues();
+                                        return confirmPassword === value || ErrorNoMatch;
                                     }
-
                                 }}
                             render={({ field, fieldState }) => (
                                 <>
@@ -219,7 +222,7 @@ export default function Profile() {
                                     },
                                     validate: (value) => {
                                         const { password } = getValues();
-                                        return password === value || labelPassword + ErrorNoMatch;
+                                        return password === value || ErrorNoMatch;
                                     }
                                 }}
                             render={({ field, fieldState }) => (

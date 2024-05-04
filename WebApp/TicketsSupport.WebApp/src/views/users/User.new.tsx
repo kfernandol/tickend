@@ -46,7 +46,7 @@ export default function UserNew() {
     const ErrorRequired = t('errors.required');
     const ErrorMaxCaracter = t('errors.maxLength');
     const ErrorMinCaracter = t('errors.minLength');
-    const ErrorNoMatch = t("errors.noMatch");
+    const ErrorNoMatch = t("errors.noMatch", { 0: t("users.labels.password") });
     const CardButtonSave = t('buttons.save');
     const CardButtonCancel = t('buttons.cancel');
     const CardFormFirstName = t("users.labels.firstName")
@@ -266,8 +266,11 @@ export default function UserNew() {
                                     minLength: {
                                         value: 5,
                                         message: ErrorMinCaracter.replace("{{0}}", "5")
+                                    },
+                                    validate: (value) => {
+                                        const { confirmPassword } = getValues();
+                                        return confirmPassword === value || ErrorNoMatch;
                                     }
-
                                 }}
                             render={({ field, fieldState }) => (
                                 <>
@@ -300,7 +303,7 @@ export default function UserNew() {
                                     },
                                     validate: (value) => {
                                         const { password } = getValues();
-                                        return password === value || CardFormPassword + ErrorNoMatch;
+                                        return password === value || ErrorNoMatch;
                                     }
                                 }}
                             render={({ field, fieldState }) => (
