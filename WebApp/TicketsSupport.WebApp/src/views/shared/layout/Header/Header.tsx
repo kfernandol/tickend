@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import './Header.css'
 import { paths } from "../../../../routes/paths";
 //componente
 import { Menubar } from "primereact/menubar";
 import { Avatar } from "primereact/avatar";
-import { TieredMenu } from "primereact/tieredmenu";
 import { Button } from "primereact/button";
+import { TieredMenu } from "primereact/tieredmenu";
+import { MenuItem } from "primereact/menuitem";
 //hooks
 import { useDispatch, useSelector } from "react-redux";
 import useTokenData from "../../../../hooks/useTokenData";
 import { i18next, useTranslation } from "../../../../i18n";
-import { useToggle } from "@uidotdev/usehooks";
 import { useNavigate } from "react-router-dom";
 import { useGet } from "../../../../services/api_services";
 //redux
@@ -21,9 +21,10 @@ import { RootState } from "../../../../redux/store";
 import { AuthToken } from "../../../../models/tokens/token.model";
 import { Languages } from "../../../../models/combobox/languages";
 import { UserResponse } from "../../../../models/responses/users.response";
-import { MenuItem } from "primereact/menuitem";
 
 function Header() {
+    //Ref
+    const AvatarMenu= useRef<TieredMenu>(null);
     //redux
     const language = useSelector((state: RootState) => state.language);
     const authenticated = useSelector((state: RootState) => state.auth);
@@ -31,7 +32,6 @@ function Header() {
     const dispatch = useDispatch();
 
     //hooks
-    const [on, toggle] = useToggle(false);
     const navigate = useNavigate();
     const { SendGetRequest, getResponse } = useGet<UserResponse>()
 
@@ -86,18 +86,6 @@ function Header() {
 
     }, [getResponse]);
 
-
-    //OnClick Avantar Menu
-    useEffect(() => {
-        const avatarMenu = document.querySelector("#headerMenu");
-
-        if (on)
-            avatarMenu?.classList.remove("hidden");
-        else
-            avatarMenu?.classList.add("hidden");
-
-    }, [on])
-
     //OnChange Language
     useEffect(() => {
         if (selectedLanguage) {
@@ -127,7 +115,7 @@ function Header() {
     const MenubarEnd = (
         <div className="flex align-items-center gap-2 m-1">
             <span className="text-xl">{FullName}</span>
-            <Avatar id="headerAvatar" className="p-1" size="large" image={AvatarIMG} shape="circle" onClick={() => toggle()} />
+            <Avatar id="headerAvatar" className="p-1" size="large" image={AvatarIMG} shape="circle" onClick={(event) => AvatarMenu != null && AvatarMenu.current != null ? AvatarMenu.current.toggle(event) : ''} />
         </div>
     );
 
@@ -181,9 +169,7 @@ function Header() {
         <>
             <div className="card relative">
                 <Menubar start={MenubarStart} end={MenubarEnd} style={{ backgroundColor: "#17212f2D", borderLeft: "none", borderTop: "none", borderRight: "none" }} />
-                <div className="absolute right-0 top-50 mt-4 z-1">
-                    <TieredMenu id="headerMenu" className="hidden" model={MenuAvatarItems as MenuItem[]} breakpoint="767px" />
-                </div>
+                <TieredMenu model={MenuAvatarItems as MenuItem[]} popup ref={AvatarMenu} />
             </div>
         </>
     );
