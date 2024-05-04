@@ -1,0 +1,35 @@
+version: '3'
+services:
+  webapi:
+    image: tickend-api
+    ports:
+      - "8090:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    restart: unless-stopped
+    volumes:
+      - c:/temp/Tickend/WebApi/appsettings.json:/app/appsettings.json
+    networks:
+      - networktickend
+  webapp:
+    image: tickend-web
+    ports:
+      - "8082:8082"
+    restart: unless-stopped
+    volumes:
+      - c:/temp/Tickend/WebApp/.env:/app/.env
+    networks:
+      - networktickend
+  database:
+    image: tickend-db
+    ports:
+      - "1439:1433"
+    restart: unless-stopped
+    volumes:
+      - c:/temp/Tickend/Database/data:/var/opt/mssql/data
+      - c:/temp/Tickend/Database/log:/var/opt/mssql/log 
+      - c:/temp/Tickend/Database/secrets:/var/opt/mssql/secrets
+    networks:
+      - networktickend
+networks:
+  networktickend:
