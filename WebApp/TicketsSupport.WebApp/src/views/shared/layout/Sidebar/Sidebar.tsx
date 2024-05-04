@@ -4,8 +4,8 @@ import { ReactNode, useEffect, useRef, useState } from "react";
 //css
 import "./Sidebar.css"
 //Components
-import { Ripple } from "primereact/Ripple";
-import { StyleClass } from "primereact/StyleClass";
+import { Ripple } from "primereact/ripple";
+import { StyleClass } from "primereact/styleclass";
 import { Button } from "primereact/button";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../../../redux/Slices/AuthSlice";
