@@ -59,7 +59,7 @@ export default function Users() {
     useEffect(() => {
         if (httpCodeDelete === 200) {
             toast?.current?.show({ severity: 'success', summary: TableDeleteTitle, detail: deleteResponse?.message, life: 3000 });
-            setTimeout(() => SendGetRequest("v1/ticket/priorities"), 3000);
+            setTimeout(() => SendGetRequest("v1/users").then((response) => setUsers(response.data as UserResponse[])), 3000);
         }
         if (errorDelete && httpCodeDelete !== 0) {
             if ('errors' in errorDelete) {//Is Errors Response
@@ -83,15 +83,27 @@ export default function Users() {
 
     //Send Request
     useEffect(() => {
-        SendGetRequest("v1/users");
-    }, [])
+        const requests = [
+            SendGetRequest("v1/users")
+        ];
 
-    //Get Response
-    useEffect(() => {
-        if (getResponse) {
-            setUsers(getResponse);
-        }
-    }, [getResponse]);
+        Promise.all(requests)
+            .then((responses) => {
+                responses.forEach((response) => {
+                    switch (response.url) {
+                        case "v1/users":
+                            setUsers(response.data as UserResponse[]);
+                            break;
+                        default:
+                            break;
+                    }
+                });
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+            });
+        
+    }, [])
 
 
     //Confirm Delete User Dialog
