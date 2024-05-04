@@ -323,14 +323,15 @@ function useDelete<T>() {
     const [errorDelete, setErrorDelete] = useState<ErrorResponse | ErrorsResponse | null>();
     const [httpCodeDelete, setHttpDeleteCode] = useState(0);
 
-    const SendDeleteRequest = (url: string, config?: AxiosRequestConfig) => {
+    function SendDeleteRequest (url: string, config?: AxiosRequestConfig) {
         setLoadingDelete(true);
         setErrorDelete(undefined);
 
-        apiClient.delete(url, config)
+        return apiClient.delete(url, config)
             .then((response) => {
                 setDeleteResponse(response.data);
                 setHttpDeleteCode(response.status)
+                return { data: response.data, url: url }
             })
             .catch((error: unknown) => {
                 if (axios.isAxiosError(error)) {
@@ -368,6 +369,7 @@ function useDelete<T>() {
                         setErrorDelete(errorResponse);
                     }
                 }
+                return Promise.reject(error);
             })
             .finally(() => {
                 setLoadingDelete(false);

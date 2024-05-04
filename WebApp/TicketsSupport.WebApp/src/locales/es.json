@@ -30,6 +30,16 @@
     "TicketP": "Tickets",
     "Ticket": "Ticket"
   },
+  "element": {
+    "User": "Usuario",
+    "Rol": "Rol",
+    "Menu": "Menu",
+    "Ticket": "Ticket",
+    "TicketStatus": "Estado de ticket",
+    "TicketTypes": "Tipo de ticket",
+    "TicketPriority": "Prioridad de ticket",
+    "Project": "Proyecto"
+  },
   "sidebar": {
     "logout": "Cerrar sesión"
   },

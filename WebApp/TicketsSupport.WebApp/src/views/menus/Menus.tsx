@@ -10,13 +10,14 @@ import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { Link } from 'react-router-dom';
 import { ProgressSpinner } from 'primereact/progressspinner';
+import { Badge } from 'primereact/badge';
+import Swal from 'sweetalert2';
 //hooks
 import { useDelete, useGet } from "../../services/api_services";
 import { useTranslation } from 'react-i18next';
 //models
 import { BasicResponse, ErrorResponse, ErrorsResponse } from '../../models/responses/basic.response';
 import { MenusResponse } from '../../models/responses/menus.response';
-import { Badge } from 'primereact/badge';
 
 export default function Menus() {
     const toast = useRef<Toast>(null);
@@ -40,7 +41,7 @@ export default function Menus() {
 
     //Translations
     const { t } = useTranslation();
-    const GlobalConfirmationDeleteText = t("deleteConfirmation.description", { 0: t("navigation.Users") });
+    const GlobalConfirmationDeleteText = t("deleteConfirmation.description", { 0: t("element.Menu").toLowerCase() + "?" });
     const GlobalConfirmation = t("deleteConfirmation.title");
     const GlobalButtonDelete = t("buttons.delete");
     const GlobalButtonCancel = t("common.cardFormButtons.cancel");
@@ -155,15 +156,21 @@ export default function Menus() {
         </>
     }
 
-    //Confirm Delete User Dialog
     const confirmDelete = (id: string) => {
-        confirmDialog({
-            message: GlobalConfirmationDeleteText,
-            header: GlobalConfirmation,
-            icon: 'pi pi-exclamation-triangle',
-            defaultFocus: 'accept',
-            accept: () => SendDeleteRequest("v1/menus/" + id),
-        });
+        return Swal.fire({
+            title: GlobalConfirmation,
+            text: GlobalConfirmationDeleteText,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: GlobalButtonDelete,
+            confirmButtonColor: "#d33",
+            cancelButtonText: GlobalButtonCancel,
+            cancelButtonColor: "#707070",
+        }).then((result: { isConfirmed: boolean }) => {
+            if (result.isConfirmed) {
+                SendDeleteRequest("v1/menus/" + id)
+            }
+        })
     };
 
     return (

@@ -1,8 +1,7 @@
-import React, { LegacyRef, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { FilterMatchMode } from 'primereact/api';
 import { paths } from '../../routes/paths';
 //components
-import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { Toast } from 'primereact/toast';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -11,6 +10,7 @@ import { InputText } from 'primereact/inputtext';
 import { Link } from 'react-router-dom';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Badge } from 'primereact/badge';
+import Swal from 'sweetalert2';
 //hooks
 import { useDelete, useGet } from "../../services/api_services";
 import { useTranslation } from 'react-i18next';
@@ -37,7 +37,7 @@ export default function TicketStatus() {
 
     //Translations
     const { t } = useTranslation();
-    const GlobalConfirmationDeleteText = t("deleteConfirmation.description", { 0: t("navigation.Users") });
+    const GlobalConfirmationDeleteText = t("deleteConfirmation.description", { 0: t("element.TicketStatus").toLowerCase() + "?" });
     const GlobalConfirmation = t("deleteConfirmation.title");
     const GlobalButtonDelete = t("buttons.delete");
     const GlobalButtonCancel = t("common.cardFormButtons.cancel");
@@ -143,13 +143,20 @@ export default function TicketStatus() {
 
     //Confirm Delete User Dialog
     const confirmDelete = (id: string) => {
-        confirmDialog({
-            message: GlobalConfirmationDeleteText,
-            header: GlobalConfirmation,
-            icon: 'pi pi-exclamation-triangle',
-            defaultFocus: 'accept',
-            accept: () => SendDeleteRequest("v1/ticket/status/" + id),
-        });
+        return Swal.fire({
+            title: GlobalConfirmation,
+            text: GlobalConfirmationDeleteText,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: GlobalButtonDelete,
+            confirmButtonColor: "#d33",
+            cancelButtonText: GlobalButtonCancel,
+            cancelButtonColor: "#707070",
+        }).then((result: { isConfirmed: boolean }) => {
+            if (result.isConfirmed) {
+                SendDeleteRequest("v1/ticket/status/" + id)
+            }
+        })
     };
 
     return (
@@ -182,40 +189,6 @@ export default function TicketStatus() {
                             <Column header={TableHeaderActions} body={ActionsTableTemplate} sortable />
                         </DataTable>
                     </div>
-                    <ConfirmDialog
-                        content={({ headerRef, contentRef, footerRef, hide, message }) => (
-                            <div className="flex flex-column align-items-center p-5 surface-overlay border-round">
-                                <div className="border-circle bg-red-500 inline-flex justify-content-center align-items-center h-6rem w-6rem -mt-8">
-                                    <i className="pi pi-question text-5xl"></i>
-                                </div>
-                                <span className="font-bold text-2xl block mb-2 mt-4" ref={headerRef}>
-                                    {message.header}
-                                </span>
-                                <p className="mb-0" ref={contentRef as LegacyRef<HTMLDivElement>}>
-                                    {message.message}
-                                </p>
-                                <div className="flex align-items-center gap-2 mt-4" ref={footerRef as LegacyRef<HTMLDivElement>}>
-                                    <Button
-                                        label={GlobalButtonDelete}
-                                        severity='danger'
-                                        onClick={(event) => {
-                                            hide(event);
-                                        }}
-                                        className="w-8rem"
-                                    ></Button>
-                                    <Button
-                                        label={GlobalButtonCancel}
-                                        severity='secondary'
-                                        outlined
-                                        onClick={(event) => {
-                                            hide(event);
-                                        }}
-                                        className="w-8rem"
-                                    ></Button>
-                                </div>
-                            </div>
-                        )}
-                    />
                 </>
             }
 

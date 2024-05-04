@@ -10,6 +10,8 @@ import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { Link } from 'react-router-dom';
 import { ProgressSpinner } from 'primereact/progressspinner';
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 //hooks
 import { useDelete, useGet } from "../../services/api_services";
 import { useTranslation } from 'react-i18next';
@@ -51,7 +53,7 @@ export default function Projects() {
 
     //Translations
     const { t } = useTranslation();
-    const GlobalConfirmationDeleteText = t("deleteConfirmation.description", { 0: t("navigation.Users") });
+    const GlobalConfirmationDeleteText = t("deleteConfirmation.description", { 0: t("element.Project").toLowerCase() + "?" });
     const GlobalConfirmation = t("deleteConfirmation.title");
     const GlobalButtonDelete = t("buttons.delete");
     const GlobalButtonCancel = t("common.cardFormButtons.cancel");
@@ -137,7 +139,7 @@ export default function Projects() {
     useEffect(() => {
         if (httpCodeDelete === 200) {
             toast?.current?.show({ severity: 'success', summary: TableDeleteTitle, detail: deleteResponse?.message, life: 3000 });
-            setTimeout(() => SendGetRequest("v1/menus"), 3000);
+            setTimeout(() => SendGetRequest("v1/projects").then((result) => {setProjects(result.data) }), 3000);
         }
         if (errorDelete && httpCodeDelete !== 0) {
             if ('errors' in errorDelete) {//Is Errors Response
@@ -197,22 +199,29 @@ export default function Projects() {
                 <Link to={editUrlPath + rowData.id}>
                     <Button icon="pi pi-pencil" severity='warning' aria-label="Bookmark"></Button>
                 </Link>
-                <Button icon="pi pi-trash" severity='danger' aria-label="Bookmark" onClick={() => { confirmDelete(rowData.id) }}></Button>
+                <Button icon="pi pi-trash" severity='danger' aria-label="Bookmark" onClick={() => { confirmDelete(rowData.id) }} key={rowData.id }></Button>
             </div>
         </>
     }
 
     //Confirm Delete User Dialog
     const confirmDelete = (id: string) => {
-        confirmDialog({
-            message: GlobalConfirmationDeleteText,
-            header: GlobalConfirmation,
-            icon: 'pi pi-exclamation-triangle',
-            defaultFocus: 'accept',
-            accept: () => SendDeleteRequest("v1/projects/" + id),
-            reject: () => console.log("aaaaaaaa")
-        });
+        return Swal.fire({
+            title: GlobalConfirmation,
+            text: GlobalConfirmationDeleteText,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: GlobalButtonDelete,
+            confirmButtonColor: "#d33",
+            cancelButtonText: GlobalButtonCancel,
+            cancelButtonColor: "#707070",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                SendDeleteRequest("v1/projects/" + id);
+            }
+        })
     };
+
 
     return (
         <>
@@ -250,40 +259,6 @@ export default function Projects() {
                             <Column header={TableHeaderActions} body={ActionsTableTemplate} sortable />
                         </DataTable>
                     </div>
-                    <ConfirmDialog
-                        content={({ headerRef, contentRef, footerRef, hide, message }) => (
-                            <div className="flex flex-column align-items-center p-5 surface-overlay border-round">
-                                <div className="border-circle bg-red-500 inline-flex justify-content-center align-items-center h-6rem w-6rem -mt-8">
-                                    <i className="pi pi-question text-5xl"></i>
-                                </div>
-                                <span className="font-bold text-2xl block mb-2 mt-4" ref={headerRef}>
-                                    {message.header}
-                                </span>
-                                <p className="mb-0" ref={contentRef as LegacyRef<HTMLDivElement>}>
-                                    {message.message}
-                                </p>
-                                <div className="flex align-items-center gap-2 mt-4" ref={footerRef as LegacyRef<HTMLDivElement>}>
-                                    <Button
-                                        label={GlobalButtonDelete}
-                                        severity='danger'
-                                        onClick={(event) => {
-                                            hide(event);
-                                        }}
-                                        className="w-8rem"
-                                    ></Button>
-                                    <Button
-                                        label={GlobalButtonCancel}
-                                        severity='secondary'
-                                        outlined
-                                        onClick={(event) => {
-                                            hide(event);
-                                        }}
-                                        className="w-8rem"
-                                    ></Button>
-                                </div>
-                            </div>
-                        )}
-                    />
                 </>
             }
 

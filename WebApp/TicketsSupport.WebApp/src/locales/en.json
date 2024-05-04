@@ -31,6 +31,16 @@
     "TicketsP": "Tickets",
     "Ticket": "Tickets"
   },
+  "element": {
+    "User": "User",
+    "Rol": "Rol",
+    "Menu": "Menu",
+    "Ticket": "Ticket",
+    "TicketStatus": "Ticket Status",
+    "TicketTypes": "Ticket Type",
+    "TicketPriority": "Ticket Priority",
+    "Project": "Project"
+  },
   "sidebar": {
     "logout": "Logout"
   },
