@@ -108,7 +108,11 @@ export default function Tickets() {
         return (
             <>
                 <div className="flex align-items-center gap-2">
-                    <img alt={project?.name} src={`data:image/*;base64,${project?.photo}`} width="32" />
+                    {project?.photo !== "" && project?.photo !== null ?
+                        <img alt={project?.name} src={`data:image/*;base64,${project?.photo}`} width="32" />
+                        :
+                        <img alt={project?.name} src={`/src/assets/imgs/project-default.png`} width="32" />}
+                    
                     <span>{project?.name}</span>
                 </div>
             </>
