@@ -236,7 +236,8 @@
       "properties": "Properties"
     },
     "status": {
-      "open": "open"
+      "open": "Open",
+      "closed": "Closed"
     }
   }
 }

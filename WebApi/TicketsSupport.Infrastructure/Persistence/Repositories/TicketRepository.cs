@@ -145,6 +145,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                    DateCreated = x.DateCreated,
                                                    DateUpdated = x.DateUpdated,
                                                    CreateBy = x.CreateBy,
+                                                   IsClosed = x.IsClosed,
                                                    Active = x.Active
                                                })
                                                .Where(x => x.Active == true)
@@ -173,6 +174,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                    DateCreated = x.DateCreated,
                                                    DateUpdated = x.DateUpdated,
                                                    CreateBy = x.CreateBy,
+                                                   IsClosed = x.IsClosed,
                                                    Active = x.Active
                                                })
                                                .AsNoTracking()

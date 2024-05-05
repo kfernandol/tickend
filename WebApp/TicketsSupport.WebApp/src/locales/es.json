@@ -235,7 +235,8 @@
       "properties": "Propiedades"
     },
     "status": {
-      "open": "Abierto"
+      "open": "Abierto",
+      "closed": "Cerrado"
     }
   }
 }

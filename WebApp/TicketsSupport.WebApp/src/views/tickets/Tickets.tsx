@@ -48,6 +48,7 @@ export default function Tickets() {
     const dateCreated = t('tickets.labels.dateCreated');
     const dateUpdated = t('tickets.labels.dateUpdated');
     const statusOpen = t('tickets.status.open');
+    const statusClosed = t('tickets.status.closed');
     //Links
     const NewItemUrl = paths.newTicket;
     const EditItemUrl = paths.editTicketWithId;
@@ -156,9 +157,15 @@ export default function Tickets() {
         }
     };
 
-    const statusBodyTemplate = (rowData: { ticketStatusId: number }) => {
+    const statusBodyTemplate = (rowData: { ticketStatusId: number, id : number }) => {
         const status = TicketStatus.find(x => x.id === rowData.ticketStatusId);
-        if (status) {
+        const ticket = Tickets.find(x => x.id === rowData.id);
+        if (ticket?.isClosed === true) {
+            return <>
+                <Badge value={statusClosed} style={{ backgroundColor: '#808080' }}></Badge>
+            </>
+        }
+        else if (status) {
             return <>
                 <Badge value={status?.name} style={{ backgroundColor: status?.color }}></Badge>
             </>
@@ -296,7 +303,7 @@ export default function Tickets() {
                             emptyMessage="No customers found."
                             selectionMode="single"
                             onSelectionChange={(e) => handleSelectionChange(e)}>
-                            <Column field="title" header={title} filter filterPlaceholder="Search by name" style={{ minWidth: '18rem', maxWidth: '350px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }} />
+                            <Column field="title" header={title} filter style={{ minWidth: '18rem', maxWidth: '350px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }} />
                             <Column header={project} filterField="projectId" showFilterMenu={false} filterMenuStyle={{ width: '11rem' }} style={{ maxWidth: '11rem' }}
                                 body={projectBodyTemplate} filter filterElement={projectRowFilterTemplate} />
                             <Column field="ticketTypeId" header={type} showFilterMenu={false} filterMenuStyle={{ width: '5rem' }} style={{ maxWidth: '11rem' }} body={typeBodyTemplate} filter filterElement={TypeRowFilterTemplate} />
