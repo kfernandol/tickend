@@ -83,16 +83,17 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
         public async Task<List<RolResponse>> GetRol()
         {
             var roles = this._context.Rols.Where(x => x.Active == true)
-                                      .Select(x => this._mapper.Map<RolResponse>(x))
-                                      .ToList();
+                                          .Select(x => this._mapper.Map<RolResponse>(x))
+                                          .AsNoTracking()
+                                          .ToList();
 
             foreach (var role in roles)
             {
                 role.Menus = _context.MenuXrols.Include(x => x.Menu)
-                                                .AsNoTracking()
-                                                .Where(x => x.RoleId == role.Id && x.Menu.Active == true)
-                                                .Select(z => z.Menu)
-                                                .ToList();
+                                               .AsNoTracking()
+                                               .Where(x => x.RoleId == role.Id && x.Menu.Active == true)
+                                               .Select(z => z.Menu)
+                                               .ToList();
             }
 
             return roles;
@@ -102,6 +103,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
         {
             var rol = this._context.Rols.Where(x => x.Active == true && x.Id == id)
                                         .Select(x => this._mapper.Map<RolResponse>(x))
+                                        .AsNoTracking()
                                         .FirstOrDefault();
 
             rol.Menus = _context.MenuXrols.Include(x => x.Menu)

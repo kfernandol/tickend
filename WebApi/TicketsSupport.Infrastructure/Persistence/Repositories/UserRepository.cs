@@ -82,6 +82,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             var user = this._context.Users.FirstOrDefault(x => x.Id == id && x.Active == true);
             if (user != null)
             {
+                user.Username = request.Username;
                 user.FirstName = request.FirstName;
                 user.LastName = request.LastName;
                 user.Email = request.Email;

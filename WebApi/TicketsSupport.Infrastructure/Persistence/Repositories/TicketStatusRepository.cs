@@ -48,20 +48,13 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
         public async Task<List<TicketStatusResponse>> GetTicketStatus(string? username)
         {
             User? user = await _context.Users.Include(x => x.RolNavigation)
+                                             .AsNoTracking()
                                              .FirstOrDefaultAsync(x => x.Username == username);
 
             List<TicketStatus>? result = new List<TicketStatus>();
             if (user?.RolNavigation?.PermissionLevel == PermissionLevel.Administrator)
             {
-                result = await _context.ProjectXticketStatuses.Include(x => x.TicketStatus)
-                                                                   .Include(x => x.Project)
-                                                                       .ThenInclude(x => x.ProjectXclients)
-                                                                       .ThenInclude(x => x.Client)
-                                                                   .Include(x => x.Project)
-                                                                       .ThenInclude(x => x.ProjectXdevelopers)
-                                                                       .ThenInclude(x => x.Developer)
-                                                                    .Select(x => x.TicketStatus)
-                                                                   .ToListAsync();
+                result = await _context.TicketStatuses.AsNoTracking().ToListAsync();
             }
             else
             {
@@ -75,6 +68,8 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                                     .Where(x => x.Project.ProjectXclients.Any(c => c.Client.Username == username) ||
                                                                                 x.Project.ProjectXdevelopers.Any(d => d.Developer.Username == username))
                                                                     .Select(x => x.TicketStatus)
+                                                                    .AsNoTracking()
+                                                                    .AsSplitQuery()
                                                                     .ToListAsync();
             }
 
@@ -88,7 +83,9 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
         public async Task<TicketStatusResponse> GetTicketStatusById(int id)
         {
-            var ticketStatus = await _context.TicketStatuses.Where(x => x.Active == true).FirstOrDefaultAsync(x => x.Id == id);
+            var ticketStatus = await _context.TicketStatuses.Where(x => x.Active == true)
+                                                            .AsNoTracking()
+                                                            .FirstOrDefaultAsync(x => x.Id == id);
 
             if (ticketStatus != null)
                 return this._mapper.Map<TicketStatusResponse>(ticketStatus);
@@ -105,6 +102,8 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                          .SelectMany(x => x.ProjectXticketStatuses
                                                              .Where(p => p.TicketStatus.Active)
                                                              .Select(p => p.TicketStatus))
+                                                         .AsNoTracking()
+                                                         .AsSplitQuery()
                                                          .ToListAsync();
 
             if (ticketType != null)

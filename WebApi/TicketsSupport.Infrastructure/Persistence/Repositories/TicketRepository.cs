@@ -115,7 +115,9 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
         public async Task<TicketResponse> GetTicketById(int id)
         {
-            var ticket = this._context.Tickets.Where(x => x.Active == true).FirstOrDefault(x => x.Id == id);
+            var ticket = this._context.Tickets.Where(x => x.Active == true)
+                                              .AsNoTracking()
+                                              .FirstOrDefault(x => x.Id == id);
 
             if (ticket != null)
                 return this._mapper.Map<TicketResponse>(ticket);
@@ -126,17 +128,16 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
         public async Task<List<TicketResponse>> GetTickets(string? username)
         {
             User? user = await _context.Users.Include(x => x.RolNavigation)
+                                             .AsNoTracking()
                                              .FirstOrDefaultAsync(x => x.Username == username);
 
             List<Ticket>? result = new List<Ticket>();
             if (user?.RolNavigation?.PermissionLevel == PermissionLevel.Administrator)
             {
-                result = await _context.Tickets.Where(x => x.Active == true)
-                                               .Select(x => new Ticket
+                result = await _context.Tickets.Select(x => new Ticket
                                                {
                                                    Id = x.Id,
                                                    Title = x.Title,
-                                                   Description = "",
                                                    ProjectId = x.ProjectId,
                                                    TicketPriorityId = x.TicketPriorityId,
                                                    TicketStatusId = x.TicketStatusId,
@@ -146,6 +147,8 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                    CreateBy = x.CreateBy,
                                                    Active = x.Active
                                                })
+                                               .Where(x => x.Active == true)
+                                               .AsNoTracking()
                                                .ToListAsync();
             }
             else
@@ -172,6 +175,8 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                    CreateBy = x.CreateBy,
                                                    Active = x.Active
                                                })
+                                               .AsNoTracking()
+                                               .AsSplitQuery()
                                                .ToListAsync();
             }
 

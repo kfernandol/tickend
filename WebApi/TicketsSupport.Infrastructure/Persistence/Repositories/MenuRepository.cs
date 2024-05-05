@@ -52,12 +52,15 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
         {
             return this._context.Menus.Where(x => x.Active == true)
                                       .Select(x => this._mapper.Map<MenuResponse>(x))
+                                      .AsNoTracking()
                                       .ToList();
         }
 
         public async Task<MenuResponse> GetMenusById(int id)
         {
-            var menu = this._context.Menus.Where(x => x.Active == true).FirstOrDefault(x => x.Id == id);
+            var menu = this._context.Menus.Where(x => x.Active == true)
+                                          .AsNoTracking()
+                                          .FirstOrDefault(x => x.Id == id);
 
             if (menu != null)
                 return this._mapper.Map<MenuResponse>(menu);
@@ -71,7 +74,10 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                      .Include(x => x.Role)
                                                      .ThenInclude(x => x.Users)
                                                      .Where(x => x.Role.Users.Any(x => x.Id == userId) && x.Menu.Active == true)
+                                                     .OrderBy(p => p.Id)
                                                      .Select(x => _mapper.Map<MenuResponse>(x.Menu))
+                                                     .AsSplitQuery()
+                                                     .AsNoTracking()
                                                      .ToListAsync();
 
             var parentIds = menuByUser.Where(x => x.ParentId != null).Select(x => x.ParentId).Distinct().ToList();

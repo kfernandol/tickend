@@ -36,6 +36,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
         {
 
             var user = _context.Users.Include(x => x.RolNavigation)
+                                     .AsNoTracking()
                                      .FirstOrDefault(x => x.Username == request.Username && x.Active == true);
             if (user != null)
             {

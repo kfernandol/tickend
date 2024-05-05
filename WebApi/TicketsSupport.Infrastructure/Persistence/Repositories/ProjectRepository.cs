@@ -167,6 +167,8 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                 .Include(x => x.ProjectXdevelopers)
                                                 .Where(x => x.Active == true && x.Id == id)
                                                 .Select(x => this._mapper.Map<ProjectResponse>(x))
+                                                .AsNoTracking()
+                                                .AsSplitQuery()
                                                 .FirstOrDefault();
 
             if (project != null)
@@ -178,6 +180,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
         public async Task<List<ProjectResponse>> GetProjects(string? username)
         {
             User? user = await _context.Users.Include(x => x.RolNavigation)
+                                             .AsNoTracking()
                                              .FirstOrDefaultAsync(x => x.Username == username);
 
             List<Project>? result = new List<Project>();
@@ -189,6 +192,8 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                 .Include(x => x.ProjectXticketStatuses)
                                                 .Include(x => x.ProjectXdevelopers)
                                                 .Where(x => x.Active == true)
+                                                .AsNoTracking()
+                                                .AsSplitQuery()
                                                 .ToListAsync();
 
 
@@ -204,6 +209,8 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                     .ThenInclude(x => x.Developer)
                                                 .Where(x => x.Active == true &&
                                                             (x.ProjectXclients.Any(c => c.Client.Username == username) || x.ProjectXdevelopers.Any(d => d.Developer.Username == username)))
+                                                .AsNoTracking()
+                                                .AsSplitQuery()
                                                 .ToListAsync();
             }
 
