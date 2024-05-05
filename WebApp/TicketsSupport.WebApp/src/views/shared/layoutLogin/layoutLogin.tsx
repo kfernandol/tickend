@@ -66,6 +66,7 @@ function LayoutLogin() {
         if (errorAuth) {
             setError("username", {
                 type: "manual",
+                message: DataInvalid
             });
             setError("password", {
                 type: "manual",
