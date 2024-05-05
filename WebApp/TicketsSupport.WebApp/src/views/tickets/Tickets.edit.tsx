@@ -6,6 +6,9 @@ import { Controller } from 'react-hook-form';
 import { Button } from 'primereact/button';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Toast } from 'primereact/toast';
+import { Editor } from 'primereact/editor';
+import { Dropdown } from 'primereact/dropdown';
+import { InputSwitch } from 'primereact/inputswitch';
 //Hooks
 import { useTranslation } from 'react-i18next'
 import { useGet, usePut } from '../../services/api_services';
@@ -13,15 +16,12 @@ import useCustomForm from '../../hooks/useCustomForm';
 //Models
 import { BasicResponse } from '../../models/responses/basic.response';
 import { TicketForm } from '../../models/forms/ticket.form';
-import { Editor } from 'primereact/editor';
-import { Dropdown } from 'primereact/dropdown';
 import { ProjectResponse } from '../../models/responses/project.response';
 import { TicketTypeResponse } from '../../models/responses/ticketType.response';
 import { TicketRequest } from '../../models/requests/ticket.request';
 import { TicketResponse } from '../../models/responses/ticket.response';
 import { TicketPriorityResponse } from '../../models/responses/ticketPriority.response';
 import { TicketStatusResponse } from '../../models/responses/ticketStatus.response';
-import { InputSwitch } from 'primereact/inputswitch';
 
 export default function TicketsEdit() {
     const toast = useRef<Toast>(null);
@@ -83,33 +83,34 @@ export default function TicketsEdit() {
 
     useEffect(() => {
         const ProjectId = getValues("Project");
-        const requests = [
-            SendGetRequest('v1/ticket/types/byproject/' + ProjectId),
-            SendGetRequest('v1/ticket/status/byproject/' + ProjectId),
-            SendGetRequest('v1/ticket/priorities/byproject/' + ProjectId)
-        ]
-        Promise.all(requests)
-            .then((responses) => {
-                responses.forEach((response) => {
-                    switch (response.url) {
-                        case "v1/ticket/types/byproject/" + ProjectId:
-                            setTicketType(response.data as TicketTypeResponse[]);
-                            break;
-                        case 'v1/ticket/status/byproject/' + ProjectId:
-                            setTicketStatus(response.data as TicketStatusResponse[]);
-                            break;
-                        case 'v1/ticket/priorities/byproject/' + ProjectId:
-                            setTicketPriorities(response.data as TicketPriorityResponse[]);
-                            break;
-                        default:
-                            break;
-                    }
+        if (ProjectId) {
+            const requests = [
+                SendGetRequest('v1/ticket/types/byproject/' + ProjectId),
+                SendGetRequest('v1/ticket/status/byproject/' + ProjectId),
+                SendGetRequest('v1/ticket/priorities/byproject/' + ProjectId)
+            ]
+            Promise.all(requests)
+                .then((responses) => {
+                    responses.forEach((response) => {
+                        switch (response.url) {
+                            case "v1/ticket/types/byproject/" + ProjectId:
+                                setTicketType(response.data as TicketTypeResponse[]);
+                                break;
+                            case 'v1/ticket/status/byproject/' + ProjectId:
+                                setTicketStatus(response.data as TicketStatusResponse[]);
+                                break;
+                            case 'v1/ticket/priorities/byproject/' + ProjectId:
+                                setTicketPriorities(response.data as TicketPriorityResponse[]);
+                                break;
+                            default:
+                                break;
+                        }
+                    });
+                })
+                .catch((error) => {
+                    console.error("Error en las solicitudes:", error);
                 });
-            })
-            .catch((error) => {
-                console.error("Error en las solicitudes:", error);
-            });
-
+        }
     }, [watch("Project")])
     useEffect(() => {
         if (Ticket) {
@@ -154,8 +155,8 @@ export default function TicketsEdit() {
             description: data.Description,
             projectId: data.Project as number,
             ticketTypeId: data.Type as number,
-            ticketPriorityId: data.Priority,
-            ticketStatusId: data.Status,
+            ticketPriorityId: data.Priority as number,
+            ticketStatusId: data.Status as number,
             isClosed: data.Closed
         };
 
