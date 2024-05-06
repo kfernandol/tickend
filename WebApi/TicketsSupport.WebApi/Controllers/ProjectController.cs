@@ -63,6 +63,7 @@ namespace TicketsSupport.WebApi.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
+        [AuthorizeRole(PermissionLevel.Administrator)]
         [AuthorizeMenu("Projects")]
         [HttpPost, MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
@@ -80,6 +81,7 @@ namespace TicketsSupport.WebApi.Controllers
         /// <param name="id"></param>
         /// <param name="request"></param>
         /// <returns></returns>
+        [AuthorizeRole(PermissionLevel.Administrator)]
         [AuthorizeMenu("Projects")]
         [HttpPut("{id}"), MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
@@ -96,8 +98,8 @@ namespace TicketsSupport.WebApi.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [AuthorizeMenu("Projects")]
         [AuthorizeRole(PermissionLevel.Administrator)]
+        [AuthorizeMenu("Projects")]
         [HttpDelete("{id}"), MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]

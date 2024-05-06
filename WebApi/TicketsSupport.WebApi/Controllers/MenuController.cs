@@ -30,7 +30,7 @@ namespace TicketsSupport.WebApi.Controllers
         /// Get all menus
         /// </summary>
         /// <returns></returns>
-        [AuthorizeRole(PermissionLevel.Administrator)]
+        [AuthorizeMenu("Menus")]
         [HttpGet, MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(List<MenuResponse>))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
@@ -46,7 +46,7 @@ namespace TicketsSupport.WebApi.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [AuthorizeRole(PermissionLevel.Administrator)]
+        [AuthorizeMenu("Menus")]
         [HttpGet("{id}"), MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(MenuResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
@@ -63,6 +63,7 @@ namespace TicketsSupport.WebApi.Controllers
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
+        [AuthorizeMenu("Menus")]
         [HttpGet("byuser/{userId}"), MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(MenuResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
@@ -79,6 +80,7 @@ namespace TicketsSupport.WebApi.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [AuthorizeRole(PermissionLevel.Administrator)]
+        [AuthorizeMenu("Menus")]
         [HttpPost, MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
@@ -96,6 +98,7 @@ namespace TicketsSupport.WebApi.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [AuthorizeRole(PermissionLevel.Administrator)]
+        [AuthorizeMenu("Menus")]
         [HttpPut("{id}"), MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
@@ -112,6 +115,7 @@ namespace TicketsSupport.WebApi.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [AuthorizeRole(PermissionLevel.Administrator)]
+        [AuthorizeMenu("Menus")]
         [HttpDelete("{id}"), MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]

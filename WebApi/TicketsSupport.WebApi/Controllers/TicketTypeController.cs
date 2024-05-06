@@ -5,6 +5,7 @@ using Swashbuckle.AspNetCore.Annotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
+using TicketsSupport.ApplicationCore.Authorization.Menu;
 using TicketsSupport.ApplicationCore.Authorization.Role;
 using TicketsSupport.ApplicationCore.Commons;
 using TicketsSupport.ApplicationCore.DTOs;
@@ -31,6 +32,7 @@ namespace TicketsSupport.WebApi.Controllers
         /// Get all ticket type
         /// </summary>
         /// <returns></returns>
+        [AuthorizeMenu("TicketTypes")]
         [HttpGet, MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(List<TicketTypeResponse>))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
@@ -47,6 +49,7 @@ namespace TicketsSupport.WebApi.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [AuthorizeMenu("TicketTypes")]
         [HttpGet("{id}"), MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(TicketTypeResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
@@ -62,6 +65,7 @@ namespace TicketsSupport.WebApi.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [AuthorizeMenu("TicketTypes")]
         [HttpGet("byproject/{id}"), MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(TicketTypeResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
@@ -77,6 +81,8 @@ namespace TicketsSupport.WebApi.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
+        [AuthorizeRole(PermissionLevel.Administrator)]
+        [AuthorizeMenu("TicketTypes")]
         [HttpPost, MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
@@ -93,6 +99,8 @@ namespace TicketsSupport.WebApi.Controllers
         /// <param name="id"></param>
         /// <param name="request"></param>
         /// <returns></returns>
+        [AuthorizeRole(PermissionLevel.Administrator)]
+        [AuthorizeMenu("TicketTypes")]
         [HttpPut("{id}"), MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
@@ -108,8 +116,9 @@ namespace TicketsSupport.WebApi.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpDelete("{id}"), MapToApiVersion(1.0)]
         [AuthorizeRole(PermissionLevel.Administrator)]
+        [AuthorizeMenu("TicketTypes")]
+        [HttpDelete("{id}"), MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]

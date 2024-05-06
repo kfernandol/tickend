@@ -64,6 +64,7 @@ namespace TicketsSupport.WebApi.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [AuthorizeMenu("Users")]
+        [AuthorizeRole(PermissionLevel.Administrator)]
         [HttpPost, MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
@@ -81,6 +82,7 @@ namespace TicketsSupport.WebApi.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [AuthorizeMenu("Users")]
+        [AuthorizeRole(PermissionLevel.Administrator)]
         [HttpPut("{id}"), MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
