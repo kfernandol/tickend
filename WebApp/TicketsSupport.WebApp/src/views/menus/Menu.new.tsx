@@ -11,6 +11,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Dropdown } from 'primereact/dropdown';
 import { Toast } from 'primereact/toast';
 import { InputNumber } from 'primereact/inputnumber';
+import { FloatLabel } from 'primereact/floatlabel';
+import { SelectItemOptionsType } from 'primereact/selectitem';
 //Hooks
 import { useTranslation } from 'react-i18next'
 import { useGet, usePost } from '../../services/api_services';
@@ -26,6 +28,20 @@ import useCustomForm from '../../hooks/useCustomForm';
 export default function MenuNew() {
     const toast = useRef<Toast>(null);
     const navigate = useNavigate();
+    const MenusNames: SelectItemOptionsType =
+        [
+            { label: 'Security', value: 'Security' },
+            { label: 'Users', value: 'Users' },
+            { label: 'Roles', value: 'Roles' },
+            { label: 'Menus', value: 'Menus' },
+            { label: 'ProjectsP', value: 'ProjectsP' },
+            { label: 'Projects', value: 'Projects' },
+            { label: 'TicketsP', value: 'TicketsP' },
+            { label: 'Tickets', value: 'Tickets' },
+            { label: 'TicketTypes', value: 'TicketTypes' },
+            { label: 'TicketStatus', value: 'TicketStatus' },
+            { label: 'TicketPriority', value: 'TicketPriority' },
+        ]
     //Form
     const { control, ErrorMessageHtml, errors, handleSubmit, reset, setValue } = useCustomForm<MenuFormModel>(
         {
@@ -145,13 +161,13 @@ export default function MenuNew() {
                                     }
 
                                 }}
-                            render={({ field, fieldState }) => (
+                            render={({ field }) => (
                                 <>
                                     <label htmlFor={field.name} className={classNames({ 'p-error': errors.name })}></label>
-                                    <span className="p-float-label">
-                                        <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
+                                    <FloatLabel>
+                                        <Dropdown id={field.name} value={field.value} onChange={(e) => field.onChange(e.target.value)} options={MenusNames} optionLabel="label" className="w-full py-1" />
                                         <label htmlFor={field.name}>{CardFormName}</label>
-                                    </span>
+                                    </FloatLabel>
                                     {ErrorMessageHtml(field.name)}
                                 </>
                             )}
