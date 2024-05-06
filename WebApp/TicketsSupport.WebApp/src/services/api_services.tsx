@@ -54,7 +54,6 @@ const useApiClient = () => {
                 return axios(originalRequest);
             } catch (error) {
                 console.error(error);
-                console.log("no se puido we")
                 dispatch(logout());
             }
 

@@ -12,10 +12,13 @@ import { Button } from 'primereact/button';
 import { FilterMatchMode, FilterOperator } from 'primereact/api';
 import { Badge } from 'primereact/badge';
 import { Tooltip } from 'primereact/tooltip';
+import { Nullable } from 'primereact/ts-helpers';
 //Hooks
 import { useGet } from '../../services/api_services';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import useTokenData from '../../hooks/useTokenData';
 //Models
 import { MenusResponse } from '../../models/responses/menus.response';
 import { ProjectResponse } from '../../models/responses/project.response';
@@ -23,7 +26,8 @@ import { TicketStatusResponse } from '../../models/responses/ticketStatus.respon
 import { TicketTypeResponse } from '../../models/responses/ticketType.response';
 import { TicketPriorityResponse } from '../../models/responses/ticketPriority.response';
 import { TicketResponse } from '../../models/responses/ticket.response';
-import { Nullable } from 'primereact/ts-helpers';
+import { RootState } from '../../redux/store';
+import { AuthToken } from '../../models/tokens/token.model';
 
 export default function Tickets() {
     const [Tickets, setTickets] = useState<TicketResponse[]>([]);
@@ -32,6 +36,9 @@ export default function Tickets() {
     const [TicketStatus, setTicketStatus] = useState<TicketStatusResponse[]>([]);
     const [TicketType, setTicketType] = useState<TicketTypeResponse[]>([]);
 
+    //Redux
+    const authenticated = useSelector((state: RootState) => state.auth);
+    const getTokenData = useTokenData<AuthToken>(authenticated?.token);
     //Hooks
     const toast = useRef<Toast>(null);
     const { SendGetRequest, loadingGet } = useGet<MenusResponse[] | TicketResponse[]>();
@@ -266,11 +273,13 @@ export default function Tickets() {
                 {/* Table Title */}
                 <span className='text-2xl text-white'>{TableTitle}</span>
                 {/* Add new */}
-                <Link to={NewItemUrl}>
-                    <Button icon="pi pi-plus" severity='success'>
-                        <span className='pl-2'>{TableHeaderNew}</span>
-                    </Button>
-                </Link>
+                {getTokenData?.PermissionLevel === "Administrator" || getTokenData?.PermissionLevel === "User"?
+                    <Link to={NewItemUrl}>
+                        <Button icon="pi pi-plus" severity='success'>
+                            <span className='pl-2'>{TableHeaderNew}</span>
+                        </Button>
+                    </Link>
+                    : null}
             </div>
         )
     }

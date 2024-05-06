@@ -1,7 +1,7 @@
 import React, { LegacyRef, useEffect, useRef, useState } from 'react'
 import { FilterMatchMode } from 'primereact/api';
 import { paths } from '../../routes/paths';
-import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { ConfirmDialog } from 'primereact/confirmdialog';
 import { Toast } from 'primereact/toast';
 //components
 import { DataTable } from 'primereact/datatable';
@@ -15,12 +15,19 @@ import Swal from 'sweetalert2';
 //hooks
 import { useDelete, useGet } from "../../services/api_services";
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
+import useTokenData from '../../hooks/useTokenData';
 //models
 import { BasicResponse, ErrorResponse, ErrorsResponse } from '../../models/responses/basic.response';
 import { MenusResponse } from '../../models/responses/menus.response';
+import { RootState } from '../../redux/store';
+import { AuthToken } from '../../models/tokens/token.model';
 
 export default function Menus() {
     const toast = useRef<Toast>(null);
+    //Redux
+    const authenticated = useSelector((state: RootState) => state.auth);
+    const getTokenData = useTokenData<AuthToken>(authenticated?.token);
     //Table Filters
     const [globalFilterValue, setGlobalFilterValue] = useState('');
     const [filters, setFilters] = useState({
@@ -136,11 +143,13 @@ export default function Menus() {
                 <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder={GlobalSearch} />
             </span>
             {/* Add new */}
-            <Link to={NewItemUrl}>
-                <Button icon="pi pi-plus" severity='success'>
-                    <span className='pl-2'>{TableHeaderNew}</span>
-                </Button>
-            </Link>
+            { getTokenData?.PermissionLevel === "Administrator" ? 
+                <Link to={NewItemUrl}>
+                    <Button icon="pi pi-plus" severity='success'>
+                        <span className='pl-2'>{TableHeaderNew}</span>
+                    </Button>
+                </Link>
+            : null}
         </div>
     );
 
@@ -204,7 +213,7 @@ export default function Menus() {
                             <Column field="position" header={TableHeaderPosition} sortable />
                             <Column field="parentId" header={TableHeaderParentId} sortable />
                             <Column field="show" header={TableHeaderShow} sortable />
-                            <Column header={TableHeaderActions} body={ActionsTableTemplate} sortable />
+                            {getTokenData?.PermissionLevel === "Administrator" ? <Column header={TableHeaderActions} body={ActionsTableTemplate} sortable /> : <></>}
                         </DataTable>
                     </div>
                     <ConfirmDialog

@@ -3,7 +3,7 @@ export interface AuthToken {
     name: string,
     sub: string,
     email: string,
-    role: string,
+    PermissionLevel: string,
     nbf: number,
     exp: number,
     iat: number,

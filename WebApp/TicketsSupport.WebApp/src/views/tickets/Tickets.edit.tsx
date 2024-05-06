@@ -13,6 +13,8 @@ import { InputSwitch } from 'primereact/inputswitch';
 import { useTranslation } from 'react-i18next'
 import { useGet, usePut } from '../../services/api_services';
 import useCustomForm from '../../hooks/useCustomForm';
+import { useSelector } from 'react-redux';
+import useTokenData from '../../hooks/useTokenData';
 //Models
 import { BasicResponse } from '../../models/responses/basic.response';
 import { TicketForm } from '../../models/forms/ticket.form';
@@ -22,11 +24,16 @@ import { TicketRequest } from '../../models/requests/ticket.request';
 import { TicketResponse } from '../../models/responses/ticket.response';
 import { TicketPriorityResponse } from '../../models/responses/ticketPriority.response';
 import { TicketStatusResponse } from '../../models/responses/ticketStatus.response';
+import { RootState } from '../../redux/store';
+import { AuthToken } from '../../models/tokens/token.model';
 
 export default function TicketsEdit() {
     const toast = useRef<Toast>(null);
     const navigate = useNavigate();
     const { id } = useParams();
+    //Redux
+    const authenticated = useSelector((state: RootState) => state.auth);
+    const getTokenData = useTokenData<AuthToken>(authenticated?.token);
     //Form
     const { control, ErrorMessageHtml, errors, handleSubmit, reset, setValue, getValues, watch } = useCustomForm<TicketForm>({ Title: '', Description: '', Priority: null, Project: null, Status: null, Type: null, });
     //Request API
@@ -284,6 +291,7 @@ export default function TicketsEdit() {
                             </div>
 
                             {/* Ticket Priority Select */}
+                            {getTokenData?.PermissionLevel === "Administrator" ? 
                             <div className='col-12'>
                                 <Controller
                                     name="Priority"
@@ -308,9 +316,13 @@ export default function TicketsEdit() {
                                         </>
                                     )}
                                 />
-                            </div>
+                                </div>
+                                :
+                                null
+                            }
 
                             {/* Ticket Status Select */}
+                            {getTokenData?.PermissionLevel === "Administrator" || getTokenData?.PermissionLevel === "Developer" ? 
                             <div className='col-12'>
                                 <Controller
                                     name="Status"
@@ -336,25 +348,32 @@ export default function TicketsEdit() {
                                     )}
                                 />
                             </div>
+                            :
+                            null
+                            }
 
                             {/* Ticket Closed */}
-                            <div className='col-12'>
-                                <Controller
-                                    name="Closed"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <>
-                                            <div className='flex align-items-center'>
-                                                <label htmlFor={field.name} className={classNames({ 'p-error': errors.Closed })}></label>
-                                                <label className='mr-2' htmlFor={field.name}>{CardFormClosed}</label>
-                                                <InputSwitch checked={field.value} onChange={(e) => field.onChange(e.value)} />
+                            {getTokenData?.PermissionLevel === "Administrator" || getTokenData?.PermissionLevel === "Developer" ?
+                                <div className='col-12'>
+                                    <Controller
+                                        name="Closed"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <>
+                                                <div className='flex align-items-center'>
+                                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.Closed })}></label>
+                                                    <label className='mr-2' htmlFor={field.name}>{CardFormClosed}</label>
+                                                    <InputSwitch checked={field.value} onChange={(e) => field.onChange(e.value)} />
 
-                                                {ErrorMessageHtml(field.name)}
-                                            </div>
-                                        </>
-                                    )}
-                                />
-                            </div>
+                                                    {ErrorMessageHtml(field.name)}
+                                                </div>
+                                            </>
+                                        )}
+                                    />
+                                </div>
+                                :
+                                null
+                            }
 
                             <div className='col-12'>
                                 <div className='flex justify-content-center align-items-center'>

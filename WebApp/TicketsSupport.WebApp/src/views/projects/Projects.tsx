@@ -13,6 +13,8 @@ import Swal from 'sweetalert2'
 //hooks
 import { useDelete, useGet } from "../../services/api_services";
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
+import useTokenData from '../../hooks/useTokenData';
 //models
 import { BasicResponse, ErrorResponse, ErrorsResponse } from '../../models/responses/basic.response';
 import { ProjectResponse } from '../../models/responses/project.response';
@@ -21,9 +23,14 @@ import { TicketStatusResponse } from '../../models/responses/ticketStatus.respon
 import { TicketTypeResponse } from '../../models/responses/ticketType.response';
 import { Avatar } from 'primereact/avatar';
 import { UserResponse } from '../../models/responses/users.response';
+import { RootState } from '../../redux/store';
+import { AuthToken } from '../../models/tokens/token.model';
 
 export default function Projects() {
     const toast = useRef<Toast>(null);
+    //Redux
+    const authenticated = useSelector((state: RootState) => state.auth);
+    const getTokenData = useTokenData<AuthToken>(authenticated?.token);
     //Table
     const [globalFilterValue, setGlobalFilterValue] = useState('');
     const [filters, setFilters] = useState({
@@ -182,11 +189,13 @@ export default function Projects() {
                 <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder={GlobalSearch} />
             </span>
             {/* Add new */}
-            <Link to={NewItemUrl}>
-                <Button icon="pi pi-plus" severity='success'>
-                    <span className='pl-2'>{TableHeaderNew}</span>
-                </Button>
-            </Link>
+            { getTokenData?.PermissionLevel === "Administrator" ? 
+                <Link to={NewItemUrl}>
+                    <Button icon="pi pi-plus" severity='success'>
+                        <span className='pl-2'>{TableHeaderNew}</span>
+                    </Button>
+                </Link>
+            : null}
         </div>
     );
 
@@ -254,7 +263,7 @@ export default function Projects() {
                             <Column field="ticketTypes" header={TableHeaderTypes} sortable />
                             <Column field="clients" header={TableHeaderClients} sortable />
                             <Column field="developers" header={TableHeaderDeveloper} sortable />
-                            <Column header={TableHeaderActions} body={ActionsTableTemplate} sortable />
+                            {getTokenData?.PermissionLevel === "Administrator" ? <Column header={TableHeaderActions} body={ActionsTableTemplate} sortable /> : <></>}
                         </DataTable>
                     </div>
                 </>

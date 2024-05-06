@@ -13,12 +13,19 @@ import Swal from 'sweetalert2';
 //hooks
 import { useDelete, useGet } from "../../services/api_services";
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
+import useTokenData from '../../hooks/useTokenData';
 //models
 import { BasicResponse, ErrorResponse, ErrorsResponse } from '../../models/responses/basic.response';
 import { RolesResponse } from '../../models/responses/roles.response';
+import { RootState } from '../../redux/store';
+import { AuthToken } from '../../models/tokens/token.model';
 
 export default function Roles() {
     const toast = useRef<Toast>(null);
+    //Redux
+    const authenticated = useSelector((state: RootState) => state.auth);
+    const getTokenData = useTokenData<AuthToken>(authenticated?.token);
     //Table Filterss
     const [globalFilterValue, setGlobalFilterValue] = useState('');
     const [filters, setFilters] = useState({
@@ -116,11 +123,13 @@ export default function Roles() {
                 <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder={GlobalSearch} />
             </span>
             {/* Add new */}
-            <Link to={NewItemUrl}>
-                <Button icon="pi pi-plus" severity='success'>
-                    <span className='pl-2'>{RolesTableHeaderNewRol}</span>
-                </Button>
-            </Link>
+            { getTokenData?.PermissionLevel === "Administrator" ? 
+                <Link to={NewItemUrl}>
+                    <Button icon="pi pi-plus" severity='success'>
+                        <span className='pl-2'>{RolesTableHeaderNewRol}</span>
+                    </Button>
+                </Link>
+            : null}
         </div>
     );
 
@@ -182,7 +191,7 @@ export default function Roles() {
                             <Column field="name" header={RolesTableHeaderName} sortable />
                             <Column field="permissionLevel" header={RolesTableHeaderPermissionLevel} sortable />
                             <Column field="menus" header={RolesTableHeaderMenus} sortable />
-                            <Column header={RolesTableHeaderActions} body={ActionsTableTemplate} sortable />
+                            {getTokenData?.PermissionLevel === "Administrator" ? <Column header={RolesTableHeaderActions} body={ActionsTableTemplate} sortable /> : <></>}
                         </DataTable>
                     </div>
                 </>

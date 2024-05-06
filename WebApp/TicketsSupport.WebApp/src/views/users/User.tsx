@@ -14,13 +14,21 @@ import Swal from 'sweetalert2';
 //hooks
 import { useDelete, useGet } from "../../services/api_services";
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
+import useTokenData from '../../hooks/useTokenData';
 //models
 import { UserResponse } from '../../models/responses/users.response';
 import { BasicResponse, ErrorResponse, ErrorsResponse } from '../../models/responses/basic.response';
 import { RolesResponse } from '../../models/responses/roles.response';
+import { RootState } from '../../redux/store';
+import { AuthToken } from '../../models/tokens/token.model';
 
 export default function Users() {
     const toast = useRef<Toast>(null);
+
+    //Redux
+    const authenticated = useSelector((state: RootState) => state.auth);
+    const getTokenData = useTokenData<AuthToken>(authenticated?.token);
 
     //Search Table Filters
     const [globalFilterValue, setGlobalFilterValue] = useState('');
@@ -178,11 +186,13 @@ export default function Users() {
                 <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder={GlobalSearch} />
             </span>
             {/* Add new */}
-            <Link to={NewItemUrl}>
-                <Button icon="pi pi-plus" severity='success'>
-                    <span className='pl-2'>{TableHeaderNew}</span>
-                </Button>
-            </Link>
+            {getTokenData?.PermissionLevel === "Administrator" ?
+                <Link to={NewItemUrl}>
+                    <Button icon="pi pi-plus" severity='success'>
+                        <span className='pl-2'>{TableHeaderNew}</span>
+                    </Button>
+                </Link>
+                : null}
         </div>
     );
 
@@ -193,7 +203,7 @@ export default function Users() {
             return <Avatar icon="pi pi-user" size="large" shape="circle" />;
     };
 
-    const actionsBodyTemplate = (rowData: { id: string; }) => {
+    const ActionsTableTemplate = (rowData: { id: string; }) => {
         const editUrlPath = EditItemUrl.slice(0, EditItemUrl.length - 3);
         return <>
             <div className='flex gap-2'>
@@ -235,7 +245,7 @@ export default function Users() {
                             <Column field="lastname" header={TableHeaderLastName} sortable />
                             <Column field="email" header={TableHeaderEmail} sortable />
                             <Column field="rol" header={TableHeaderRol} sortable />
-                            <Column header={TableHeaderActions} body={actionsBodyTemplate} sortable />
+                            {getTokenData?.PermissionLevel === "Administrator" ? <Column header={TableHeaderActions} body={ActionsTableTemplate} sortable /> : <></>}
                         </DataTable>
                     </div>
                 </>

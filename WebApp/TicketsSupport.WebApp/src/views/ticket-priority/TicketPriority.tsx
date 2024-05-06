@@ -12,14 +12,21 @@ import { ProgressSpinner } from 'primereact/progressspinner';
 //hooks
 import { useDelete, useGet } from "../../services/api_services";
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
+import useTokenData from '../../hooks/useTokenData';
 //models
 import { BasicResponse, ErrorResponse, ErrorsResponse } from '../../models/responses/basic.response';
 import { Badge } from 'primereact/badge';
 import { TicketStatusResponse } from '../../models/responses/ticketStatus.response';
 import Swal from 'sweetalert2';
+import { RootState } from '../../redux/store';
+import { AuthToken } from '../../models/tokens/token.model';
 
 export default function TicketPriority() {
     const toast = useRef<Toast>(null);
+    //Redux
+    const authenticated = useSelector((state: RootState) => state.auth);
+    const getTokenData = useTokenData<AuthToken>(authenticated?.token);
     //Table Filters
     const [globalFilterValue, setGlobalFilterValue] = useState('');
     const [filters, setFilters] = useState({
@@ -121,11 +128,13 @@ export default function TicketPriority() {
                 <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder={GlobalSearch} />
             </span>
             {/* Add new */}
-            <Link to={NewItemUrl}>
-                <Button icon="pi pi-plus" severity='success'>
-                    <span className='pl-2'>{TableHeaderNew}</span>
-                </Button>
-            </Link>
+            {getTokenData?.PermissionLevel === "Administrator" ?
+                <Link to={NewItemUrl}>
+                    <Button icon="pi pi-plus" severity='success'>
+                        <span className='pl-2'>{TableHeaderNew}</span>
+                    </Button>
+                </Link>
+                : null}
         </div>
     );
 
@@ -186,7 +195,7 @@ export default function TicketPriority() {
                             <Column field="id" header={TableHeaderId} sortable />
                             <Column field="name" header={TableHeaderName} sortable />
                             <Column field="color" header={TableHeaderColor} sortable />
-                            <Column header={TableHeaderActions} body={ActionsTableTemplate} sortable />
+                            {getTokenData?.PermissionLevel === "Administrator" ? <Column header={TableHeaderActions} body={ActionsTableTemplate} sortable /> : <></>}
                         </DataTable>
                     </div>
                 </>
