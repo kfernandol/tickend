@@ -199,6 +199,15 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 restorePassword.Used = true;
 
                 _context.Update(restorePassword);
+
+                Dictionary<string, string> EmailData = new Dictionary<string, string>
+                    {
+                        {"FullName", $"{restorePassword.User.FirstName} {restorePassword.User.LastName}"},
+                        {"Subject", ResourcesUtils.GetEmailSimpleMessage("SubjectPasswordChanged")},
+                        {"Message", ResourcesUtils.GetEmailSimpleMessage("MessagePasswordChanged")},
+                    };
+
+                await _emailSender.SendEmail(restorePassword.User.Email, EmailTemplate.SimpleMessage, EmailData);
                 await _context.SaveChangesAsync();
 
                 return true;

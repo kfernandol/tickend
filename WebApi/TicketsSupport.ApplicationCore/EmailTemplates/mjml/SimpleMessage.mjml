@@ -1,0 +1,42 @@
+<mjml>
+  <mj-body background-color="#ebeff2">
+    <mj-section background-color="#ebeff2" padding="6px 0">
+      <mj-column>
+        <mj-image width="300px" src="../imgs/logo-black.svg" align="center" padding="30px 0px" border="none" />
+      </mj-column>
+    </mj-section>
+    <mj-section background-color="#ffffff" padding="6px 0">
+      <mj-column>
+
+        <mj-text font-family="Helvetica" color="#000" font-weight="400" font-size=18px>
+
+          <h1 style="font-weight: normal;">{{Saludation}}, <span style="font-weight: bold;">{{FullName}}</span>
+          </h1>
+
+          <p>
+            {{Message}}
+          </p>
+
+        </mj-text>
+        <mj-text font-family="Helvetica" color="#898788" font-weight="500" font-size=14px>
+          <p>
+            {{WarningMessage}} <span style="text-decoration:underline;">{{From}}</span>
+          </p>
+          <p>
+            Thanks you,
+            <p>
+              Tickend Team
+              <p>
+                <p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section background-color="#ebeff2" padding="6px 0">
+      <mj-column>
+        <mj-text font-family="Helvetica" align="center">
+          <p> &copy; Tickend | Guatemala <p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-body>
+</mjml>

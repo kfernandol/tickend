@@ -19,6 +19,10 @@
   </ItemGroup>
 	
   <ItemGroup>
+    <EmbeddedResource Update="Resources\Emails\SimpleMessage\SimpleMessage.resx">
+      <LastGenOutput>SimpleMessage.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="Resources\Emails\ResetPassword\ResetPassword.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ResetPassword.Designer.cs</LastGenOutput>
@@ -66,6 +70,11 @@
   </ItemGroup>
 	
   <ItemGroup>
+    <Compile Update="Resources\Emails\SimpleMessage\SimpleMessage.Designer.cs">
+      <DependentUpon>SimpleMessage.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
     <Compile Update="Resources\Emails\ResetPassword\ResetPassword.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

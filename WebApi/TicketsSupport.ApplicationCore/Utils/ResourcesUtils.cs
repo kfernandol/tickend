@@ -12,32 +12,37 @@ namespace TicketsSupport.ApplicationCore.Utils
         /// <returns>Return value of Resource</returns>
         public static string? GetExceptionMessage(string nameInResource)
         {
-            var resourceManager = new ResourceManager("TicketsSupport.ApplicationCore.Resources.Exceptions.Messages.ExceptionMessages", Assembly.GetExecutingAssembly());
-            return resourceManager?.GetString(nameInResource);
+            return GetResourceManager("TicketsSupport.ApplicationCore.Resources.Exceptions.Messages.ExceptionMessages").GetString(nameInResource);
         }
 
         public static string? GetExceptionDetails(string nameInResource)
         {
-            var resourceManager = new ResourceManager("TicketsSupport.ApplicationCore.Resources.Exceptions.Details.ExceptionDetails", Assembly.GetExecutingAssembly());
-            return resourceManager?.GetString(nameInResource);
+            return GetResourceManager("TicketsSupport.ApplicationCore.Resources.Exceptions.Details.ExceptionDetails").GetString(nameInResource);
         }
 
         public static string? GetResponseMessage(string nameInResource)
         {
-            var resourceManager = new ResourceManager("TicketsSupport.ApplicationCore.Resources.Responses.Messages.ResponseMessages", Assembly.GetExecutingAssembly());
-            return resourceManager?.GetString(nameInResource);
+            return GetResourceManager("TicketsSupport.ApplicationCore.Resources.Responses.Messages.ResponseMessages").GetString(nameInResource);
         }
 
         public static string? GetEmailResetPassword(string nameInResource)
         {
-            var resourceManager = new ResourceManager("TicketsSupport.ApplicationCore.Resources.Emails.ResetPassword.ResetPassword", Assembly.GetExecutingAssembly());
-            return resourceManager?.GetString(nameInResource);
+            return GetResourceManager("TicketsSupport.ApplicationCore.Resources.Emails.ResetPassword.ResetPassword").GetString(nameInResource);
         }
 
         public static string? GetEmailTicketCreate(string nameInResource)
         {
-            var resourceManager = new ResourceManager("TicketsSupport.ApplicationCore.Resources.Emails.TicketCreated.TicketCreated", Assembly.GetExecutingAssembly());
-            return resourceManager?.GetString(nameInResource);
+            return GetResourceManager("TicketsSupport.ApplicationCore.Resources.Emails.TicketCreated.TicketCreated").GetString(nameInResource);
+        }
+
+        public static string? GetEmailSimpleMessage(string nameInResource)
+        {
+            return GetResourceManager("TicketsSupport.ApplicationCore.Resources.Emails.SimpleMessage.SimpleMessage").GetString(nameInResource);
+        }
+
+        private static ResourceManager GetResourceManager(string baseName)
+        {
+            return new ResourceManager(baseName, Assembly.GetExecutingAssembly());
         }
     }
 }

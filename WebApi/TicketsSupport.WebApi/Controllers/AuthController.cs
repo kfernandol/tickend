@@ -55,7 +55,7 @@ namespace TicketsSupport.Server.Controllers
         }
 
         /// <summary>
-        /// User reset password
+        /// User request reset password
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
