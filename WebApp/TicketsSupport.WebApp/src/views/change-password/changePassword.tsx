@@ -9,6 +9,8 @@ import { InputText } from 'primereact/inputtext';
 import { Link, useParams } from 'react-router-dom';
 import { paths } from '../../routes/paths';
 import { Toast } from 'primereact/toast';
+import { IconField } from "primereact/iconfield";
+import { InputIcon } from "primereact/inputicon";
 //hooks
 import useCustomForm from '../../hooks/useCustomForm';
 import { useTranslation } from 'react-i18next';
@@ -109,11 +111,15 @@ export default function ChangePassword() {
                                                     render={({ field, fieldState }) => (
                                                         <>
                                                             <label htmlFor={field.name} className={classNames({ 'p-error': errors.password })}></label>
-                                                            <span className="p-float-label p-input-icon-left w-full">
-                                                                <i className="pi pi-key" />
-                                                                <InputText id={field.name} value={field.value} type='password' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
-                                                                <label htmlFor={field.name}>{Password}</label>
-                                                            </span>
+                                                            <IconField iconPosition="left" className="w-full">
+                                                                <InputIcon className="pi pi-key"> </InputIcon>
+                                                                <InputText id={field.name}
+                                                                    value={field.value}
+                                                                    type='password'
+                                                                    className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"}
+                                                                    onChange={(e) => field.onChange(e.target.value)}
+                                                                    placeholder={Password} />
+                                                             </IconField>
                                                             {ErrorMessageHtml(field.name)}
                                                         </>
                                                     )}
@@ -144,11 +150,14 @@ export default function ChangePassword() {
                                                     render={({ field, fieldState }) => (
                                                         <>
                                                             <label htmlFor={field.name} className={classNames({ 'p-error': errors.confirmPassword })}></label>
-                                                            <span className="p-float-label p-input-icon-left w-full">
-                                                                <i className="pi pi-key" />
-                                                                <InputText id={field.name} value={field.value} type='password' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
-                                                                <label htmlFor={field.name}>{ConfirmPassword}</label>
-                                                            </span>
+                                                            <IconField iconPosition="left" className="w-full">
+                                                                <InputIcon className="pi pi-key"> </InputIcon>
+                                                                <InputText id={field.name}
+                                                                    value={field.value}
+                                                                    type='password' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"}
+                                                                    onChange={(e) => field.onChange(e.target.value)}
+                                                                    placeholder={ConfirmPassword}                                                                />
+                                                            </IconField>
                                                             {ErrorMessageHtml(field.name)}
                                                         </>
                                                     )}

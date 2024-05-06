@@ -3,6 +3,9 @@
 import { ReactNode, useEffect, useRef, useState } from "react";
 //css
 import "./Sidebar.css"
+//imgs
+import logo from "../../../../../src/assets/logo.svg";
+import logoBlack from "../../../../../src/assets/logo-black.svg";
 //Components
 import { Ripple } from "primereact/ripple";
 import { StyleClass } from "primereact/styleclass";
@@ -79,7 +82,7 @@ function Sidebar() {
                     <div className="flex flex-column h-full relative">
                         <div className="flex align-items-center justify-content-between p-3">
                             <span className="inline-flex align-items-center gap-2 ">
-                                <span className="font-semibold text-2xl text-primary">Your Logo</span>
+                                <img src={logo} alt="logo" className="w-full"></img>
                                 <Button id="btnMenuSidebar" className="absolute right-0 mr-2" icon="pi pi-bars" severity="info" aria-label="Bookmark" onClick={hideSidebar} />
                             </span>
                         </div>

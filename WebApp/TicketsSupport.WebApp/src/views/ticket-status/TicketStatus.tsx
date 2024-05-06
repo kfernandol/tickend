@@ -11,6 +11,8 @@ import { Link } from 'react-router-dom';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Badge } from 'primereact/badge';
 import Swal from 'sweetalert2';
+import { IconField } from "primereact/iconfield";
+import { InputIcon } from "primereact/inputicon";
 //hooks
 import { useDelete, useGet } from "../../services/api_services";
 import { useTranslation } from 'react-i18next';
@@ -123,10 +125,10 @@ export default function TicketStatus() {
             {/* Table Title */}
             <span className='text-2xl text-white'>{TableTitle}</span>
             {/* Filter */}
-            <span className="p-input-icon-left">
-                <i className="pi pi-search" />
+            <IconField iconPosition="left">
+                <InputIcon className="pi pi-search"> </InputIcon>
                 <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder={GlobalSearch} />
-            </span>
+            </IconField>
             {/* Add new */}
             {getTokenData?.PermissionLevel === "Administrator" ?
                 <Link to={NewItemUrl}>

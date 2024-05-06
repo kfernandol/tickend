@@ -2,17 +2,21 @@ import { useEffect, useState } from 'react'
 //componets
 import BackgroundAnimated from '../../components/backgroundAnimated/backgroundAnimated';
 import LaguageSelect from "../../components/lenguajeSelect/languageSelect";
-import useCustomForm from '../../hooks/useCustomForm';
-import { ResetPasswordForm } from '../../models/forms/resetPassword.form';
-import { useTranslation } from 'react-i18next';
 import ButtonSubmitLogin from '../../components/buttonSubmitLogin/buttonSubmitLogin';
 import { Controller } from 'react-hook-form';
 import { classNames } from 'primereact/utils';
 import { InputText } from 'primereact/inputtext';
-import { usePut } from '../../services/api_services';
-import { BasicResponse } from '../../models/responses/basic.response';
 import { Link } from 'react-router-dom';
 import { paths } from '../../routes/paths';
+import { IconField } from "primereact/iconfield";
+import { InputIcon } from "primereact/inputicon";
+//hooks
+import useCustomForm from '../../hooks/useCustomForm';
+import { usePut } from '../../services/api_services';
+import { useTranslation } from 'react-i18next';
+//models
+import { ResetPasswordForm } from '../../models/forms/resetPassword.form';
+import { BasicResponse } from '../../models/responses/basic.response';
 import { ResetPasswordRequest } from '../../models/requests/resetPassword.request';
 
 export default function ResetPassword() {
@@ -87,8 +91,8 @@ export default function ResetPassword() {
                                                 render={({ field, fieldState }) => (
                                                     <>
                                                         <label htmlFor={field.name} className={classNames({ "p-error": errors.email })}></label>
-                                                        <span className="p-input-icon-left w-full">
-                                                            <i className="pi pi-inbox" />
+                                                        <IconField iconPosition="left" className="w-full">
+                                                            <InputIcon className="pi pi-inbox"> </InputIcon>
                                                             <InputText
                                                                 id={field.name}
                                                                 value={field.value}
@@ -98,7 +102,7 @@ export default function ResetPassword() {
                                                                 onChange={(e) => field.onChange(e.target.value)}
                                                                 placeholder={"Email"}
                                                             />
-                                                        </span>
+                                                        </IconField>
                                                         {ErrorMessageHtml(field.name)}
                                                     </>
                                                 )}

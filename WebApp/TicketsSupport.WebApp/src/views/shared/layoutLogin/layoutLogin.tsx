@@ -8,6 +8,8 @@ import { classNames } from "primereact/utils";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { Checkbox } from "primereact/checkbox";
+import { IconField } from "primereact/iconfield";
+import { InputIcon } from "primereact/inputicon";
 import LaguageSelect from "../../../components/lenguajeSelect/languageSelect"
 import ButtonSubmitLogin from "../../../components/buttonSubmitLogin/buttonSubmitLogin";
 import BackgroundAnimated from "../../../components/backgroundAnimated/backgroundAnimated";
@@ -102,17 +104,16 @@ function LayoutLogin() {
                                         render={({ field, fieldState }) => (
                                             <>
                                                 <label htmlFor={field.name} className={classNames({ "p-error": errors.username })}></label>
-                                                <span className="p-input-icon-left w-full">
-                                                    <i className="pi pi-user" />
+                                                <IconField iconPosition="left" className="w-full">
+                                                    <InputIcon className="pi pi-user"> </InputIcon>
                                                     <InputText
                                                         id={field.name}
                                                         value={field.value}
                                                         className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
-                                                        style={{ backgroundColor: "transparent" }}
                                                         onChange={(e) => field.onChange(e.target.value)}
                                                         placeholder={Username}
                                                     />
-                                                </span>
+                                                </IconField>
                                                 {ErrorMessageHtml(field.name)}
                                             </>
                                         )}
@@ -128,8 +129,8 @@ function LayoutLogin() {
                                         render={({ field, fieldState }) => (
                                             <>
                                                 <label htmlFor={field.name} className={classNames({ "p-error": errors.password })}></label>
-                                                <span className="p-input-icon-left w-full">
-                                                    <i className="pi pi-lock" />
+                                                <IconField iconPosition="left" className="w-full">
+                                                    <InputIcon className="pi pi-lock"> </InputIcon>
                                                     <InputText
                                                         id={field.name}
                                                         value={field.value}
@@ -138,7 +139,7 @@ function LayoutLogin() {
                                                         onChange={(e) => field.onChange(e.target.value)}
                                                         placeholder={Password}
                                                     />
-                                                </span>
+                                                </IconField>
                                                 {ErrorMessageHtml(field.name)}
                                             </>
                                         )}

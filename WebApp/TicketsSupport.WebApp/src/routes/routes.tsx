@@ -45,7 +45,7 @@ export const routesAuthorized = () => {
                     path: "",
                     element:
                         <ProtectedRoute name="Home">
-                            <Home />,
+                            <Home />
                         </ProtectedRoute>
                 },
                 {
