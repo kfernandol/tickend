@@ -50,6 +50,9 @@
       "name": "Name",
       "actions": "Actions"
     },
+    "table": {
+      "noElements": "No data available"
+    },
     "deleteTitle": "Deletion",
     "cardTitles": {
       "new": "Add New {{0}}",

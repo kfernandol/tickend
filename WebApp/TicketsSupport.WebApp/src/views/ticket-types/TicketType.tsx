@@ -59,6 +59,7 @@ export default function TicketTypes() {
     const TableHeaderIcon = t("ticketTypes.labels.icon");
     const TableHeaderIconColor = t("ticketTypes.labels.iconColor");
     const TableHeaderActions = t("common.labels.actions");
+    const TableNoElements = t("common.table.noElements");
 
     //Links
     const NewItemUrl = paths.newTicketType;
@@ -194,7 +195,7 @@ export default function TicketTypes() {
                             size='small'
                             filters={filters}
                             globalFilterFields={['id', 'name', 'icon', 'iconColor']}
-                            emptyMessage="No customers found."
+                            emptyMessage={TableNoElements}
                         >
                             <Column style={{ width: '5rem' }} />
                             <Column field="id" header={TableHeaderId} sortable />

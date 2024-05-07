@@ -78,6 +78,7 @@ export default function Projects() {
     const TableHeaderTypes = t("projects.labels.types");
     const TableHeaderClients = t("projects.labels.clients");
     const TableHeaderDeveloper = t("projects.labels.developer");
+    const TableNoElements = t("common.table.noElements");
 
     //Links
     const NewItemUrl = paths.newProject;
@@ -146,7 +147,7 @@ export default function Projects() {
     useEffect(() => {
         if (httpCodeDelete === 200) {
             toast?.current?.show({ severity: 'success', summary: TableDeleteTitle, detail: deleteResponse?.message, life: 3000 });
-            setTimeout(() => SendGetRequest("v1/projects").then((result) => {setProjects(result.data) }), 3000);
+            setTimeout(() => SendGetRequest("v1/projects").then((result) => { setProjects(result.data) }), 3000);
         }
         if (errorDelete && httpCodeDelete !== 0) {
             if ('errors' in errorDelete) {//Is Errors Response
@@ -191,13 +192,13 @@ export default function Projects() {
                 <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder={GlobalSearch} />
             </IconField>
             {/* Add new */}
-            { getTokenData?.PermissionLevel === "Administrator" ? 
+            {getTokenData?.PermissionLevel === "Administrator" ?
                 <Link to={NewItemUrl}>
                     <Button icon="pi pi-plus" severity='success'>
                         <span className='pl-2'>{TableHeaderNew}</span>
                     </Button>
                 </Link>
-            : null}
+                : null}
         </div>
     );
 
@@ -208,7 +209,7 @@ export default function Projects() {
                 <Link to={editUrlPath + rowData.id}>
                     <Button icon="pi pi-pencil" severity='warning' aria-label="Bookmark"></Button>
                 </Link>
-                <Button icon="pi pi-trash" severity='danger' aria-label="Bookmark" onClick={() => { confirmDelete(rowData.id) }} key={rowData.id }></Button>
+                <Button icon="pi pi-trash" severity='danger' aria-label="Bookmark" onClick={() => { confirmDelete(rowData.id) }} key={rowData.id}></Button>
             </div>
         </>
     }
@@ -253,7 +254,7 @@ export default function Projects() {
                             size='small'
                             filters={filters}
                             globalFilterFields={['id', 'name', 'url', 'icon', 'position', 'parentId', 'show']}
-                            emptyMessage="No customers found."
+                            emptyMessage={TableNoElements}
                         >
                             <Column style={{ width: '5rem' }} />
                             <Column field="id" header={TableHeaderId} sortable />

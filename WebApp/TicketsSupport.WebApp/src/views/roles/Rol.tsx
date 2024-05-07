@@ -53,6 +53,7 @@ export default function Roles() {
     const RolesTableHeaderPermissionLevel = t("roles.labels.permissionLevel");
     const RolesTableHeaderMenus = t("roles.labels.menus");
     const RolesTableHeaderActions = t("common.labels.actions");
+    const TableNoElements = t("common.table.noElements");
 
     //Links
     const NewItemUrl = paths.newRol;
@@ -125,13 +126,13 @@ export default function Roles() {
                 <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder={GlobalSearch} />
             </IconField>
             {/* Add new */}
-            { getTokenData?.PermissionLevel === "Administrator" ? 
+            {getTokenData?.PermissionLevel === "Administrator" ?
                 <Link to={NewItemUrl}>
                     <Button icon="pi pi-plus" severity='success'>
                         <span className='pl-2'>{RolesTableHeaderNewRol}</span>
                     </Button>
                 </Link>
-            : null}
+                : null}
         </div>
     );
 
@@ -186,7 +187,7 @@ export default function Roles() {
                             size='small'
                             filters={filters}
                             globalFilterFields={['id', 'name', 'permissionLevel', 'menus']}
-                            emptyMessage="No customers found."
+                            emptyMessage={TableNoElements}
                         >
                             <Column style={{ width: '5rem' }} />
                             <Column field="id" header={RolesTableHeaderId} sortable />

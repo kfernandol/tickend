@@ -58,6 +58,7 @@ export default function TicketPriority() {
     const TableHeaderName = t("common.labels.name");
     const TableHeaderColor = t("ticketPriorities.labels.color");
     const TableHeaderActions = t("common.labels.actions");
+    const TableNoElements = t("common.table.noElements");
 
     //Links
     const NewItemUrl = paths.newTicketPriorities;
@@ -191,7 +192,7 @@ export default function TicketPriority() {
                             size='small'
                             filters={filters}
                             globalFilterFields={['id', 'name', 'color']}
-                            emptyMessage="No customers found."
+                            emptyMessage={TableNoElements}
                         >
                             <Column style={{ width: '5rem' }} />
                             <Column field="id" header={TableHeaderId} sortable />

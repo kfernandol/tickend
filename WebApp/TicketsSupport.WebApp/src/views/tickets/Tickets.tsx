@@ -55,6 +55,7 @@ export default function Tickets() {
     const dateUpdated = t('tickets.labels.dateUpdated');
     const statusOpen = t('tickets.status.open');
     const statusClosed = t('tickets.status.closed');
+    const TableNoElements = t("common.table.noElements");
     //Links
     const NewItemUrl = paths.newTicket;
     const EditItemUrl = paths.editTicketWithId;
@@ -339,7 +340,7 @@ export default function Tickets() {
                             filterDisplay="row"
                             header={TableHeader}
                             loading={loadingGet}
-                            emptyMessage="No customers found."
+                            emptyMessage={TableNoElements}
                             selectionMode="single"
                             onSelectionChange={(e) => handleSelectionChange(e)}>
                             <Column

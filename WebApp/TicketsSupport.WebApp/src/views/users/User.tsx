@@ -62,6 +62,7 @@ export default function Users() {
     const TableHeaderEmail = t("users.labels.email");
     const TableHeaderRol = t("users.labels.role");
     const TableHeaderActions = t("common.labels.actions");
+    const TableNoElements = t("common.table.noElements");
 
     //Links
     const NewItemUrl = paths.newUser;
@@ -128,7 +129,7 @@ export default function Users() {
             .catch((error) => {
                 console.error("Error:", error);
             });
-        
+
     }, [])
 
     //Process Request
@@ -238,6 +239,7 @@ export default function Users() {
                             size='small'
                             filters={filters}
                             globalFilterFields={['id', 'username', 'firstName', 'lastName', 'email']}
+                            emptyMessage={TableNoElements}
                         >
                             <Column style={{ width: '5rem' }} />
                             <Column field="id" header={TableHeaderId} sortable />

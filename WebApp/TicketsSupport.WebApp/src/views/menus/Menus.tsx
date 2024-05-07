@@ -68,6 +68,7 @@ export default function Menus() {
     const TableHeaderPosition = t("menus.labels.position");
     const TableHeaderParentId = t("menus.labels.parentId");
     const TableHeaderShow = t("menus.labels.show");
+    const TableNoElements = t("common.table.noElements");
 
     //Links
     const NewItemUrl = paths.newMenus;
@@ -145,13 +146,13 @@ export default function Menus() {
                 <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder={GlobalSearch} />
             </IconField>
             {/* Add new */}
-            { getTokenData?.PermissionLevel === "Administrator" ? 
+            {getTokenData?.PermissionLevel === "Administrator" ?
                 <Link to={NewItemUrl}>
                     <Button icon="pi pi-plus" severity='success'>
                         <span className='pl-2'>{TableHeaderNew}</span>
                     </Button>
                 </Link>
-            : null}
+                : null}
         </div>
     );
 
@@ -205,7 +206,7 @@ export default function Menus() {
                             size='small'
                             filters={filters}
                             globalFilterFields={['id', 'name', 'url', 'icon', 'position', 'parentId', 'show']}
-                            emptyMessage="No customers found."
+                            emptyMessage={TableNoElements}
                         >
                             <Column style={{ width: '5rem' }} />
                             <Column field="id" header={TableHeaderId} sortable />
