@@ -4,15 +4,13 @@ import { paths } from '../../routes/paths';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Toast } from 'primereact/toast';
 import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';
-import { Dropdown } from 'primereact/dropdown';
+import { Column, ColumnFilterElementTemplateOptions } from 'primereact/column';
 import { Calendar } from 'primereact/calendar';
 import { MultiSelect } from 'primereact/multiselect';
 import { Button } from 'primereact/button';
-import { FilterMatchMode, FilterOperator } from 'primereact/api';
+import { FilterMatchMode } from 'primereact/api';
 import { Badge } from 'primereact/badge';
 import { Tooltip } from 'primereact/tooltip';
-import { Nullable } from 'primereact/ts-helpers';
 //Hooks
 import { useGet } from '../../services/api_services';
 import { useTranslation } from 'react-i18next';
@@ -38,6 +36,7 @@ export default function Tickets() {
 
     //Redux
     const authenticated = useSelector((state: RootState) => state.auth);
+    const language = useSelector((state: RootState) => state.language);
     const getTokenData = useTokenData<AuthToken>(authenticated?.token);
     //Hooks
     const toast = useRef<Toast>(null);
@@ -75,7 +74,20 @@ export default function Tickets() {
                 responses.forEach((response) => {
                     switch (response.url) {
                         case "v1/tickets":
-                            setTickets(response.data as TicketResponse[]);
+                            setTickets((response.data as TicketResponse[]).map((value) => (
+                                {
+                                    id: value.id,
+                                    title: value.title,
+                                    projectId: value.projectId,
+                                    description: value.description,
+                                    ticketPriorityId: value.ticketPriorityId,
+                                    ticketStatusId: value.ticketStatusId,
+                                    ticketTypeId: value.ticketTypeId,
+                                    dateCreated: new Date(value.dateCreated),
+                                    dateUpdated: new Date(value.dateUpdated),
+                                    isClosed: value.isClosed
+                                }
+                            )));
                             break;
                         case "v1/projects":
                             setProjects(response.data as ProjectResponse[]);
@@ -101,14 +113,13 @@ export default function Tickets() {
 
     //Table Filters
     const filters = {
-        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
         title: { value: null, matchMode: FilterMatchMode.EQUALS },
-        project: { value: null, matchMode: FilterMatchMode.EQUALS },
-        type: { value: null, matchMode: FilterMatchMode.EQUALS },
-        status: { value: null, matchMode: FilterMatchMode.EQUALS },
-        priority: { value: null, matchMode: FilterMatchMode.EQUALS },
-        dateCreated: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
-        dateUpdated: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
+        projectId: { value: null, matchMode: FilterMatchMode.IN },
+        ticketTypeId: { value: null, matchMode: FilterMatchMode.IN },
+        ticketStatusId: { value: null, matchMode: FilterMatchMode.IN },
+        ticketPriorityId: { value: null, matchMode: FilterMatchMode.IN },
+        dateCreated: { value: null, matchMode: FilterMatchMode.DATE_IS },
+        dateUpdated: { value: null, matchMode: FilterMatchMode.DATE_IS },
     };
 
     const projectBodyTemplate = (rowData: { projectId: number; }) => {
@@ -120,7 +131,7 @@ export default function Tickets() {
                         <img alt={project?.name} src={`data:image/*;base64,${project?.photo}`} width="32" />
                         :
                         <img alt={project?.name} src={`/src/assets/imgs/project-default.png`} width="32" />}
-                    
+
                     <span>{project?.name}</span>
                 </div>
             </>
@@ -164,7 +175,7 @@ export default function Tickets() {
         }
     };
 
-    const statusBodyTemplate = (rowData: { ticketStatusId: number, id : number }) => {
+    const statusBodyTemplate = (rowData: { ticketStatusId: number, id: number }) => {
         const status = TicketStatus.find(x => x.id === rowData.ticketStatusId);
         const ticket = Tickets.find(x => x.id === rowData.id);
         if (ticket?.isClosed === true) {
@@ -208,7 +219,7 @@ export default function Tickets() {
         </>;
     }
 
-    const projectRowFilterTemplate = (options: { value: string, filterApplyCallback: (value: number) => void }) => {
+    const projectRowFilterTemplate = (options: ColumnFilterElementTemplateOptions) => {
         return (
             <MultiSelect
                 value={options.value}
@@ -216,54 +227,73 @@ export default function Tickets() {
                 itemTemplate={projectItemTemplate}
                 onChange={(e) => options.filterApplyCallback(e.value)}
                 optionLabel="name"
-                placeholder="Any"
+                optionValue="id"
+                placeholder={project}
                 className="p-column-filter"
                 maxSelectedLabels={1}
-                style={{ minWidth: '10rem' }}
             />
         );
     };
 
-    const statusRowFilterTemplate = (options: { value: number, filterApplyCallback(name: string): void }) => {
-        const status = TicketStatus.find(x => x.id === options.value);
+    const statusRowFilterTemplate = (options: ColumnFilterElementTemplateOptions) => {
         return (
-            <Dropdown value={status?.name} options={TicketStatus} onChange={(e) => options.filterApplyCallback(e.value?.name)} itemTemplate={statusItemTemplate} placeholder="Status" className="p-column-filter" showClear style={{ minWidth: '10rem' }} />
+            <MultiSelect
+                value={options.value}
+                options={TicketStatus}
+                itemTemplate={statusItemTemplate}
+                onChange={(e) => options.filterApplyCallback(e.value)}
+                optionLabel="name"
+                optionValue="id"
+                placeholder={status}
+                className="p-column-filter"
+            />
         );
     };
 
-    const priorityRowFilterTemplate = (options: { value: { name: string }, filterApplyCallback: (value: { name: string }) => void }) => {
+    const priorityRowFilterTemplate = (options: ColumnFilterElementTemplateOptions) => {
         return (
-            <Dropdown value={options.value?.name} options={TicketPriorities} onChange={(e) => options.filterApplyCallback(e.value?.name)} itemTemplate={statusItemTemplate} placeholder="Type" className="p-column-filter" showClear style={{ minWidth: '10rem' }} />
+            <MultiSelect
+                value={options.value}
+                options={TicketPriorities}
+                itemTemplate={statusItemTemplate}
+                onChange={(e) => options.filterApplyCallback(e.value)}
+                optionLabel="name"
+                optionValue="id"
+                placeholder={priority}
+                className="p-column-filter"
+            />
         );
     }
 
-    const TypeRowFilterTemplate = (options: { value: { name: string }, filterApplyCallback(name: string): void }) => {
+    const TypeRowFilterTemplate = (options: ColumnFilterElementTemplateOptions) => {
         return (
-            <Dropdown value={options.value?.name} options={TicketType} onChange={(e) => options.filterApplyCallback(e.value?.name)} itemTemplate={priorityItemTemplate} placeholder="Priority" className="p-column-filter" showClear style={{ minWidth: '10rem' }} />
+            <MultiSelect
+                value={options.value}
+                options={TicketType}
+                itemTemplate={priorityItemTemplate}
+                onChange={(e) => options.filterApplyCallback(e.value)}
+                optionLabel="name"
+                optionValue="id"
+                placeholder={type}
+                className="p-column-filter"
+            />
         );
     }
 
-    const dateFilterTemplate = (options: { value: Date, index: number, filterCallback(value: Nullable<Date>, index: number): void }) => {
-        return <Calendar value={options?.value} onChange={(e) => options.filterCallback(e.value, options.index)} dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />;
+    const dateFilterTemplate = (options: ColumnFilterElementTemplateOptions) => {
+        return <Calendar value={options.value} onChange={(e) => options.filterApplyCallback(e.value)} dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" />;
     };
 
-    const dateCreatedBodyTemplate = (options: { dateCreated: string }) => {
+    const dateBodyTemplate = (options: { dateCreated: string }) => {
         const date = new Date(options.dateCreated)
 
         if (date && options.dateCreated) {
-            return `${date.toLocaleDateString("en-US")} ${date.toLocaleTimeString("en-US")}`;
-        } else {
-            return ''
-        }
-    }
-
-    const dateUpdatedBodyTemplate = (options: { dateUpdated: string }) => {
-        const date = new Date(options.dateUpdated)
-
-        if (date && options.dateUpdated) {
-            return `${date.toLocaleDateString("en-US")} ${date.toLocaleTimeString("en-US")}`;
-        } else {
-            return ''
+            if (language.code === "en") {
+                return `${date.toLocaleDateString("en-US", { day: '2-digit', month: '2-digit', year: 'numeric' })} ${date.toLocaleTimeString("en-US")}`;
+            }
+            else if (language.code === "es") {
+                return `${date.toLocaleDateString("es-GT", { day: '2-digit', month: '2-digit', year: 'numeric' })} ${date.toLocaleTimeString("es-GT")}`;
+            }
         }
     }
 
@@ -273,7 +303,7 @@ export default function Tickets() {
                 {/* Table Title */}
                 <span className='text-2xl text-white'>{TableTitle}</span>
                 {/* Add new */}
-                {getTokenData?.PermissionLevel === "Administrator" || getTokenData?.PermissionLevel === "User"?
+                {getTokenData?.PermissionLevel === "Administrator" || getTokenData?.PermissionLevel === "User" ?
                     <Link to={NewItemUrl}>
                         <Button icon="pi pi-plus" severity='success'>
                             <span className='pl-2'>{TableHeaderNew}</span>
@@ -312,14 +342,69 @@ export default function Tickets() {
                             emptyMessage="No customers found."
                             selectionMode="single"
                             onSelectionChange={(e) => handleSelectionChange(e)}>
-                            <Column field="title" header={title} filter style={{ minWidth: '18rem', maxWidth: '350px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }} />
-                            <Column header={project} filterField="projectId" showFilterMenu={false} filterMenuStyle={{ width: '11rem' }} style={{ maxWidth: '11rem' }}
-                                body={projectBodyTemplate} filter filterElement={projectRowFilterTemplate} />
-                            <Column field="ticketTypeId" header={type} showFilterMenu={false} filterMenuStyle={{ width: '5rem' }} style={{ maxWidth: '11rem' }} body={typeBodyTemplate} filter filterElement={TypeRowFilterTemplate} />
-                            <Column field="ticketPriorityId" header={priority} showFilterMenu={false} filterMenuStyle={{ width: '5rem' }} style={{ maxWidth: '11rem' }} body={priorityBodyTemplate} filter filterElement={priorityRowFilterTemplate} />
-                            <Column field="ticketStatusId" header={status} showFilterMenu={false} filterMenuStyle={{ width: '5rem' }} style={{ maxWidth: '11rem' }} body={statusBodyTemplate} filter filterElement={statusRowFilterTemplate} />
-                            <Column field="dateCreated" dataType="date" header={dateCreated} showFilterMenu={false} filterMenuStyle={{ width: '14rem' }} style={{ maxWidth: '11rem' }} body={dateCreatedBodyTemplate} filter filterElement={dateFilterTemplate} />
-                            <Column field="dateUpdated" dataType="date" header={dateUpdated} showFilterMenu={false} filterMenuStyle={{ width: '14rem' }} style={{ maxWidth: '11rem' }} body={dateUpdatedBodyTemplate} filter filterElement={dateFilterTemplate} />
+                            <Column
+                                field="title"
+                                header={title}
+                                filter
+                                filterPlaceholder={title}
+                                showFilterMenu={false}
+                                style={{ minWidth: '18rem', maxWidth: '350px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }} />
+                            <Column
+                                field="projectId"
+                                header={project}
+                                showFilterMenu={false}
+                                filterMenuStyle={{ width: '11rem' }}
+                                style={{ maxWidth: '11rem' }}
+                                body={projectBodyTemplate}
+                                filter
+                                filterElement={projectRowFilterTemplate} />
+                            <Column
+                                field="ticketTypeId"
+                                header={type}
+                                showFilterMenu={false}
+                                filterMenuStyle={{ width: '5rem' }}
+                                style={{ maxWidth: '11rem' }}
+                                body={typeBodyTemplate}
+                                filter
+                                filterElement={TypeRowFilterTemplate} />
+                            <Column
+                                field="ticketPriorityId"
+                                header={priority}
+                                showFilterMenu={false}
+                                filterMenuStyle={{ width: '5rem' }}
+                                style={{ maxWidth: '11rem' }}
+                                body={priorityBodyTemplate}
+                                filter
+                                filterElement={priorityRowFilterTemplate} />
+                            <Column
+                                field="ticketStatusId"
+                                header={status}
+                                showFilterMenu={false}
+                                filterMenuStyle={{ width: '5rem' }}
+                                style={{ maxWidth: '11rem' }}
+                                body={statusBodyTemplate}
+                                filter
+                                filterElement={statusRowFilterTemplate} />
+                            <Column
+                                field="dateCreated"
+                                dataType="date"
+                                header={dateCreated}
+                                showFilterMenu={false}
+                                filterMenuStyle={{ width: '14rem' }}
+                                style={{ maxWidth: '11rem' }}
+                                body={dateBodyTemplate}
+                                filter
+                                filterElement={dateFilterTemplate} />
+                            <Column
+                                field="dateUpdated"
+                                dataType="date"
+                                header={dateUpdated}
+                                showFilterMenu={false}
+                                filterMenuStyle={{ width: '14rem' }}
+                                style={{ maxWidth: '11rem' }}
+                                body={dateBodyTemplate}
+                                filter
+                                filterElement={dateFilterTemplate} />
                         </DataTable>
                     </div>
                 </>
