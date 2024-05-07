@@ -6,7 +6,7 @@ export interface TicketResponse {
     ticketTypeId: number,
     ticketPriorityId: number,
     ticketStatusId: number,
-    dateCreated: string,
-    dateUpdated: string,
+    dateCreated: Date,
+    dateUpdated: Date,
     isClosed: boolean
 }
