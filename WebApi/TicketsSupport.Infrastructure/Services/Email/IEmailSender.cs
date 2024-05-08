@@ -2,6 +2,7 @@
 {
     public interface IEmailSender
     {
-        Task SendEmail(string to, EmailTemplate template, Dictionary<string, string> templateData);
+        Task<(string subject, string to)> SendEmail(string to, string subject, EmailTemplate template, Dictionary<string, string> templateData);
+        Task<(string subject, string to)> ReplyEmailTicket(string to, string originalSubjet, string HtmlEmail);
     }
 }

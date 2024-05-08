@@ -163,7 +163,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                         {"ResetLink", resetPasswordLink},
                     };
 
-                    await _emailSender.SendEmail(request.Email, EmailTemplate.ResetPassword, EmailData);
+                    await _emailSender.SendEmail(request.Email, string.Empty, EmailTemplate.ResetPassword, EmailData);
                 }
 
                 return true;
@@ -207,7 +207,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                         {"Message", ResourcesUtils.GetEmailSimpleMessage("MessagePasswordChanged")},
                     };
 
-                await _emailSender.SendEmail(restorePassword.User.Email, EmailTemplate.SimpleMessage, EmailData);
+                await _emailSender.SendEmail(restorePassword.User.Email, string.Empty, EmailTemplate.SimpleMessage, EmailData);
                 await _context.SaveChangesAsync();
 
                 return true;

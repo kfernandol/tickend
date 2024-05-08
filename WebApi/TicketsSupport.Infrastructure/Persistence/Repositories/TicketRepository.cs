@@ -54,13 +54,15 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                .Where(x => x.Id == ticket.ProjectId)
                                                .FirstOrDefaultAsync();
 
-                //Send Email All Clients
-                foreach (var ClientXProject in Project.ProjectXclients)
+                var clients = Project.ProjectXclients.Where(x => x.Client.Active == true).Select(x => x.Client).ToList();
+
+                //Send Email All Clients And Administrators
+                foreach (var client in clients)
                 {
                     var TicketViewLink = $"{_webAppConfig.Url}/Ticket/Edit/{ticket.Id}";
                     Dictionary<string, string> EmailData = new Dictionary<string, string>
                     {
-                        {"FullName", $"{ClientXProject?.Client?.FirstName} {ClientXProject?.Client?.LastName}"},
+                        {"FullName", $"{client.FirstName} {client.LastName}"},
                         {"TicketTitle", ticket.Title},
                         {"TicketCreateDate", DateCreate.ToString("dd/MM/yyyy")},
                         {"TicketProject", Project?.Name ?? string.Empty},
@@ -69,27 +71,40 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                         {"ViewTicketLink", TicketViewLink},
                     };
 
-                    if (ClientXProject != null && ClientXProject.Client != null && ClientXProject.Client.Email != null)
-                        await _emailSender.SendEmail(ClientXProject.Client.Email, EmailTemplate.TicketCreate, EmailData);
+                    if (client != null && client.Email != null)
+                    {
+                        await _emailSender.SendEmail(client.Email, ticket.Title, EmailTemplate.TicketCreate, EmailData);
+                    }
                 }
 
+                var administrators = _context.Users.AsNoTracking()
+                                                   .Include(x => x.RolNavigation)
+                                                   .Where(x => x.RolNavigation.PermissionLevel == PermissionLevel.Administrator && x.Active == true)
+                                                   .ToList();
+
+                var devs = Project.ProjectXdevelopers.Where(x => x.Developer.Active == true).Select(x => x.Developer).ToList();
+                var adminsAndDevs = administrators.Union(devs);
+
                 //Send Email All Developers
-                foreach (var DevelopertXProject in Project.ProjectXdevelopers)
+                foreach (var Usr in adminsAndDevs)
                 {
                     var TicketViewLink = $"{_webAppConfig.Url}/Ticket/Edit/{ticket.Id}";
                     Dictionary<string, string> EmailData = new Dictionary<string, string>
                     {
-                        {"FullName", $"{DevelopertXProject?.Developer?.FirstName} {DevelopertXProject?.Developer?.LastName}"},
+                        {"FullName", $"{Usr?.FirstName} {Usr?.LastName}"},
                         {"TicketTitle", ticket.Title},
                         {"TicketCreateDate", DateCreate.ToString("dd/MM/yyyy")},
                         {"TicketProject", Project?.Name ?? string.Empty},
                         {"TicketType", TicketType?.Name ?? string.Empty},
-                        {"CreateBy", $"{user.FirstName} {user.LastName}"},
+                        {"CreateBy", $"{Usr.FirstName} {Usr.LastName}"},
                         {"ViewTicketLink", TicketViewLink},
                     };
 
-                    if (DevelopertXProject != null && DevelopertXProject.Developer != null && DevelopertXProject.Developer.Email != null)
-                        await _emailSender.SendEmail(DevelopertXProject.Developer.Email, EmailTemplate.TicketCreate, EmailData);
+                    if (Usr != null && Usr.Email != null)
+                    {
+                        var Email = await _emailSender.SendEmail(Usr.Email, ticket.Title, EmailTemplate.TicketCreate, EmailData);
+                        await _emailSender.ReplyEmailTicket(Email.to, Email.subject, ticket.Description);
+                    }
                 }
 
 
@@ -135,19 +150,19 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             if (user?.RolNavigation?.PermissionLevel == PermissionLevel.Administrator)
             {
                 result = await _context.Tickets.Select(x => new Ticket
-                                               {
-                                                   Id = x.Id,
-                                                   Title = x.Title,
-                                                   ProjectId = x.ProjectId,
-                                                   TicketPriorityId = x.TicketPriorityId,
-                                                   TicketStatusId = x.TicketStatusId,
-                                                   TicketTypeId = x.TicketTypeId,
-                                                   DateCreated = x.DateCreated,
-                                                   DateUpdated = x.DateUpdated,
-                                                   CreateBy = x.CreateBy,
-                                                   IsClosed = x.IsClosed,
-                                                   Active = x.Active
-                                               })
+                {
+                    Id = x.Id,
+                    Title = x.Title,
+                    ProjectId = x.ProjectId,
+                    TicketPriorityId = x.TicketPriorityId,
+                    TicketStatusId = x.TicketStatusId,
+                    TicketTypeId = x.TicketTypeId,
+                    DateCreated = x.DateCreated,
+                    DateUpdated = x.DateUpdated,
+                    CreateBy = x.CreateBy,
+                    IsClosed = x.IsClosed,
+                    Active = x.Active
+                })
                                                .Where(x => x.Active == true)
                                                .AsNoTracking()
                                                .ToListAsync();
