@@ -36,7 +36,7 @@ export default function TicketStatus() {
     });
     //Api Request
     const { SendDeleteRequest, deleteResponse, errorDelete, httpCodeDelete } = useDelete<BasicResponse>();
-    const { SendGetRequest, getResponse, loadingGet } = useGet<TicketStatusResponse[]>();
+    const { SendGetRequest, loadingGet } = useGet<TicketStatusResponse[]>();
     const [TicketStatus, setTicketStatus] = useState<
         {
             id: number,
@@ -66,27 +66,42 @@ export default function TicketStatus() {
 
     //Send Request
     useEffect(() => {
-        SendGetRequest("v1/ticket/status");
-    }, [deleteResponse])
+        const requests = [
+            SendGetRequest("v1/ticket/status")
+        ];
 
-    //Get Response
-    useEffect(() => {
-        if (getResponse) {
-            const ticketStatus = getResponse.map(x => ({
-                id: x.id,
-                name: x.name,
-                color: <Badge value={x.color} style={{ backgroundColor: x.color }}></Badge>
-            }))
-
-            setTicketStatus(ticketStatus);
-        }
-    }, [getResponse]);
+        Promise.all(requests)
+            .then((responses) => {
+                responses.forEach((response) => {
+                    switch (response.url) {
+                        case "v1/ticket/status":
+                            setTicketStatus((response.data as TicketStatusResponse[]).map(x => ({
+                                id: x.id,
+                                name: x.name,
+                                color: <Badge value={x.color} style={{ backgroundColor: x.color }}></Badge>
+                            })));
+                            break;
+                        default:
+                            break;
+                    }
+                });
+            })
+            .catch((error) => {
+                console.error("Error en las solicitudes:", error);
+            });
+    }, [])
 
     //Notification delete
     useEffect(() => {
         if (httpCodeDelete === 200) {
             toast?.current?.show({ severity: 'success', summary: TableDeleteTitle, detail: deleteResponse?.message, life: 3000 });
-            setTimeout(() => SendGetRequest("v1/ticket/priorities"), 3000);
+            setTimeout(() => SendGetRequest("v1/ticket/status").then((value) => {
+                setTicketStatus((value.data as TicketStatusResponse[]).map(x => ({
+                    id: x.id,
+                    name: x.name,
+                    color: <Badge value={x.color} style={{ backgroundColor: x.color }}></Badge>
+                })));
+            }), 3000);
         }
         if (errorDelete && httpCodeDelete !== 0) {
             if ('errors' in errorDelete) {//Is Errors Response

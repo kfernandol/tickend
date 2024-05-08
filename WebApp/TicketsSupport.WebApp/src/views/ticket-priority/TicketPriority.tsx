@@ -23,6 +23,7 @@ import { TicketStatusResponse } from '../../models/responses/ticketStatus.respon
 import Swal from 'sweetalert2';
 import { RootState } from '../../redux/store';
 import { AuthToken } from '../../models/tokens/token.model';
+import { TicketPriorityResponse } from '../../models/responses/ticketPriority.response';
 
 export default function TicketPriority() {
     const toast = useRef<Toast>(null);
@@ -66,27 +67,46 @@ export default function TicketPriority() {
 
     //Send Request
     useEffect(() => {
-        SendGetRequest("v1/ticket/priorities");
+        const requests = [
+            SendGetRequest("v1/ticket/priorities")
+        ];
+
+        Promise.all(requests)
+            .then((responses) => {
+                responses.forEach((response) => {
+                    switch (response.url) {
+                        case "v1/ticket/priorities":
+                            setTicketPriorities((response.data as TicketPriorityResponse[]).map((x) => (
+                                {
+                                    id: x.id,
+                                    name: x.name,
+                                    color: <Badge value={x.color} style={{ backgroundColor: x.color }}></Badge>
+                                }
+                            )));
+                            break;
+                        default:
+                            break;
+                    }
+                });
+            })
+            .catch((error) => {
+                console.error("Error en las solicitudes:", error);
+            });
     }, [])
-
-    //Get Response
-    useEffect(() => {
-        if (getResponse) {
-            const ticketPriorities = getResponse.map(x => ({
-                id: x.id,
-                name: x.name,
-                color: <Badge value={x.color} style={{ backgroundColor: x.color }}></Badge>
-            }))
-
-            setTicketPriorities(ticketPriorities);
-        }
-    }, [getResponse, t]);
 
     //Notification delete
     useEffect(() => {
         if (httpCodeDelete === 200) {
             toast?.current?.show({ severity: 'success', summary: TableDeleteTitle, detail: deleteResponse?.message, life: 3000 });
-            setTimeout(() => SendGetRequest("v1/ticket/priorities"), 3000);
+            setTimeout(() => SendGetRequest("v1/ticket/priorities").then((value) => {
+                setTicketPriorities((value.data as TicketPriorityResponse[]).map((x) => (
+                    {
+                        id: x.id,
+                        name: x.name,
+                        color: <Badge value={x.color} style={{ backgroundColor: x.color }}></Badge>
+                    }
+                )));
+            }), 3000);
         }
         if (errorDelete && httpCodeDelete !== 0) {
             if ('errors' in errorDelete) {//Is Errors Response

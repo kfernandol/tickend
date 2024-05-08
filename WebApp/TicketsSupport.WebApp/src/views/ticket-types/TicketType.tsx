@@ -68,28 +68,44 @@ export default function TicketTypes() {
 
     //Send Request
     useEffect(() => {
-        SendGetRequest("v1/ticket/types");
-    }, [deleteResponse])
+        const requests = [
+            SendGetRequest("v1/ticket/types")
+        ];
 
-    //Get Response
-    useEffect(() => {
-        if (getResponse) {
-            const TicketTypes = getResponse.map(x => ({
-                id: x.id,
-                name: x.name,
-                icon: <i className={x.icon} />,
-                iconColor: <Badge value={x.iconColor} style={{ backgroundColor: x.iconColor }}></Badge>
-            }))
-
-            setTicketTypes(TicketTypes);
-        }
-    }, [getResponse, t]);
+        Promise.all(requests)
+            .then((responses) => {
+                responses.forEach((response) => {
+                    switch (response.url) {
+                        case "v1/ticket/types":
+                            setTicketTypes((response.data as TicketTypeResponse[]).map(x => ({
+                                id: x.id,
+                                name: x.name,
+                                icon: <i className={x.icon} />,
+                                iconColor: <Badge value={x.iconColor} style={{ backgroundColor: x.iconColor }}></Badge>
+                            })));
+                            break;
+                        default:
+                            break;
+                    }
+                });
+            })
+            .catch((error) => {
+                console.error("Error en las solicitudes:", error);
+            });
+    }, [])
 
     //Notification delete
     useEffect(() => {
         if (httpCodeDelete === 200) {
             toast?.current?.show({ severity: 'success', summary: TableDeleteTitle, detail: deleteResponse?.message, life: 3000 });
-            setTimeout(() => SendGetRequest("v1/ticket/priorities"), 3000);
+            setTimeout(() => SendGetRequest("v1/ticket/types").then((value) => {
+                setTicketTypes((value.data as TicketTypeResponse[]).map(x => ({
+                    id: x.id,
+                    name: x.name,
+                    icon: <i className={x.icon} />,
+                    iconColor: <Badge value={x.iconColor} style={{ backgroundColor: x.iconColor }}></Badge>
+                })));
+            }), 3000);
         }
         if (errorDelete && httpCodeDelete !== 0) {
             if ('errors' in errorDelete) {//Is Errors Response

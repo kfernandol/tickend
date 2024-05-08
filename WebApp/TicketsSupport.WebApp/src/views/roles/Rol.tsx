@@ -61,27 +61,44 @@ export default function Roles() {
 
     //Send Request
     useEffect(() => {
-        SendGetRequest("v1/roles");
-    }, [])
+        const requests = [
+            SendGetRequest("v1/roles")
+        ];
 
-    //Get Response
-    useEffect(() => {
-        if (getResponse) {
-            const rolesResponse = getResponse.map(x => ({
-                id: x.id,
-                name: x.name,
-                permissionLevel: x.permissionLevel,
-                menus: x.menus.map(x => x.name + ", ")
-            }))
-            setRoles(rolesResponse);
-        }
-    }, [getResponse]);
+        Promise.all(requests)
+            .then((responses) => {
+                responses.forEach((response) => {
+                    switch (response.url) {
+                        case "v1/roles":
+                            setRoles((response.data as RolesResponse[]).map(x => ({
+                                id: x.id,
+                                name: x.name,
+                                permissionLevel: x.permissionLevel,
+                                menus: x.menus.map(x => x.name + ", ")
+                            })));
+                            break;
+                        default:
+                            break;
+                    }
+                });
+            })
+            .catch((error) => {
+                console.error("Error en las solicitudes:", error);
+            });
+    }, [])
 
     //Notification delete
     useEffect(() => {
         if (httpCodeDelete === 200) {
             toast?.current?.show({ severity: 'success', summary: TableDeleteTitle, detail: deleteResponse?.message, life: 3000 });
-            setTimeout(() => SendGetRequest("v1/roles"), 3000);
+            setTimeout(() => SendGetRequest("v1/roles").then((value) => {
+                setRoles((value.data as RolesResponse[]).map(x => ({
+                    id: x.id,
+                    name: x.name,
+                    permissionLevel: x.permissionLevel,
+                    menus: x.menus.map(x => x.name + ", ")
+                })));
+            }), 3000);
         }
         if (errorDelete && httpCodeDelete !== 0) {
             if ('errors' in errorDelete) {//Is Errors Response

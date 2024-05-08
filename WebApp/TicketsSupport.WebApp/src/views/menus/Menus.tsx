@@ -76,32 +76,50 @@ export default function Menus() {
 
     //Send Request
     useEffect(() => {
-        SendGetRequest("v1/menus");
+        const requests = [
+            SendGetRequest("v1/menus")
+        ];
+
+        Promise.all(requests)
+            .then((responses) => {
+                responses.forEach((response) => {
+                    switch (response.url) {
+                        case "v1/menus":
+                            setMenus((response.data as MenusResponse[]).map(x => ({
+                                id: x.id,
+                                name: x.name,
+                                icon: <i className={'pi ' + x.icon} />,
+                                url: x.url,
+                                parentId: (response.data as MenusResponse[]).find(c => c.id == x.parentId)?.name,
+                                position: x.parentId !== null ? x.position : '',
+                                show: x.show === true ? <Badge value={GlobalTextTrue} severity="success"></Badge> : <Badge value={GlobalTextFalse} severity="danger"></Badge>
+                            })));
+                            break;
+                        default:
+                            break;
+                    }
+                });
+            })
+            .catch((error) => {
+                console.error("Error en las solicitudes:", error);
+            });
     }, [])
-
-    //Get Response
-    useEffect(() => {
-        if (getResponse) {
-            console.log()
-            const menus = getResponse.map(x => ({
-                id: x.id,
-                name: x.name,
-                icon: <i className={'pi ' + x.icon} />,
-                url: x.url,
-                parentId: getResponse.find(c => c.id == x.parentId)?.name,
-                position: x.parentId !== null ? x.position : '',
-                show: x.show === true ? <Badge value={GlobalTextTrue} severity="success"></Badge> : <Badge value={GlobalTextFalse} severity="danger"></Badge>
-            }))
-
-            setMenus(menus);
-        }
-    }, [getResponse]);
 
     //Notification Api Response
     useEffect(() => {
         if (httpCodeDelete === 200) {
             toast?.current?.show({ severity: 'success', summary: TableDeleteTitle, detail: deleteResponse?.message, life: 3000 });
-            setTimeout(() => SendGetRequest("v1/menus"), 3000);
+            setTimeout(() => SendGetRequest("v1/menus").then((value) => {
+                setMenus((value.data as MenusResponse[]).map(x => ({
+                    id: x.id,
+                    name: x.name,
+                    icon: <i className={'pi ' + x.icon} />,
+                    url: x.url,
+                    parentId: (value.data as MenusResponse[]).find(c => c.id == x.parentId)?.name,
+                    position: x.parentId !== null ? x.position : '',
+                    show: x.show === true ? <Badge value={GlobalTextTrue} severity="success"></Badge> : <Badge value={GlobalTextFalse} severity="danger"></Badge>
+                })));
+            }), 3000);
         }
         if (errorDelete && httpCodeDelete !== 0) {
             if ('errors' in errorDelete) {//Is Errors Response

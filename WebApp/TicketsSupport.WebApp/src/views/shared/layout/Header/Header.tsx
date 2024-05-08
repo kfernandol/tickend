@@ -24,7 +24,7 @@ import { UserResponse } from "../../../../models/responses/users.response";
 
 function Header() {
     //Ref
-    const AvatarMenu= useRef<TieredMenu>(null);
+    const AvatarMenu = useRef<TieredMenu>(null);
     //redux
     const language = useSelector((state: RootState) => state.language);
     const authenticated = useSelector((state: RootState) => state.auth);
@@ -65,27 +65,25 @@ function Header() {
         menubar?.classList.remove("hidden");
     }
 
-    //request user data
     useEffect(() => {
-        SendGetRequest("v1/users/" + getTokenData?.id);
-    }, [])
-
-    //Load user data
-
-    useEffect(() => {
-
-        if (getResponse) {
-            if ('firstName' in getResponse) {
-                const response = getResponse as UserResponse;
-                setFullName(response.firstName + " " + response.lastName);
-                if (response.photo != "")
-                    setAvatarIMG(`data:image/*;base64,${response.photo}`)
-            } else {
-                setAvatarIMG("src/assets/imgs/avatar-default.png")
+        const fetchMenus = async () => {
+            try {
+                SendGetRequest("v1/users/" + getTokenData?.id).then((response) => {
+                    const resp = response.data as UserResponse;
+                    setFullName(resp.firstName + " " + resp.lastName);
+                    if (resp.photo != "")
+                        setAvatarIMG(`data:image/*;base64,${resp.photo}`)
+                    else {
+                        setAvatarIMG("src/assets/imgs/avatar-default.png")
+                    }
+                });
+            } catch (error) {
+                //console.error("Error en las solicitudes:", error);
             }
-        }
+        };
 
-    }, [getResponse]);
+        fetchMenus();
+    }, []);
 
     //OnChange Language
     useEffect(() => {
