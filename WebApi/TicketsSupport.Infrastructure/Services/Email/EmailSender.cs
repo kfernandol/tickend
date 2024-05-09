@@ -25,14 +25,19 @@ namespace TicketsSupport.Infrastructure.Services.Email
         {
             _emailConfig = emailConfig.Value;
             _emailTemplate = emailTemplate;
+
             _smtpClient = new SmtpClient(_emailConfig.Server, _emailConfig.Port);
 
             //extra config Email
             if (_emailConfig.SSL == true)
                 _smtpClient.EnableSsl = true;
 
+            //Authentication email
             if (!string.IsNullOrWhiteSpace(_emailConfig.Username) && !string.IsNullOrWhiteSpace(_emailConfig.Password))
+            {
+                _smtpClient.UseDefaultCredentials = false;
                 _smtpClient.Credentials = new NetworkCredential(_emailConfig.Username, _emailConfig.Password);
+            }
         }
 
         public async Task<(string subject, string to)> SendEmail(string to, string subject, EmailTemplate template, Dictionary<string, string> templateData)
