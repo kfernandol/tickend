@@ -33,7 +33,7 @@ function Header() {
 
     //hooks
     const navigate = useNavigate();
-    const { SendGetRequest, getResponse } = useGet<UserResponse>()
+    const { SendGetRequest } = useGet<UserResponse>()
 
     //translations
     const { t } = useTranslation();
