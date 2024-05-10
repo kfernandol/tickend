@@ -86,6 +86,7 @@ export default function Tickets() {
                                     ticketTypeId: value.ticketTypeId,
                                     dateCreated: new Date(value.dateCreated),
                                     dateUpdated: new Date(value.dateUpdated),
+                                    createBy: value.createBy,
                                     isClosed: value.isClosed
                                 }
                             )));
