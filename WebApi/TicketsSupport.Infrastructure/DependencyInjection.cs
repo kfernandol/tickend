@@ -30,6 +30,7 @@ namespace TicketsSupport.Infrastructure
             services.AddScoped<ITicketPriorityRepository, TicketPriorityRepository>();
             services.AddScoped<ITicketStatusRepository, TicketStatusRepository>();
             services.AddScoped<ITicketTypeRepository, TicketTypeRepository>();
+            services.AddScoped<IStadisticsRepository, StadisticsRepository>();
             services.AddScoped<IEmailSender, EmailSender>();
 
             return services;

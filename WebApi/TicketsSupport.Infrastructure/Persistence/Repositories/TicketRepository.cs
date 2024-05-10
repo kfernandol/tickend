@@ -149,20 +149,21 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             List<Ticket>? result = new List<Ticket>();
             if (user?.RolNavigation?.PermissionLevel == PermissionLevel.Administrator)
             {
-                result = await _context.Tickets.Select(x => new Ticket
-                {
-                    Id = x.Id,
-                    Title = x.Title,
-                    ProjectId = x.ProjectId,
-                    TicketPriorityId = x.TicketPriorityId,
-                    TicketStatusId = x.TicketStatusId,
-                    TicketTypeId = x.TicketTypeId,
-                    DateCreated = x.DateCreated,
-                    DateUpdated = x.DateUpdated,
-                    CreateBy = x.CreateBy,
-                    IsClosed = x.IsClosed,
-                    Active = x.Active
-                })
+                result = await _context.Tickets
+                                                .Select(x => new Ticket
+                                                {
+                                                    Id = x.Id,
+                                                    Title = x.Title,
+                                                    ProjectId = x.ProjectId,
+                                                    TicketPriorityId = x.TicketPriorityId,
+                                                    TicketStatusId = x.TicketStatusId,
+                                                    TicketTypeId = x.TicketTypeId,
+                                                    DateCreated = x.DateCreated,
+                                                    DateUpdated = x.DateUpdated,
+                                                    CreateBy = x.CreateBy,
+                                                    IsClosed = x.IsClosed,
+                                                    Active = x.Active
+                                                })
                                                .Where(x => x.Active == true)
                                                .AsNoTracking()
                                                .ToListAsync();

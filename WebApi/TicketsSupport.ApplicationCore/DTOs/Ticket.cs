@@ -52,6 +52,7 @@ namespace TicketsSupport.ApplicationCore.DTOs
         public int TicketTypeId { get; set; }
         public int? TicketPriorityId { get; set; }
         public int? TicketStatusId { get; set; }
+        public int? CreateBy { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime? DateUpdated { get; set; }
         public bool IsClosed { get; set; }
