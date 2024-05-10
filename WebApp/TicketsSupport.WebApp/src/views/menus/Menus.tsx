@@ -37,7 +37,7 @@ export default function Menus() {
     });
     //Api Request
     const { SendDeleteRequest, deleteResponse, errorDelete, httpCodeDelete } = useDelete<BasicResponse>();
-    const { SendGetRequest, getResponse, loadingGet } = useGet<MenusResponse[]>();
+    const { SendGetRequest, loadingGet } = useGet<MenusResponse[]>();
     const [menus, setMenus] = useState<{
         id: number,
         name: string,
