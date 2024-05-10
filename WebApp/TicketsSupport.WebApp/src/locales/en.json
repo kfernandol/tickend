@@ -232,6 +232,7 @@
       "project": "Project",
       "priority": "Priority",
       "type": "Type",
+      "createBy": "Created by",
       "status": "Status",
       "dateCreated": "Date Created",
       "dateUpdated": "Last Updated",
@@ -242,5 +243,33 @@
       "open": "Open",
       "closed": "Closed"
     }
+  },
+  "home": {
+    "total": "Total",
+    "totalDesc": "Tickets created",
+    "closed": "Closed",
+    "closedDesc": "Closed tickets",
+    "open": "Open",
+    "openDesc": "Tickets opened",
+    "pending": "Pending",
+    "pendingDesc": "Tickets pending assignment",
+    "percentageResolution": "Percentage of resolution",
+    "ticketsByStatus": "Tickets by status",
+    "lastTicketsCreated": "Last tickets created",
+    "ticketsByProject": "Tickets by project"
+  },
+  "months": {
+    "1": "January",
+    "2": "February",
+    "3": "March",
+    "4": "April",
+    "5": "May",
+    "6": "June",
+    "7": "July",
+    "8": "August",
+    "9": "September",
+    "10": "October",
+    "11": "November",
+    "12": "December"
   }
 }

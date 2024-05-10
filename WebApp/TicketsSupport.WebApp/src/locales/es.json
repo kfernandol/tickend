@@ -231,6 +231,7 @@
       "description": "Descripcion",
       "priority": "Prioridad",
       "type": "Tipo",
+      "createBy": "Creado por",
       "status": "Estado",
       "dateCreated": "Fecha de Creacion",
       "dateUpdated": "Ultima Actualización",
@@ -241,5 +242,33 @@
       "open": "Abierto",
       "closed": "Cerrado"
     }
+  },
+  "home": {
+    "total": "Total",
+    "totalDesc": "Total de Tickets",
+    "closed": "Cerrados",
+    "closedDesc": "Tickets cerrados",
+    "open": "Abiertos",
+    "openDesc": "Tickets abiertos",
+    "pending": "Pendientes",
+    "pendingDesc": "Tickets pendientes de asignar",
+    "percentageResolution": "Porcentaje de resolución",
+    "ticketsByStatus": "Tickets por estado",
+    "lastTicketsCreated": "Ultimos tickets creados",
+    "ticketsByProject": "Tickets por proyecto"
+  },
+  "months": {
+    "1": "Enero",
+    "2": "Febrero",
+    "3": "Marzo",
+    "4": "Abril",
+    "5": "Mayo",
+    "6": "Junio",
+    "7": "Julio",
+    "8": "Agosto",
+    "9": "Septiembre",
+    "10": "Octubre",
+    "11": "Noviembre",
+    "12": "Diciembre"
   }
 }
