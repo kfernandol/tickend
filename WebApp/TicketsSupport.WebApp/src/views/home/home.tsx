@@ -141,11 +141,11 @@ export default function Home() {
                     break;
                 case "v1/stadistics/tickets/month-chart":
                     ticketMonthChartData = (response.data as ChartData[]).map(chart => ({
-                        labels: chart.labels,
-                        datasets: chart.name
+                        labels: chart?.labels,
+                        datasets: chart?.name
                     }))
                     ticketMonthChartData = {
-                        labels: (response.data as ChartData[])[0].labels.map(x => t(`months.${x}`)),
+                        labels: (response.data as ChartData[])[0]?.labels.map(x => t(`months.${x}`)),
                         datasets: (response.data as ChartData[]).map(chart => ({
                             label: chart.name,
                             data: chart.data,

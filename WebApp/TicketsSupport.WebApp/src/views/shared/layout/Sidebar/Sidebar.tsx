@@ -38,24 +38,18 @@ function Sidebar() {
     const getTokenData = useTokenData<AuthToken>(authenticated?.token);
 
     //Api Request
-    const { SendGetRequest, getResponse } = useGet<MenusResponse[]>();
-    const [Menus, setMenus] = useState<MenusResponse[]>([]);
+    const { SendGetRequest } = useGet<MenusResponse[]>();
+    const [Menus, setMenus] = useState<MenusResponse[] | null>(null);
 
     //Menu ref
     const menuRef = useRef<HTMLDivElement[]>([]);
 
     //Request Data
     useEffect(() => {
-        SendGetRequest("v1/menus/byuser/" + getTokenData?.id);
+        SendGetRequest("v1/menus/byuser/" + getTokenData?.id).then((response) => {
+            setMenus(response.data as MenusResponse[]);
+        });
     }, [])
-
-    //Process response
-    useEffect(() => {
-        if (getResponse) {
-            const response = getResponse as MenusResponse[];
-            setMenus(response);
-        }
-    }, [getResponse])
 
     //load translation
     useEffect(() => {
@@ -96,38 +90,40 @@ function Sidebar() {
                                         <Ripple />
                                     </Link>
 
-                                    {Menus.filter(x => x.parentId === null && x.show === true).sort((a, b) => a.position - b.position).map((menu, index) => {
-                                        return (
-                                            <div key={menu.name + index}>
-                                                <StyleClass
-                                                    nodeRef={menuRef[index as keyof ReactNode]}
-                                                    selector="@next"
-                                                    enterClassName="hidden"
-                                                    enterActiveClassName="slidedown"
-                                                    leaveToClassName="hidden"
-                                                    leaveActiveClassName="slideup"
-                                                >
-                                                    <div ref={(element) => (menuRef[index as keyof ReactNode] as HTMLDivElement) = element as HTMLDivElement} className="p-ripple p-3 flex align-items-center justify-content-between text-600 cursor-pointer">
-                                                        <span className="font-medium">{MenusTranslation.find(x => x.name == menu.name)?.value}</span>
-                                                        <i className={`pi pi-chevron-down`}></i>
-                                                        <Ripple />
-                                                    </div>
-                                                </StyleClass>
-                                                <ul className="list-none py-0 pl-3 pr-0 m-0 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
-                                                    {Menus.filter(x => x.parentId === menu.id && x.show === true).sort((a, b) => a.position - b.position).map((submenu, index) => (
-                                                        <li key={submenu.name + index}>
-                                                            <Link to={submenu.url} className="p-ripple no-underline flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full">
-                                                                <i className={`mr-2 pi ${submenu.icon}`}></i>
-                                                                <span className="font-medium">{MenusTranslation.find(x => x.name == submenu.name)?.value}</span>
-                                                                <Ripple />
-                                                            </Link>
-                                                        </li>
-                                                    ))}
-                                                </ul>
+                                    {Menus != null
+                                        ? Menus.filter(x => x.parentId === null && x.show === true).sort((a, b) => a.position - b.position).map((menu, index) => {
+                                            return (
+                                                <div key={menu.name + index}>
+                                                    <StyleClass
+                                                        nodeRef={menuRef[index as keyof ReactNode]}
+                                                        selector="@next"
+                                                        enterClassName="hidden"
+                                                        enterActiveClassName="slidedown"
+                                                        leaveToClassName="hidden"
+                                                        leaveActiveClassName="slideup"
+                                                    >
+                                                        <div ref={(element) => (menuRef[index as keyof ReactNode] as HTMLDivElement) = element as HTMLDivElement} className="p-ripple p-3 flex align-items-center justify-content-between text-600 cursor-pointer">
+                                                            <span className="font-medium">{MenusTranslation.find(x => x.name == menu.name)?.value}</span>
+                                                            <i className={`pi pi-chevron-down`}></i>
+                                                            <Ripple />
+                                                        </div>
+                                                    </StyleClass>
+                                                    <ul className="list-none py-0 pl-3 pr-0 m-0 hidden overflow-y-hidden transition-all transition-duration-400 transition-ease-in-out">
+                                                        {Menus?.filter(x => x.parentId === menu.id && x.show === true).sort((a, b) => a.position - b.position).map((submenu, index) => (
+                                                            <li key={submenu.name + index}>
+                                                                <Link to={submenu.url} className="p-ripple no-underline flex align-items-center cursor-pointer p-3 border-round text-700 hover:surface-100 transition-duration-150 transition-colors w-full">
+                                                                    <i className={`mr-2 pi ${submenu.icon}`}></i>
+                                                                    <span className="font-medium">{MenusTranslation.find(x => x.name == submenu.name)?.value}</span>
+                                                                    <Ripple />
+                                                                </Link>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
 
-                                            </div>
-                                        );
-                                    })}
+                                                </div>
+                                            );
+                                        })
+                                        : <></>}
                                 </li>
                             </ul>
 
