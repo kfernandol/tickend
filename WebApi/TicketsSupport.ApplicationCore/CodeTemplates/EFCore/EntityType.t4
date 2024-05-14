@@ -28,7 +28,8 @@
     var usings = new List<string>
     {
         "System",
-        "System.Collections.Generic"
+        "System.Collections.Generic",
+        "System.ComponentModel.DataAnnotations"
     };
 
     if (Options.UseDataAnnotations)
@@ -81,6 +82,24 @@ public partial class <#= EntityType.Name #>
         {
 #>
     public PermissionLevel <#= property.Name #> { get; set; }
+<#
+    continue;
+        }
+
+        if(property.Name == "Action")
+        {
+#>
+    [EnumDataType(typeof(byte))]
+    public InterceptorActions <#= property.Name #> { get; set; }
+<#
+    continue;
+        }
+
+        if(property.Name == "TypeValue")
+        {
+#>
+    [EnumDataType(typeof(byte))]
+    public TypeValue <#= property.Name #> { get; set; }
 <#
     continue;
         }

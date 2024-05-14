@@ -49,6 +49,12 @@ namespace TicketsSupport.ApplicationCore.Mappings
             //Tickets
             CreateMap<CreateTicketRequest, Ticket>();
             CreateMap<Ticket, TicketResponse>();
+
+            //AuditLog
+            CreateMap<AuditLogDetail, AuditLogDetailResponse>();
+            CreateMap<AuditLog, AuditLogResponse>()
+                .ForMember(dest => dest.auditLogDetailResponses, opt => opt.MapFrom(opt => opt.AuditLogDetails));
+
         }
     }
 }
