@@ -167,7 +167,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: "AllowWebApp",
         policy =>
         {
-            policy.WithOrigins(builder.Configuration.GetSection("Cors:Origins").Value ?? string.Empty)
+            policy.WithOrigins(builder.Configuration.GetSection("Cors:Origins")?.Value?.Split(',') ?? [])
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials()
