@@ -76,9 +76,13 @@
     <Build Include="Tables\ProjectXDeveloper.sql" />
     <Build Include="Tables\ProjectXClients.sql" />
     <Build Include="Tables\Ticket.sql" />
-    <Build Include="Script.PostDeployment1.sql" />
+    <Build Include="Tables\AuditLog.sql" />
+    <Build Include="Tables\AuditLogDetails.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TS_Database.dev.publish.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="DefaultInsertst.PostDeployment1.sql" />
   </ItemGroup>
 </Project>

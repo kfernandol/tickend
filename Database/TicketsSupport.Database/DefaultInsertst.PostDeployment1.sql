@@ -11,18 +11,16 @@ Post-Deployment Script Template
 */
 
 
-
-/* Default inserts in Rol table */
 IF NOT EXISTS (SELECT 1 FROM Rol WHERE Name = 'Administrator')
 BEGIN 
-    INSERT INTO Rol(Name, PermissionLevel, Active) VALUES('Administrador', 1, 1)
+    INSERT INTO Rol(Name, PermissionLevel, Active) VALUES('Administrator', 1, 1)
 END;
 
 /* Default inserts in Users table */
-IF NOT EXISTS (SELECT 1 FROM [User] WHERE Username = 'EBarillas')
+IF NOT EXISTS (SELECT 1 FROM [User] WHERE Username = 'Administrator')
 BEGIN 
     INSERT INTO [User](Username, FirstName, LastName, Password, Salt,  Email, Rol, Active) 
-    VALUES('EBarillas', 'Edder','Barillas', 'jFQqrIMWUMGJEa8SWmYp5bsbhd/67y1JA5yRmXEqd1w=', 'kiFFKjUclHd03kvLDeRzLGa6XxJWYY+c8vzc6MdBfd4=', 'edderfernando20@gmail.com', 1, 1)/*Password default 123456*/
+    VALUES('Administrator', 'Edder','Barillas', 'jFQqrIMWUMGJEa8SWmYp5bsbhd/67y1JA5yRmXEqd1w=', 'kiFFKjUclHd03kvLDeRzLGa6XxJWYY+c8vzc6MdBfd4=', 'edderfernando20@gmail.com', 1, 1)/*Password default 123456*/
 END;
 
 /* Default inserts in Menu table */
@@ -50,6 +48,12 @@ BEGIN
     VALUES('Menus', 'pi-th-large', '/Menus', 1, 3, 1, 1)
 END;
 
+IF NOT EXISTS (SELECT 1 FROM [Menu] WHERE Name = 'AuditLogs')
+BEGIN 
+    INSERT INTO [Menu](Name,  Icon, Url, ParentId, Position, Show, Active) 
+    VALUES('AuditLogs', 'pi-book', '/Audit', 1, 4, 1, 1)
+END;
+
 IF NOT EXISTS (SELECT 1 FROM [Menu] WHERE Name = 'ProjectsP')
 BEGIN 
     INSERT INTO [Menu](Name,  Icon, Url, ParentId, Position, Show, Active) 
@@ -59,7 +63,7 @@ END;
 IF NOT EXISTS (SELECT 1 FROM [Menu] WHERE Name = 'Projects')
 BEGIN 
     INSERT INTO [Menu](Name,  Icon, Url, ParentId, Position, Show, Active) 
-    VALUES('Projects', 'pi pi-copy', '/Projects', 5, 1, 1, 1)
+    VALUES('Projects', 'pi pi-copy', '/Projects', 6, 1, 1, 1)
 END;
 
 IF NOT EXISTS (SELECT 1 FROM [Menu] WHERE Name = 'TicketsP')
@@ -71,25 +75,25 @@ END;
 IF NOT EXISTS (SELECT 1 FROM [Menu] WHERE Name = 'Tickets')
 BEGIN 
     INSERT INTO [Menu](Name,  Icon, Url, ParentId, Position, Show, Active) 
-    VALUES('Tickets', 'pi pi-ticket', '/Tickets', 7, 1, 1, 1)
+    VALUES('Tickets', 'pi pi-ticket', '/Tickets', 8, 1, 1, 1)
 END;
 
 IF NOT EXISTS (SELECT 1 FROM [Menu] WHERE Name = 'TicketTypes')
 BEGIN 
     INSERT INTO [Menu](Name,  Icon, Url, ParentId, Position, Show, Active) 
-    VALUES('TicketTypes', 'pi pi-tags', '/Ticket/Types', 7, 2, 1, 1)
+    VALUES('TicketTypes', 'pi pi-tags', '/Ticket/Types', 8, 2, 1, 1)
 END;
 
 IF NOT EXISTS (SELECT 1 FROM [Menu] WHERE Name = 'TicketStatus')
 BEGIN 
     INSERT INTO [Menu](Name,  Icon, Url, ParentId, Position, Show, Active) 
-    VALUES('TicketStatus', 'pi pi-sliders-h', '/Ticket/Status', 7, 3, 1, 1)
+    VALUES('TicketStatus', 'pi pi-sliders-h', '/Ticket/Status', 8, 3, 1, 1)
 END;
 
 IF NOT EXISTS (SELECT 1 FROM [Menu] WHERE Name = 'TicketPriority')
 BEGIN 
     INSERT INTO [Menu](Name,  Icon, Url, ParentId, Position, Show, Active) 
-    VALUES('TicketPriority', 'pi pi-sort-amount-up', '/Ticket/Priorities', 7, 4, 1, 1)
+    VALUES('TicketPriority', 'pi pi-sort-amount-up', '/Ticket/Priorities', 8, 4, 1, 1)
 END;
 
 /* Default insert in MenuXRol */
@@ -114,37 +118,44 @@ BEGIN
     VALUES(4,1)
 END;
 
-IF NOT EXISTS (SELECT 1 FROM [MenuXRol] WHERE MenuId = 6)
+IF NOT EXISTS (SELECT 1 FROM [MenuXRol] WHERE MenuId = 5)
+BEGIN 
+    /* Audit Menu */
+    INSERT INTO [MenuXRol](MenuId, RoleId) 
+    VALUES(5,1)
+END;
+
+IF NOT EXISTS (SELECT 1 FROM [MenuXRol] WHERE MenuId = 7)
 BEGIN 
     /* Projects Menu */
     INSERT INTO [MenuXRol](MenuId, RoleId) 
-    VALUES(6,1)
-END;
-
-IF NOT EXISTS (SELECT 1 FROM [MenuXRol] WHERE MenuId = 8)
-BEGIN 
-    /* Tickets Menu */
-    INSERT INTO [MenuXRol](MenuId, RoleId) 
-    VALUES(8,1)
+    VALUES(7,1)
 END;
 
 IF NOT EXISTS (SELECT 1 FROM [MenuXRol] WHERE MenuId = 9)
 BEGIN 
-    /* Tickets Type Menu */
+    /* Tickets Menu */
     INSERT INTO [MenuXRol](MenuId, RoleId) 
     VALUES(9,1)
 END;
 
 IF NOT EXISTS (SELECT 1 FROM [MenuXRol] WHERE MenuId = 10)
 BEGIN 
-    /* Tickets Status Menu */
+    /* Tickets Type Menu */
     INSERT INTO [MenuXRol](MenuId, RoleId) 
     VALUES(10,1)
 END;
 
 IF NOT EXISTS (SELECT 1 FROM [MenuXRol] WHERE MenuId = 11)
 BEGIN 
-    /* Tickets Priorities Menu */
+    /* Tickets Status Menu */
     INSERT INTO [MenuXRol](MenuId, RoleId) 
     VALUES(11,1)
+END;
+
+IF NOT EXISTS (SELECT 1 FROM [MenuXRol] WHERE MenuId = 12)
+BEGIN 
+    /* Tickets Priorities Menu */
+    INSERT INTO [MenuXRol](MenuId, RoleId) 
+    VALUES(12,1)
 END;
