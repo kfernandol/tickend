@@ -164,10 +164,14 @@ builder.Host.UseSerilog((hostingContext, loggerConfiguration) =>
 //Add Corns
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: "AllowAny",
-        builder =>
+    options.AddPolicy(name: "AllowWebApp",
+        policy =>
         {
-            builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+            policy.WithOrigins(builder.Configuration.GetSection("Cors:Origins").Value ?? string.Empty)
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials()
+                  .Build();
         });
 });
 
@@ -238,15 +242,15 @@ app.UseExceptionHandler(errorApp =>
 
 var locOptions = app.Services.GetService<IOptions<RequestLocalizationOptions>>();
 app.UseRequestLocalization(locOptions.Value);
-
 app.UseHttpsRedirection();
+app.UseRouting();
+
+//Add corns
+app.UseCors("AllowWebApp");
 
 //Add Authentication and Authorization
 app.UseAuthentication();
 app.UseAuthorization();
-
-//Add corns
-app.UseCors("AllowAny");
 
 app.MapControllers();
 
