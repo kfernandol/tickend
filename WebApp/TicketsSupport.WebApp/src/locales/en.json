@@ -29,7 +29,8 @@
     "Projects": "Projects",
     "ProjectsP": "Projects",
     "TicketsP": "Tickets",
-    "Ticket": "Tickets"
+    "Ticket": "Tickets",
+    "AuditLogs": "Audit Logs"
   },
   "element": {
     "User": "User",
@@ -152,7 +153,7 @@
     "required": "This field is required",
     "maxLength": "The maximum number of characters is {{0}}",
     "minLength": "The minimum number of characters is {{0}}",
-    "noMatch": "{{0}} does not match"
+    "notMatch": "{{0}} does not match"
   },
   "languages": {
     "en": "English",
@@ -217,10 +218,10 @@
       "clients": "Clients",
       "developer": "Developers",
       "selectPriorities": "Select ticket priorities",
-      "SelectTypes": "Select ticket types",
-      "selectStatus": "Select ticket status",
-      "selectClients": "Select ticket clients",
-      "selectDeveloper": "Select ticket developer"
+      "SelectTypes": "Select Types",
+      "selectStatus": "Select Status",
+      "selectClients": "Select Clients",
+      "selectDeveloper": "Select Developer"
     }
   },
   "tickets": {
@@ -232,7 +233,7 @@
       "project": "Project",
       "priority": "Priority",
       "type": "Type",
-      "createBy": "Created by",
+      "createdBy": "Created by",
       "status": "Status",
       "dateCreated": "Date Created",
       "dateUpdated": "Last Updated",
@@ -271,5 +272,24 @@
     "10": "October",
     "11": "November",
     "12": "December"
+  },
+  "auditLogs": {
+    "title": "Audit Logs",
+    "subTitle": "Monitor any changes made to your project, schema and content with audit logs.",
+    "user": "User",
+    "selectUser": "Select Users",
+    "actions": "Actions",
+    "selectedAction": "Select Actions",
+    "date": "Date",
+    "selectedDate": "Select Date",
+    "table": "Table",
+    "selectedTable": "Select Table",
+    "elementId": "Element Id",
+    "selectElementId": "Select Element Id",
+    "auditLogDetails": "Audit Log Details",
+    "name": "Name",
+    "oldValue": "Old Value",
+    "newValue": "New Value",
+    "registeredChanges": "Registered changes"
   }
 }

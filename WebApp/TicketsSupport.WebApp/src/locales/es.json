@@ -8,36 +8,38 @@
         "username": "Nombre de usuario",
         "password": "Contraseña"
       },
-      "usernameRequired": "Se requiere el nombre de usuario",
-      "passwordRequired": "Se requiere la contraseña",
+      "usernameRequired": "Se requiere un nombre de usuario",
+      "passwordRequired": "Se requiere una contraseña",
       "loginInvalid": "Nombre de usuario o contraseña inválidos",
-      "keepMeLogin": "No cerrar sesión",
-      "restorePassword": "¿Olvidaste tu contraseña?"
+      "keepMeLogin": "Mantenerme conectado",
+      "restorePassword": "¿Olvidó su contraseña?"
     }
   },
   "navigation": {
-    "Dashboard": "Inicio",
+    "Dashboard": "Tablero",
     "Security": "Seguridad",
     "Users": "Usuarios",
     "Roles": "Roles",
     "Menus": "Menús",
     "Tickets": "Tickets",
-    "TicketStatus": "Estados de ticket",
-    "TicketTypes": "Tipos de ticket",
-    "TicketPriority": "Prioridades de ticket",
-    "ProjectsP": "Proyectos",
+    "TicketStatus": "Estados de Ticket",
+    "TicketTypes": "Tipos de Ticket",
+    "TicketPriority": "Prioridades de Ticket",
+    "Profile": "Perfiles",
     "Projects": "Proyectos",
-    "TicketP": "Tickets",
-    "Ticket": "Ticket"
+    "ProjectsP": "Proyectos",
+    "TicketsP": "Tickets",
+    "Ticket": "Tickets",
+    "AuditLogs": "Registros de Auditoría"
   },
   "element": {
     "User": "Usuario",
     "Rol": "Rol",
-    "Menu": "Menu",
+    "Menu": "Menú",
     "Ticket": "Ticket",
-    "TicketStatus": "Estado de ticket",
-    "TicketTypes": "Tipo de ticket",
-    "TicketPriority": "Prioridad de ticket",
+    "TicketStatus": "Estado de Ticket",
+    "TicketTypes": "Tipo de Ticket",
+    "TicketPriority": "Prioridad de Ticket",
     "Project": "Proyecto"
   },
   "sidebar": {
@@ -49,12 +51,12 @@
       "name": "Nombre",
       "actions": "Acciones"
     },
-    "deleteTitle": "Eliminación",
     "table": {
       "noElements": "No hay datos disponibles"
     },
+    "deleteTitle": "Eliminación",
     "cardTitles": {
-      "new": "Agregar nuevo {{0}}",
+      "new": "Agregar Nuevo {{0}}",
       "edit": "Editar {{0}}"
     },
     "cardSubTitles": {
@@ -70,46 +72,46 @@
   "menus": {
     "tableTitle": "Lista de menús",
     "labels": {
-      "new": "Nuevo menú",
+      "new": "Nuevo Menú",
       "url": "URL",
-      "icon": "Ícono",
+      "icon": "Icono",
       "position": "Posición",
       "parentId": "Padre",
       "show": "Mostrar"
     }
   },
   "roles": {
-    "tableTitle": "Lista de roles",
+    "tableTitle": "Lista de Roles",
     "labels": {
-      "new": "Nuevo rol",
-      "permissionLevel": "Nivel de permiso",
+      "new": "Nuevo Rol",
+      "permissionLevel": "Nivel de Permiso",
       "menus": "Menús"
     }
   },
   "ticketPriorities": {
-    "tableTitle": "Lista de prioridades de ticket",
+    "tableTitle": "Lista de Prioridades de Ticket",
     "labels": {
-      "new": "Nueva prioridad de ticket",
+      "new": "Nueva Prioridad de Ticket",
       "color": "Color"
     }
   },
   "ticketStatuses": {
-    "tableTitle": "Lista de estados de ticket",
+    "tableTitle": "Lista de Estados de Ticket",
     "labels": {
-      "new": "Nuevo estado de ticket",
+      "new": "Nuevo Estado de Ticket",
       "color": "Color"
     }
   },
   "ticketTypes": {
-    "tableTitle": "Lista de tipos de ticket",
+    "tableTitle": "Lista de Tipos de Ticket",
     "labels": {
-      "new": "Nuevo tipo de ticket",
-      "icon": "Ícono",
-      "iconColor": "Color de ícono"
+      "new": "Nuevo Tipo de Ticket",
+      "icon": "Icono",
+      "iconColor": "Color del Icono"
     }
   },
   "users": {
-    "tableTitle": "Lista de usuarios",
+    "tableTitle": "Lista de Usuarios",
     "labels": {
       "photo": "Foto",
       "username": "Nombre de usuario",
@@ -117,9 +119,9 @@
       "lastName": "Apellido",
       "email": "Correo electrónico",
       "role": "Rol",
-      "new": "Nuevo usuario",
+      "new": "Nuevo Usuario",
       "password": "Contraseña",
-      "confirmPassword": "Confirmar contraseña"
+      "confirmPassword": "Confirmar Contraseña"
     }
   },
   "buttons": {
@@ -127,7 +129,7 @@
     "accept": "Aceptar",
     "save": "Guardar",
     "delete": "Eliminar",
-    "updated": "Actualizar"
+    "updated": "Actualizado"
   },
   "boolean": {
     "true": "Verdadero",
@@ -137,21 +139,21 @@
     "search": "Buscar"
   },
   "selects": {
-    "languages": "Seleccionar un idioma"
+    "languages": "Seleccionar un Idioma"
   },
   "deleteConfirmation": {
     "title": "Confirmación",
-    "description": "¿Está seguro de que desea eliminar este {{0}}"
+    "description": "¿Está seguro de que desea eliminar este {{0}}?"
   },
   "avatarMenu": {
     "languages": "Idiomas",
     "profile": "Perfil"
   },
   "errors": {
-    "required": "Este campo es obligatorio",
+    "required": "Este campo es requerido",
     "maxLength": "El número máximo de caracteres es {{0}}",
     "minLength": "El número mínimo de caracteres es {{0}}",
-    "noMatch": "{{0}} no coincide"
+    "notMatch": "{{0}} no coincide"
   },
   "languages": {
     "en": "Inglés",
@@ -163,45 +165,45 @@
       "lastName": "Apellido",
       "email": "Correo electrónico",
       "password": "Contraseña",
-      "confirmPassword": "Confirmar contraseña"
+      "confirmPassword": "Confirmar Contraseña"
     },
     "errors": {
       "fileSize": {
-        "title": "Error de tamaño de archivo",
+        "title": "Error de Tamaño de Archivo",
         "message": "Tamaño máximo 5 MB"
       }
     }
   },
   "resetPassword": {
-    "title": "¿Olvidaste tu contraseña?",
-    "subTitle": "Por favor, ingresa tu correo electrónico registrado. Enviaremos las instrucciones para ayudarte a restablecer tu contraseña.",
+    "title": "¿Olvidó su contraseña?",
+    "subTitle": "Ingrese su dirección de correo electrónico registrada. Le enviaremos instrucciones para ayudarlo a restablecer su contraseña.",
     "labels": {
-      "submit": "Restablecer contraseña"
+      "submit": "Restablecer Contraseña"
     }
   },
   "resetPasswordSend": {
-    "title": "Instrucciones enviadas por correo electrónico",
-    "subTitle": "Por favor, sigue las instrucciones que hemos enviado a tu bandeja de entrada.",
+    "title": "Instrucciones de Correo Electrónico Enviadas",
+    "subTitle": "Siga las instrucciones que enviamos a su bandeja de entrada.",
     "labels": {
-      "return": "Regresar al inicio"
+      "return": "Regresar al Inicio"
     }
   },
   "changePassword": {
-    "title": "Restablecer contraseña",
+    "title": "Restablecer Contraseña",
     "labels": {
-      "submit": "Cambiar contraseña",
+      "submit": "Cambiar Contraseña",
       "password": "Contraseña",
-      "confirmPassword": "Confirmar contraseña"
+      "confirmPassword": "Confirmar Contraseña"
     },
     "errors": {
-      "changePassword": "Ocurrio un problema al intentar cambiar la contraseña."
+      "changePassword": "Problema al cambiar la contraseña."
     }
   },
   "changePasswordSend": {
-    "title": "Contraseña cambiada",
-    "subTitle": "La contraseña ha sido cambiada exitosamente.",
+    "title": "Contraseña Cambiada",
+    "subTitle": "Su contraseña ha sido cambiada con éxito.",
     "labels": {
-      "return": "Regresar al inicio"
+      "return": "Regresar al Inicio"
     }
   },
   "projects": {
@@ -209,32 +211,32 @@
     "labels": {
       "new": "Nuevo proyecto",
       "photo": "Foto",
-      "description": "Descripcion",
-      "status": "Estados",
+      "description": "Descripción",
+      "status": "Estado",
       "priorities": "Prioridades",
       "types": "Tipos",
       "clients": "Clientes",
-      "developer": "Desarroladores",
-      "selectPriorities": "Selecciona las prioridades de tickets",
-      "SelectTypes": "Selecciona los tipos de tickets",
-      "selectStatus": "Selecciona los estados de tickets",
-      "selectClients": "Selecciona los clientes",
-      "selectDeveloper": "Selecciona los desarrolladores"
+      "developer": "Desarrolladores",
+      "selectPriorities": "Seleccionar prioridades de ticket",
+      "SelectTypes": "Seleccionar Tipos",
+      "selectStatus": "Seleccionar Estado",
+      "selectClients": "Seleccionar Clientes",
+      "selectDeveloper": "Seleccionar Desarrollador"
     }
   },
   "tickets": {
     "tableTitle": "Lista de Tickets",
     "labels": {
       "new": "Nuevo Ticket",
-      "title": "Titulo",
+      "title": "Título",
+      "description": "Descripción",
       "project": "Proyecto",
-      "description": "Descripcion",
       "priority": "Prioridad",
       "type": "Tipo",
-      "createBy": "Creado por",
+      "createdBy": "Creado por",
       "status": "Estado",
-      "dateCreated": "Fecha de Creacion",
-      "dateUpdated": "Ultima Actualización",
+      "dateCreated": "Fecha de Creación",
+      "dateUpdated": "Última Actualización",
       "closed": "Cerrado",
       "properties": "Propiedades"
     },
@@ -245,16 +247,16 @@
   },
   "home": {
     "total": "Total",
-    "totalDesc": "Total de Tickets",
+    "totalDesc": "Tickets creados",
     "closed": "Cerrados",
     "closedDesc": "Tickets cerrados",
     "open": "Abiertos",
     "openDesc": "Tickets abiertos",
     "pending": "Pendientes",
-    "pendingDesc": "Tickets pendientes de asignar",
+    "pendingDesc": "Tickets pendientes de asignación",
     "percentageResolution": "Porcentaje de resolución",
     "ticketsByStatus": "Tickets por estado",
-    "lastTicketsCreated": "Ultimos tickets creados",
+    "lastTicketsCreated": "Últimos tickets creados",
     "ticketsByProject": "Tickets por proyecto"
   },
   "months": {
@@ -270,5 +272,24 @@
     "10": "Octubre",
     "11": "Noviembre",
     "12": "Diciembre"
+  },
+  "auditLogs": {
+    "title": "Registros de Auditoría",
+    "subTitle": "Monitoree cualquier cambio realizado en su proyecto, esquema y contenido con registros de auditoría.",
+    "user": "Usuario",
+    "selectUser": "Seleccionar Usuario",
+    "actions": "Acciones",
+    "selectedAction": "Seleccionar Acciones",
+    "date": "Fecha",
+    "selectedDate": "Seleccionar Fecha",
+    "table": "Tabla",
+    "selectedTable": "Seleccionar Tabla",
+    "elementId": "Id de Elemento",
+    "selectElementId": "Seleccionar Id de Elemento",
+    "auditLogDetails": "Detalles del log",
+    "name": "Nombre",
+    "oldValue": "Anterior",
+    "newValue": "Nuevo",
+    "registeredChanges": "Cambios registrados"
   }
 }
