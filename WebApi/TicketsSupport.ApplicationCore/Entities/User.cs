@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace TicketsSupport.ApplicationCore.Entities;
 
@@ -28,6 +29,8 @@ public partial class User
     public int? Rol { get; set; }
 
     public bool Active { get; set; }
+
+    public virtual ICollection<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
 
     public virtual ICollection<ProjectXclient> ProjectXclients { get; set; } = new List<ProjectXclient>();
 
