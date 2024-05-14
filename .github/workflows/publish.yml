@@ -44,7 +44,7 @@ jobs:
             - name: SSH into Server
               run: |
                    sshpass -p ${{secrets.AUTH_PASS}} ssh -o StrictHostKeyChecking=no ${{secrets.AUTH_SERVER}} << EOF
-                    cd /home/Projects/NET/Tickend/
+                    cd /home/Docker/Tickend/
                     docker login ghcr.io -u kfernandol -p ${{secrets.TOKEN_DEPLOY}}
                     docker pull ghcr.io/kfernandol/tickend-webapi:latest
                     docker pull ghcr.io/kfernandol/tickend-webapp:latest
