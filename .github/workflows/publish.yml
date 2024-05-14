@@ -32,7 +32,7 @@ jobs:
                 
             - name: Build Database image
               run:  |
-                docker build ./Database --tag ghcr.io/kfernandol/tickend-database:latest
+                docker build ./Database --build-arg DBNAME=Tickend --build-arg PASSWORD=Test!2039 --tag ghcr.io/kfernandol/tickend-database:latest
                 docker push ghcr.io/kfernandol/tickend-database:latest
     deploy:
         needs: create-docker-image
