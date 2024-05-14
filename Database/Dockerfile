@@ -24,10 +24,6 @@ ENV SA_PASSWORD=$PASSWORD
 # Copy DACPAC From build
 COPY --from=build /app/Database.sqlproj.dacpac /tmp/database.dacpac
 
-# Copy WaitScript
-COPY ["TicketsSupport.Database/wait-for-it.sh", "/app"]
-RUN chmod +x wait-for-it.sh
-
 # Install Unzip and libunwind8
 RUN apt-get update \
     && apt-get install unzip libunwind8 -y
