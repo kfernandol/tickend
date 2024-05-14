@@ -49,6 +49,8 @@ jobs:
                     docker pull ghcr.io/kfernandol/tickend-webapi:latest
                     docker pull ghcr.io/kfernandol/tickend-webapp:latest
                     docker pull ghcr.io/kfernandol/tickend-database:latest
-                    docker stop tickend && docker rm tickend
+                    docker stop tickend-webapi && docker rm tickend-webapi
+                    docker stop tickend-webapp && docker rm tickend-webapp
+                    docker stop tickend-database && docker rm tickend-database
                     docker-compose down
                     docker-compose up -d
