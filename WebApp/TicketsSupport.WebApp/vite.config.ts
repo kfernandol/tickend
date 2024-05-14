@@ -29,7 +29,11 @@ export default defineConfig({
     preview: {
         host: true,
         strictPort: true,
-        port: 8082
+        port: 8082,
+		https: {
+            key: fs.readFileSync(SSL_PATH + SSL_KEY_NAME),
+            cert: fs.readFileSync(SSL_PATH + SSL_CERT_NAME),
+        }
     },
     server: {
         proxy: {

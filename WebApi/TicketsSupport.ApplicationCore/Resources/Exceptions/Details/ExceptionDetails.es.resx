@@ -126,10 +126,10 @@
   <data name="NotAssignedDetail" xml:space="preserve">
     <value>{0} no tiene asignado un {0}</value>
   </data>
-  <data name="NotFoundMessage" xml:space="preserve">
+  <data name="NotFoundDetail" xml:space="preserve">
     <value>{0} no encontrado</value>
   </data>
-  <data name="NotFoundMesssageWithValue" xml:space="preserve">
+  <data name="NotFoundDetailWithValue" xml:space="preserve">
     <value>{0} con valor {1} no encontrado</value>
   </data>
 </root>
