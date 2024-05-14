@@ -22,17 +22,17 @@ jobs:
                 
             - name: Build WEBAPI IMAGE
               run:  |
-                docker build /WebApi/Dockerfile --tag ghcr.io/kfernandol/tickend-webapi:latest
+                docker build ./WebApi --tag ghcr.io/kfernandol/tickend-webapi:latest
                 docker push ghcr.io/kfernandol/tickend-webapi:latest
     
             - name: Build WEBAPP image
               run:  |
-                docker build /WebApp/Dockerfile --tag ghcr.io/kfernandol/tickend-webapp:latest
+                docker build ./WebApp --tag ghcr.io/kfernandol/tickend-webapp:latest
                 docker push ghcr.io/kfernandol/tickend-webapp:latest
                 
             - name: Build Database image
               run:  |
-                docker build /Database/Dockerfile --tag ghcr.io/kfernandol/tickend-database:latest
+                docker build ./Database --tag ghcr.io/kfernandol/tickend-database:latest
                 docker push ghcr.io/kfernandol/tickend-database:latest
     deploy:
         needs: create-docker-image
