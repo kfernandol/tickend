@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -19,11 +20,16 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
     {
         private readonly TS_DatabaseContext _context;
         private readonly IMapper _mapper;
+        private int UserIdRequest;
 
-        public UserRepository(TS_DatabaseContext context, IMapper mapper)
+        public UserRepository(TS_DatabaseContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _mapper = mapper;
+
+            //Get UserId
+            string? userIdTxt = httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
+            int.TryParse(userIdTxt, out UserIdRequest);
         }
 
         public async Task<UserResponse> CreateUser(CreateUserRequest request)
@@ -38,7 +44,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             user.Salt = passwordHashed.salt;
 
             this._context.Users.Add(user);
-            await this._context.SaveChangesAsync();
+            await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
 
             return this._mapper.Map<UserResponse>(user);
         }
@@ -51,7 +57,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 user.Active = false;
 
                 this._context.Update(user);
-                await this._context.SaveChangesAsync();
+                await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Delete);
             }
             else
                 throw new NotFoundException(ExceptionMessage.NotFound("User", $"{id}"));
@@ -99,7 +105,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
 
                 this._context.Users.Update(user);
-                await this._context.SaveChangesAsync();
+                await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Modified);
 
                 return this._mapper.Map<UserResponse>(user);
             }

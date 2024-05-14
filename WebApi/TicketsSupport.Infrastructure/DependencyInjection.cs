@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TicketsSupport.ApplicationCore.Interfaces;
 using TicketsSupport.Infrastructure.Persistence.Contexts;
+using TicketsSupport.Infrastructure.Persistence.Interceptors;
 using TicketsSupport.Infrastructure.Persistence.Repositories;
 using TicketsSupport.Infrastructure.Services.Email;
 
@@ -12,13 +13,6 @@ namespace TicketsSupport.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            //Add DatabaseContext
-            var defaultConnectionString = configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContext<TS_DatabaseContext>(options =>
-            {
-                options.UseSqlServer(defaultConnectionString);
-            });
-
             //Dependencies infrastructures
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IProfileRepository, ProfileRepository>();
@@ -31,7 +25,15 @@ namespace TicketsSupport.Infrastructure
             services.AddScoped<ITicketStatusRepository, TicketStatusRepository>();
             services.AddScoped<ITicketTypeRepository, TicketTypeRepository>();
             services.AddScoped<IStadisticsRepository, StadisticsRepository>();
+            services.AddScoped<IAuditLogRepository, AuditLogRepository>();
             services.AddScoped<IEmailSender, EmailSender>();
+
+            //Add DatabaseContext
+            var defaultConnectionString = configuration.GetConnectionString("DefaultConnection");
+            services.AddDbContext<TS_DatabaseContext>((sp, options) =>
+            {
+                options.UseSqlServer(defaultConnectionString);
+            });
 
             return services;
         }

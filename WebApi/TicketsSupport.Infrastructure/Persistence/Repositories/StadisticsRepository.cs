@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using TicketsSupport.ApplicationCore.DTOs;
 using TicketsSupport.ApplicationCore.Entities;
@@ -12,10 +13,16 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
     {
         private readonly TS_DatabaseContext _context;
         private readonly IMapper _mapper;
-        public StadisticsRepository(TS_DatabaseContext context, IMapper mapper)
+        private int UserIdRequest;
+
+        public StadisticsRepository(TS_DatabaseContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _mapper = mapper;
+
+            //Get UserId
+            string? userIdTxt = httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
+            int.TryParse(userIdTxt, out UserIdRequest);
         }
 
         public async Task<int> GetClosedTickets(string? username)

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using TicketsSupport.ApplicationCore.DTOs;
 using TicketsSupport.ApplicationCore.Entities;
@@ -13,11 +14,16 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
     {
         private readonly TS_DatabaseContext _context;
         private readonly IMapper _mapper;
+        private int UserIdRequest;
 
-        public TicketStatusRepository(TS_DatabaseContext context, IMapper mapper)
+        public TicketStatusRepository(TS_DatabaseContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _mapper = mapper;
+
+            //Get UserId
+            string? userIdTxt = httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
+            int.TryParse(userIdTxt, out UserIdRequest);
         }
 
         public async Task<TicketStatusResponse> CreateTicketStatus(CreateTicketStatusRequest request)
@@ -26,7 +32,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             ticketStatus.Active = true;
 
             this._context.TicketStatuses.Add(ticketStatus);
-            await this._context.SaveChangesAsync();
+            await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
 
             return this._mapper.Map<TicketStatusResponse>(ticketStatus);
         }
@@ -39,7 +45,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 ticketStatus.Active = false;
 
                 this._context.Update(ticketStatus);
-                await this._context.SaveChangesAsync();
+                await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Delete);
             }
             else
                 throw new NotFoundException(ExceptionMessage.NotFound("Ticket Status", $"{id}"));
@@ -122,7 +128,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 ticketStatus.Active = true;
 
                 this._context.TicketStatuses.Update(ticketStatus);
-                await this._context.SaveChangesAsync();
+                await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Modified);
 
                 return this._mapper.Map<TicketStatusResponse>(ticketStatus);
             }

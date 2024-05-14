@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using System.Security.Claims;
 using TicketsSupport.ApplicationCore.Configuration;
 using TicketsSupport.ApplicationCore.DTOs;
 using TicketsSupport.ApplicationCore.Entities;
@@ -15,11 +17,16 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
     {
         private readonly TS_DatabaseContext _context;
         private readonly IMapper _mapper;
+        private int UserIdRequest;
 
-        public MenuRepository(TS_DatabaseContext context, IMapper mapper)
+        public MenuRepository(TS_DatabaseContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _mapper = mapper;
+
+            //Get UserId
+            string? userIdTxt = httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
+            int.TryParse(userIdTxt, out UserIdRequest);
         }
 
         public async Task<MenuResponse> CreateMenu(CreateMenuRequest request)
@@ -29,7 +36,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             menu.Active = true;
 
             this._context.Menus.Add(menu);
-            await this._context.SaveChangesAsync();
+            await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
 
             return this._mapper.Map<MenuResponse>(menu);
         }
@@ -42,7 +49,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 menu.Active = false;
 
                 this._context.Update(menu);
-                await this._context.SaveChangesAsync();
+                await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Delete);
             }
             else
                 throw new NotFoundException(ExceptionMessage.NotFound("Menu", $"{id}"));
@@ -110,7 +117,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 menu.Active = true;
 
                 this._context.Menus.Update(menu);
-                await this._context.SaveChangesAsync();
+                await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Modified);
 
                 return this._mapper.Map<MenuResponse>(menu);
             }

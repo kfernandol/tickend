@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -19,11 +20,16 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
     {
         private readonly TS_DatabaseContext _context;
         private readonly IMapper _mapper;
+        private int UserIdRequest;
 
-        public ProjectRepository(TS_DatabaseContext context, IMapper mapper)
+        public ProjectRepository(TS_DatabaseContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _mapper = mapper;
+
+            //Get UserId
+            string? userIdTxt = httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
+            int.TryParse(userIdTxt, out UserIdRequest);
         }
 
         public async Task<ProjectResponse> CreateProject(CreateProjectRequest request)
@@ -44,7 +50,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             project.Active = true;
 
             this._context.Projects.Add(project);
-            await this._context.SaveChangesAsync();
+            await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
 
             //Add Tickets Type
             if (!string.IsNullOrWhiteSpace(request.TicketTypesJson))
@@ -59,7 +65,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                     };
 
                     _context.ProjectXticketTypes.Add(ticketType);
-                    await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
                 }
             }
 
@@ -77,7 +83,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                     };
 
                     _context.ProjectXticketPriorities.Add(ticketPriority);
-                    await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
                 }
             }
 
@@ -95,7 +101,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                     };
 
                     _context.ProjectXticketStatuses.Add(ticketStatus);
-                    await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
                 }
             }
 
@@ -113,7 +119,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                     };
 
                     _context.ProjectXclients.Add(projectXclient);
-                    await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
                 }
             }
 
@@ -131,7 +137,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                     };
 
                     _context.ProjectXdevelopers.Add(projectXDeveloper);
-                    await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
                 }
             }
 
@@ -152,7 +158,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 project.Active = false;
 
                 this._context.Update(project);
-                await this._context.SaveChangesAsync();
+                await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Delete);
             }
             else
                 throw new NotFoundException(ExceptionMessage.NotFound("Project", $"{id}"));
@@ -244,7 +250,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             //Delete all Tickets Types
             var TicketsType = await _context.ProjectXticketTypes.Where(x => x.ProjectId == project.Id).ToListAsync();
             _context.ProjectXticketTypes.RemoveRange(TicketsType);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Delete);
 
             //Add Tickets Type
             List<int> TicketTypes = JsonSerializer.Deserialize<List<int>>(request.TicketTypesJson);
@@ -258,13 +264,13 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 };
 
                 _context.ProjectXticketTypes.Add(ticketType);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
             }
 
             //Delete all Tickets Priorities
             var TicketsPriorities = await _context.ProjectXticketPriorities.Where(x => x.ProjectId == project.Id).ToListAsync();
             _context.ProjectXticketPriorities.RemoveRange(TicketsPriorities);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Delete);
 
             //Add Tickets Priorities
             List<int> TicketPriorities = JsonSerializer.Deserialize<List<int>>(request.TicketPrioritiesJson);
@@ -277,13 +283,13 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 };
 
                 _context.ProjectXticketPriorities.Add(ticketPriority);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
             }
 
             //Delete Tickets Status
             var TicketsStatus = await _context.ProjectXticketStatuses.Where(x => x.ProjectId == project.Id).ToListAsync();
             _context.ProjectXticketStatuses.RemoveRange(TicketsStatus);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Delete);
 
             //Add Tickets Status
             List<int> TicketStatus = JsonSerializer.Deserialize<List<int>>(request.TicketStatusJson);
@@ -296,13 +302,13 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 };
 
                 _context.ProjectXticketStatuses.Add(ticketStatus);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
             }
 
             //Delete clients
             var Clients = await _context.ProjectXclients.Where(x => x.ProjectId == project.Id).ToListAsync();
             _context.ProjectXclients.RemoveRange(Clients);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Delete);
 
             //Add Clients
             List<int> clients = JsonSerializer.Deserialize<List<int>>(request.ClientsJson);
@@ -315,13 +321,13 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 };
 
                 _context.ProjectXclients.Add(projectXclient);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
             }
 
             //remove Developers
             var Developers = await _context.ProjectXdevelopers.Where(x => x.ProjectId == project.Id).ToListAsync();
             _context.ProjectXdevelopers.RemoveRange(Developers);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Delete);
 
             //Add Developer
             List<int> developers = JsonSerializer.Deserialize<List<int>>(request.DevelopersJson);
@@ -334,7 +340,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 };
 
                 _context.ProjectXdevelopers.Add(projectXDeveloper);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
             }
 
             return this._mapper.Map<ProjectResponse>(project);

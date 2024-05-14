@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Serilog.Parsing;
@@ -21,13 +22,18 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
         private readonly IMapper _mapper;
         private readonly WebApp _webAppConfig;
         private readonly IEmailSender _emailSender;
+        private int UserIdRequest;
 
-        public TicketRepository(TS_DatabaseContext context, IMapper mapper, IEmailSender emailSender, IOptions<WebApp> webAppConfig)
+        public TicketRepository(TS_DatabaseContext context, IMapper mapper, IEmailSender emailSender, IOptions<WebApp> webAppConfig, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _mapper = mapper;
             _webAppConfig = webAppConfig.Value;
             _emailSender = emailSender;
+
+            //Get UserId
+            string? userIdTxt = httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
+            int.TryParse(userIdTxt, out UserIdRequest);
         }
 
         public async Task<TicketResponse> CreateTicket(string? username, CreateTicketRequest request)
@@ -44,7 +50,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 ticket.DateCreated = DateCreate;
                 ticket.Active = true;
                 this._context.Tickets.Add(ticket);
-                await this._context.SaveChangesAsync();
+                await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
 
                 var TicketType = _context.TicketTypes.Find(ticket.TicketTypeId);
                 var Project = await _context.Projects.Include(x => x.ProjectXclients)
@@ -122,7 +128,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 ticket.Active = false;
 
                 this._context.Update(ticket);
-                await this._context.SaveChangesAsync();
+                await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Delete);
             }
             else
                 throw new NotFoundException(ExceptionMessage.NotFound("Ticket", $"{id}"));
@@ -219,7 +225,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 ticket.Active = true;
 
                 this._context.Tickets.Update(ticket);
-                await this._context.SaveChangesAsync();
+                await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Modified);
 
                 return this._mapper.Map<TicketResponse>(ticket);
             }

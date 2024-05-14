@@ -68,7 +68,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 user.RefreshToken = RefreshToken.RefreshTokenHash;
                 user.RefreshTokenExpirationTime = DateTime.Now.AddMinutes(_configJWT.ExpirationRefreshTokenMin);
                 _context.Update(user);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(user.Id, InterceptorActions.Modified);
 
                 return AuthResponse;
             }
@@ -96,7 +96,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 user.RefreshTokenExpirationTime = null;
 
                 _context.Update(user);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(user.Id, InterceptorActions.Modified);
 
                 throw new InvalidException(ExceptionMessage.Invalid("RefreshToken"));
             }
@@ -109,7 +109,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             {
                 user.RefreshToken = "";
                 _context.Update(user);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(user.Id, InterceptorActions.Modified);
 
                 throw new InvalidException(ExceptionMessage.Invalid("RefreshToken"));
             }
@@ -130,7 +130,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             user.RefreshToken = newRefreshToken.RefreshTokenHash;
             user.RefreshTokenExpirationTime = DateTime.Now.AddMinutes(_configJWT.ExpirationRefreshTokenMin);
             _context.Update(user);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(user.Id, InterceptorActions.Modified);
 
             return AuthResponse;
 
@@ -153,7 +153,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                     restorePassword.ExpirationDate = DateTime.Now.AddDays(1);
 
                     _context.Add(restorePassword);
-                    await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync(user.Id, InterceptorActions.Modified);
 
                     var resetPasswordLink = $"{_webAppConfig.Url}/ChangePassword/{HttpUtility.UrlEncode(HashReset)}";
 
@@ -208,7 +208,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                     };
 
                 await _emailSender.SendEmail(restorePassword.User.Email, string.Empty, EmailTemplate.SimpleMessage, EmailData);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(restorePassword.User.Id, InterceptorActions.Modified);
 
                 return true;
             }

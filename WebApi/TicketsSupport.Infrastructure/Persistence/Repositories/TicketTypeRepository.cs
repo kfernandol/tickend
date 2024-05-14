@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using TicketsSupport.ApplicationCore.DTOs;
 using TicketsSupport.ApplicationCore.Entities;
@@ -13,11 +14,16 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
     {
         private readonly TS_DatabaseContext _context;
         private readonly IMapper _mapper;
+        private int UserIdRequest;
 
-        public TicketTypeRepository(TS_DatabaseContext context, IMapper mapper)
+        public TicketTypeRepository(TS_DatabaseContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _mapper = mapper;
+
+            //Get UserId
+            string? userIdTxt = httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
+            int.TryParse(userIdTxt, out UserIdRequest);
         }
 
         public async Task<TicketTypeResponse> CreateTicketType(CreateTicketTypeRequest request)
@@ -26,7 +32,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             ticketType.Active = true;
 
             _context.TicketTypes.Add(ticketType);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
 
             return _mapper.Map<TicketTypeResponse>(ticketType);
         }
@@ -39,7 +45,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 ticketType.Active = false;
 
                 _context.Update(ticketType);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Delete);
             }
             else
                 throw new NotFoundException(ExceptionMessage.NotFound("Ticket Type", $"{id}"));
@@ -124,7 +130,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 ticketType.Active = true;
 
                 this._context.TicketTypes.Update(ticketType);
-                await this._context.SaveChangesAsync();
+                await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Modified);
 
                 return this._mapper.Map<TicketTypeResponse>(ticketType);
             }
