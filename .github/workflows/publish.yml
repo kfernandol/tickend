@@ -20,11 +20,20 @@ jobs:
                 username: ${{ github.actor }}
                 password: ${{ secrets.TOKEN_DEPLOY }}
                 
-            - name: Build image
+            - name: Build WEBAPI IMAGE
               run:  |
-                docker build . --tag ghcr.io/kfernandol/tickend:latest
-                docker push ghcr.io/kfernandol/tickend:latest
+                docker build ./WebApi/Dockerfile --tag ghcr.io/kfernandol/tickend-webapi:latest
+                docker push ghcr.io/kfernandol/tickend-webapi:latest
     
+            - name: Build WEBAPP image
+              run:  |
+                docker build ./WebApp/Dockerfile --tag ghcr.io/kfernandol/tickend-webapp:latest
+                docker push ghcr.io/kfernandol/tickend-webapp:latest
+                
+            - name: Build Database image
+              run:  |
+                docker build ./Database/Dockerfile --tag ghcr.io/kfernandol/tickend-database:latest
+                docker push ghcr.io/kfernandol/tickend-database:latest
     deploy:
         needs: create-docker-image
         runs-on: ubuntu-latest
@@ -37,7 +46,9 @@ jobs:
                    sshpass -p ${{secrets.AUTH_PASS}} ssh -o StrictHostKeyChecking=no ${{secrets.AUTH_SERVER}} << EOF
                     cd /home/Projects/NET/Tickend/
                     docker login ghcr.io -u kfernandol -p ${{secrets.TOKEN_DEPLOY}}
-                    docker pull ghcr.io/kfernandol/tickend:latest
+                    docker pull ghcr.io/kfernandol/tickend-webapi:latest
+                    docker pull ghcr.io/kfernandol/tickend-webapp:latest
+                    docker pull ghcr.io/kfernandol/tickend-database:latest
                     docker stop tickend && docker rm tickend
                     docker-compose down
                     docker-compose up -d
