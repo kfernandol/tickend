@@ -24,6 +24,10 @@ ENV SA_PASSWORD=$PASSWORD
 # Copy DACPAC From build
 COPY --from=build /app/Database.sqlproj.dacpac /tmp/database.dacpac
 
+# Copy WaitScript
+COPY ["TicketsSupport.Database/wait-for-it.sh", "/app"]
+RUN chmod +x wait-for-it.sh
+
 # Install Unzip and libunwind8
 RUN apt-get update \
     && apt-get install unzip libunwind8 -y
@@ -34,22 +38,17 @@ RUN wget -progress=bar:force -q -O sqlpackage.zip https://aka.ms/sqlpackage-linu
     && chmod a+x /opt/sqlpackage/sqlpackage 
 
 RUN echo "#!/bin/bash \n \
-# Iniciar SQL Server \n \
-/opt/mssql/bin/sqlservr \n \
-# Esperar hasta que SQL Server esté listo \n \
-until /opt/mssql/bin/sqlcmd -S localhost -U sa -P "$SA_PASSWORD" -Q "SELECT @@VERSION" &> /dev/null \n \
-do \n \
-    echo "Waiting for SQL Server to be ready..." \n \
-    sleep 5 \n \
-done \n \
+/opt/mssql/bin/sqlservr & \n \
+sleep 60 \n \
 # Verificar si el archivo database.dacpac existe \n \
 if [ -f "/tmp/database.dacpac" ]; then \n \
     echo "Applying database changes..." \n \
     /opt/sqlpackage/sqlpackage /a:Publish /tsn:. /tdn:${DBNAME} /tu:sa /tp:$SA_PASSWORD /sf:/tmp/database.dacpac /tec:Mandatory /ttsc:True \n \
     rm /tmp/database.dacpac \n \
-fi" > /app/deploy.sh && chmod +x /app/deploy.sh	
+fi \n \
+tail -f /dev/null" > /app/deploy.sh && chmod +x /app/deploy.sh	
 
 # Expone el puerto predeterminado de SQL Server
 EXPOSE 1433
 
-ENTRYPOINT ["/app/deploy.sh"]
+CMD ["/app/deploy.sh"]

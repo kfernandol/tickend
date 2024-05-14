@@ -9,6 +9,7 @@ services:
     restart: unless-stopped
     volumes:
       - c:/temp/Tickend/WebApi/appsettings.json:/app/appsettings.json
+      - c:/temp/Tickend/WebApi/Logs:/app/Temp/Logs
     networks:
       - networktickend
   webapp:
@@ -18,12 +19,15 @@ services:
     restart: unless-stopped
     volumes:
       - c:/temp/Tickend/WebApp/.env:/app/.env
+      - c:/temp/Tickend/WebApp/ssl:/app/ssl
     networks:
       - networktickend
   database:
     image: tickend-db
     ports:
       - "1439:1433"
+    environment:
+    - SA_PASSWORD=Test!2039
     restart: unless-stopped
     volumes:
       - c:/temp/Tickend/Database/data:/var/opt/mssql/data
