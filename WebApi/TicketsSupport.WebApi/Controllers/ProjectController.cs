@@ -30,7 +30,6 @@ namespace TicketsSupport.WebApi.Controllers
         /// Get all projects
         /// </summary>
         /// <returns></returns>
-        [AuthorizeMenu("Projects")]
         [HttpGet, MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(List<ProjectResponse>))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
@@ -47,7 +46,6 @@ namespace TicketsSupport.WebApi.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [AuthorizeMenu("Projects")]
         [HttpGet("{id}"), MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(ProjectResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]

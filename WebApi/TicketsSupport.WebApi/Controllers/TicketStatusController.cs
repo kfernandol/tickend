@@ -31,7 +31,6 @@ namespace TicketsSupport.WebApi.Controllers
         /// Get all ticket status
         /// </summary>
         /// <returns></returns>
-        [AuthorizeMenu("TicketStatus")]
         [HttpGet, MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(List<TicketStatusResponse>))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
@@ -48,7 +47,6 @@ namespace TicketsSupport.WebApi.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [AuthorizeMenu("TicketStatus")]
         [HttpGet("{id}"), MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(TicketStatusResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
@@ -64,7 +62,6 @@ namespace TicketsSupport.WebApi.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [AuthorizeMenu("TicketStatus")]
         [HttpGet("byproject/{id}"), MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(TicketTypeResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
