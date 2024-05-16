@@ -67,7 +67,7 @@ WORKDIR /app
 
 # Copy the published application into the container
 COPY --from=publish /app/publish .
-COPY /TicketsSupport.ApplicationCore/EmailTemplates/html /app/TicketsSupport.ApplicationCore/EmailTemplates/html
+COPY /TicketsSupport.ApplicationCore/EmailTemplates/html /TicketsSupport.ApplicationCore/EmailTemplates/html
 
 # Set the entry point for the container
 ENTRYPOINT ["dotnet", "TicketsSupport.WebApi.dll"]
