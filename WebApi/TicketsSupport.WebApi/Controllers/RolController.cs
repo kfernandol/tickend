@@ -30,7 +30,6 @@ namespace TicketsSupport.WebApi.Controllers
         /// Get all roles
         /// </summary>
         /// <returns></returns>
-        [AuthorizeMenu("Roles")]
         [HttpGet, MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(List<RolResponse>))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
@@ -46,7 +45,6 @@ namespace TicketsSupport.WebApi.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [AuthorizeMenu("Roles")]
         [HttpGet("{id}"), MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(RolResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]

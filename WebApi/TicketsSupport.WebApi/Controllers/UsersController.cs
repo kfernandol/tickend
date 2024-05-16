@@ -31,7 +31,6 @@ namespace TicketsSupport.WebApi.Controllers
         /// Get all users
         /// </summary>
         /// <returns></returns>
-        [AuthorizeMenu("Users")]
         [HttpGet, MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(List<UserResponse>))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
@@ -47,7 +46,6 @@ namespace TicketsSupport.WebApi.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [AuthorizeMenu("Users")]
         [HttpGet("{id}"), MapToApiVersion(1.0)]
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(UserResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
