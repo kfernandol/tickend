@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 //componets
-import BackgroundAnimated from '../../components/backgroundAnimated/backgroundAnimated';
 import LaguageSelect from "../../components/lenguajeSelect/languageSelect";
 import ButtonSubmitLogin from '../../components/buttonSubmitLogin/buttonSubmitLogin';
 import { Controller } from 'react-hook-form';
@@ -69,7 +68,6 @@ export default function ChangePassword() {
 
     return (
         <>
-            <BackgroundAnimated />
             <LaguageSelect />
             <Toast ref={toast} />
             <div className="grid h-screen w-screen m-0 p-0">
@@ -119,7 +117,7 @@ export default function ChangePassword() {
                                                                     className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"}
                                                                     onChange={(e) => field.onChange(e.target.value)}
                                                                     placeholder={Password} />
-                                                             </IconField>
+                                                            </IconField>
                                                             {ErrorMessageHtml(field.name)}
                                                         </>
                                                     )}
@@ -156,7 +154,7 @@ export default function ChangePassword() {
                                                                     value={field.value}
                                                                     type='password' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"}
                                                                     onChange={(e) => field.onChange(e.target.value)}
-                                                                    placeholder={ConfirmPassword}                                                                />
+                                                                    placeholder={ConfirmPassword} />
                                                             </IconField>
                                                             {ErrorMessageHtml(field.name)}
                                                         </>

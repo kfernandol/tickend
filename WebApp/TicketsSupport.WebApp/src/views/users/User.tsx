@@ -24,6 +24,7 @@ import { BasicResponse, ErrorResponse, ErrorsResponse } from '../../models/respo
 import { RolesResponse } from '../../models/responses/roles.response';
 import { RootState } from '../../redux/store';
 import { AuthToken } from '../../models/tokens/token.model';
+import { Card } from 'primereact/card';
 
 export default function Users() {
     const toast = useRef<Toast>(null);
@@ -63,6 +64,7 @@ export default function Users() {
     const TableHeaderRol = t("users.labels.role");
     const TableHeaderActions = t("common.labels.actions");
     const TableNoElements = t("common.table.noElements");
+    const PageName = t("navigation.Users");
 
     //Links
     const NewItemUrl = paths.newUser;
@@ -182,20 +184,12 @@ export default function Users() {
     const header = (
         <div className="flex flex-wrap justify-content-between align-items-center gap-2 p-2" >
             {/* Table Title */}
-            <span className='text-2xl text-white'>{TableTitle}</span>
+            <span className='text-xl text-gray-900'>{TableTitle}</span>
             {/* Filter */}
             <IconField iconPosition="left">
                 <InputIcon className="pi pi-search"> </InputIcon>
-                <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder={GlobalSearch} />
+                <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder={GlobalSearch} className="h-3rem" />
             </IconField>
-            {/* Add new */}
-            {getTokenData?.PermissionLevel === "Administrator" ?
-                <Link to={NewItemUrl}>
-                    <Button icon="pi pi-plus" severity='success'>
-                        <span className='pl-2'>{TableHeaderNew}</span>
-                    </Button>
-                </Link>
-                : null}
         </div>
     );
 
@@ -209,7 +203,7 @@ export default function Users() {
     const ActionsTableTemplate = (rowData: { id: string; }) => {
         const editUrlPath = EditItemUrl.slice(0, EditItemUrl.length - 3);
         return <>
-            <div className='flex gap-2'>
+            <div className='flex justify-content-center gap-2'>
                 <Link to={editUrlPath + rowData.id}>
                     <Button icon="pi pi-pencil" severity='warning' aria-label="Bookmark"></Button>
                 </Link>
@@ -228,30 +222,39 @@ export default function Users() {
                 :
                 <>
                     <Toast ref={toast} />
-                    <div className="card" style={{ backgroundColor: "#17212f5D" }}>
-                        <DataTable
-                            value={TableData}
-                            header={header}
-                            style={{ backgroundColor: "#17212f5D" }}
-                            dataKey="id"
-                            paginator
-                            rows={10}
-                            size='small'
-                            filters={filters}
-                            globalFilterFields={['id', 'username', 'firstName', 'lastName', 'email']}
-                            emptyMessage={TableNoElements}
-                        >
-                            <Column style={{ width: '5rem' }} />
-                            <Column field="id" header={TableHeaderId} sortable />
-                            <Column body={imageBodyTemplate} header={TableHeaderPhoto} />
-                            <Column field="username" header={TableHeaderUsername} sortable />
-                            <Column field="firstname" header={TableHeaderFirstName} sortable />
-                            <Column field="lastname" header={TableHeaderLastName} sortable />
-                            <Column field="email" header={TableHeaderEmail} sortable />
-                            <Column field="rol" header={TableHeaderRol} sortable />
-                            {getTokenData?.PermissionLevel === "Administrator" ? <Column header={TableHeaderActions} body={ActionsTableTemplate} sortable /> : <></>}
-                        </DataTable>
+                    {/*Title*/}
+                    <div className="flex justify-content-between align-items-center my-4">
+                        <h2 className="my-0">{PageName}</h2>
+                        {/* Add new */}
+                        {getTokenData?.PermissionLevel === "Administrator"
+                            ? <Link to={NewItemUrl}>
+                                <Button icon="pi pi-plus" severity='success'>
+                                    <span className='pl-2'>{TableHeaderNew}</span>
+                                </Button>
+                            </Link>
+                            : null}
                     </div>
+                    {/*Table*/}
+                    <DataTable
+                        value={TableData}
+                        header={header}
+                        dataKey="id"
+                        paginator
+                        rows={10}
+                        size='small'
+                        filters={filters}
+                        globalFilterFields={['id', 'username', 'firstName', 'lastName', 'email']}
+                        emptyMessage={TableNoElements}
+                    >
+                        <Column field="id" header={TableHeaderId} sortable />
+                        <Column body={imageBodyTemplate} header={TableHeaderPhoto} />
+                        <Column field="username" header={TableHeaderUsername} sortable />
+                        <Column field="firstname" header={TableHeaderFirstName} sortable />
+                        <Column field="lastname" header={TableHeaderLastName} sortable />
+                        <Column field="email" header={TableHeaderEmail} sortable />
+                        <Column field="rol" header={TableHeaderRol} sortable />
+                        {getTokenData?.PermissionLevel === "Administrator" ? <Column header={TableHeaderActions} body={ActionsTableTemplate} sortable /> : <></>}
+                    </DataTable>
                 </>
             }
 

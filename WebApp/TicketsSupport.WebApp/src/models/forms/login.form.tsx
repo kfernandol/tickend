@@ -1,5 +1,4 @@
 export interface LoginFormModel {
-  username: string;
-  password: string;
-  keepLogin: boolean;
+    username: string;
+    password: string;
 }

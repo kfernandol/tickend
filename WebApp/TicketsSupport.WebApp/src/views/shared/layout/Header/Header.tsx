@@ -4,14 +4,14 @@ import { paths } from "../../../../routes/paths";
 //componente
 import { Menubar } from "primereact/menubar";
 import { Avatar } from "primereact/avatar";
-import { Button } from "primereact/button";
 import { TieredMenu } from "primereact/tieredmenu";
 import { MenuItem } from "primereact/menuitem";
+import { BreadCrumb } from "primereact/breadcrumb";
 //hooks
 import { useDispatch, useSelector } from "react-redux";
 import useTokenData from "../../../../hooks/useTokenData";
 import { i18next, useTranslation } from "../../../../i18n";
-import { useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useGet } from "../../../../services/api_services";
 //redux
 import { changeLanguage } from "../../../../redux/Slices/LanguageSlice";
@@ -21,6 +21,7 @@ import { RootState } from "../../../../redux/store";
 import { AuthToken } from "../../../../models/tokens/token.model";
 import { Languages } from "../../../../models/combobox/languages";
 import { UserResponse } from "../../../../models/responses/users.response";
+import { BreadCrumbModel } from "../../../../models/breadcrumb/breadcrumb.model";
 
 function Header() {
     //Ref
@@ -33,7 +34,12 @@ function Header() {
 
     //hooks
     const navigate = useNavigate();
+    const location = useLocation();
     const { SendGetRequest } = useGet<UserResponse>()
+    const [breadcrumbItems, setBreadcrumbItems] = useState<BreadCrumbModel[]>();
+    const [selectedLanguage, setSelectedLanguage] = useState<Languages>({ name: language.name, code: language.code, flag: language.flag });
+    const [AvatarIMG, setAvatarIMG] = useState<string>("/src/assets/imgs/avatar-default.png");
+    const [FullName, setFullName] = useState<string>("");
 
     //translations
     const { t } = useTranslation();
@@ -44,7 +50,6 @@ function Header() {
     const LogoutTxt = t("sidebar.logout");
 
     //Variables
-    const [selectedLanguage, setSelectedLanguage] = useState<Languages>({ name: language.name, code: language.code, flag: language.flag });
     const languages: Array<Languages> = [
         {
             name: SpanishTxt,
@@ -57,8 +62,24 @@ function Header() {
             flag: 'us'
         }
     ];
-    const [AvatarIMG, setAvatarIMG] = useState<string>("/src/assets/imgs/avatar-default.png");
-    const [FullName, setFullName] = useState<string>("");
+    const home = { icon: 'pi pi-home', url: '/' };
+
+    // load element to BreadCrumb
+    useEffect(() => {
+        const paths = location.pathname.split('/').filter((path) => path !== '');
+
+        const breadcrumbItems = paths.map((segment, index) => {
+            const routePath = `/${paths.slice(0, index + 1).join('/')}`;
+
+            const item: BreadCrumbModel = {
+                label: segment,
+                template: () => <Link to={routePath} className="no-underline"><span>{segment}</span></Link>
+            }
+            return item;
+        });
+
+        setBreadcrumbItems(breadcrumbItems)
+    }, [location])
 
     const showSidebar = () => {
         const menubar = document.querySelector("#app-sidebar-2");
@@ -108,12 +129,24 @@ function Header() {
     };
 
     const MenubarStart = (
-        <Button id="btnMenu" icon="pi pi-bars" severity="info" aria-label="Bookmark" onClick={showSidebar} />
+        <div className="flex justify-content-center align-items-center">
+            <i id="MenuBtn" className="pi pi-bars mx-3 cursor-pointer" style={{ fontSize: "1.25rem" }} onClick={showSidebar} />
+            <BreadCrumb
+                home={home}
+                model={breadcrumbItems}
+                style={{ backgroundColor: "#FFFFFF00" }}
+                pt={{
+                    menuitem: { className: "text-gray-900" },
+                    label: { className: "text-gray-900" },
+                    menu: { className: "text-gray-900" },
+                    root: { className: "border-none" }
+                }} />
+        </div>
     );
 
     const MenubarEnd = (
         <div className="flex align-items-center gap-2 m-1">
-            <span className="text-xl">{FullName}</span>
+            <span className="text-lg">{FullName}</span>
             <Avatar id="headerAvatar" className="p-1" size="large" image={AvatarIMG} shape="circle" onClick={(event) => AvatarMenu != null && AvatarMenu.current != null ? AvatarMenu.current.toggle(event) : ''} />
         </div>
     );
@@ -166,8 +199,8 @@ function Header() {
 
     return (
         <>
-            <div className="card relative">
-                <Menubar start={MenubarStart} end={MenubarEnd} style={{ backgroundColor: "#17212f2D", borderLeft: "none", borderTop: "none", borderRight: "none" }} />
+            <div className="relative h-full">
+                <Menubar className="h-full" start={MenubarStart} end={MenubarEnd} style={{ backgroundColor: "#FFFFFF00" }} />
                 <TieredMenu model={MenuAvatarItems as MenuItem[]} popup ref={AvatarMenu} />
             </div>
         </>

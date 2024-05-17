@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 //componets
-import BackgroundAnimated from '../../components/backgroundAnimated/backgroundAnimated';
 import LaguageSelect from "../../components/lenguajeSelect/languageSelect";
 import ButtonSubmitLogin from '../../components/buttonSubmitLogin/buttonSubmitLogin';
 import { Controller } from 'react-hook-form';
@@ -59,7 +58,6 @@ export default function ResetPassword() {
 
     return (
         <>
-            <BackgroundAnimated />
             <LaguageSelect />
             <div className="grid h-screen w-screen m-0 p-0">
                 <div className="col-12 sm:col-6 sm:col-offset-3 md:col-5 md:col-offset-4 lg:col-10 lg:col-offset-1 lg:px-5 xl:col-8 xl:col-offset-2 xl:px-8">

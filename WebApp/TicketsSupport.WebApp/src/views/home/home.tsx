@@ -47,7 +47,7 @@ export default function Home() {
     const title = t('tickets.labels.title');
     const priority = t('tickets.labels.priority');
     const status = t('tickets.labels.status');
-    const createBy = t('tickets.labels.createBy');
+    const createBy = t('tickets.labels.createdBy');
     const dateCreated = t('tickets.labels.dateCreated');
     const statusOpen = t('tickets.status.open');
     const statusClosed = t('tickets.status.closed');
