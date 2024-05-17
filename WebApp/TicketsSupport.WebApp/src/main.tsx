@@ -14,8 +14,9 @@ import "primereact/resources/primereact.css";
 //primereact/resources/themes/vela-blue/theme.css
 //primereact/resources/themes/lara-dark-blue/theme.css
 //primereact/resources/themes/luna-blue/theme.css
-import "primereact/resources/themes/vela-blue/theme.css";
+//import "primereact/resources/themes/vela-blue/theme.css";
 //i18n
+import "./assets/themes/tickend-light/theme.css"
 import { LanguageComponent } from "./i18n.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(

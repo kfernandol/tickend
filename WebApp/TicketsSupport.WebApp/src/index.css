@@ -1,29 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+html {
+    font-size: 14px
+}
+
 body {
-  margin: 0;
-  padding: 0;
-  background-color: #121212;
+    margin: 0;
+    padding: 0;
 }
 
 #root {
-  position: relative;
+    position: relative;
 }
 
-.p-datatable .p-datatable-header {
-  background-color: transparent;
+.p-divider.p-divider-horizontal:before {
+    border-top: solid 1px #bbb;
 }
 
-.p-datatable .p-datatable-tbody>tr {
-  background-color: transparent;
+.p-datatable .p-column-header-content {
+    justify-content: center;
 }
 
-.p-datatable .p-datatable-thead>tr>th {
-  background-color: transparent;
-}
-
-.p-card {
-  background-color: #17212f5D;
-}
-
-.p-card .p-card-subtitle {
-  font-weight: 400 !important;
+.p-datatable .p-datatable-tbody > tr > td {
+    text-align: center;
 }
