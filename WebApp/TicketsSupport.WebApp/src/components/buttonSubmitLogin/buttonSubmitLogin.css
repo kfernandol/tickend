@@ -1,5 +1,5 @@
 :root {
-    --btn-submit-login-color: #45B9FF;
+    --btn-submit-login-color: #263238;
 }
 
 
@@ -10,6 +10,6 @@
     transition: box-shadow .2s;
 }
 
-.btnSubmitLogin:hover {
-    box-shadow: var(--btn-submit-login-color) 0px 0px 10px;
-}
+    .btnSubmitLogin:hover {
+        box-shadow: var(--btn-submit-login-color) 0px 0px 10px;
+    }

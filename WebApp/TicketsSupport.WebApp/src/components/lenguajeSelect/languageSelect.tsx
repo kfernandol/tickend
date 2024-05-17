@@ -12,8 +12,10 @@ import { Languages } from '../../models/combobox/languages';
 import { changeLanguage } from '../../redux/Slices/LanguageSlice';
 
 
-
-function LenguajeSelect() {
+interface Props {
+    className?: string,
+}
+export default function LenguajeSelect(props: Props) {
     const language = useSelector((state: RootState) => state.language);
     const dispatch = useDispatch();
 
@@ -70,7 +72,7 @@ function LenguajeSelect() {
     };
 
     return (
-        <div className='absolute bottom-0 right-0'>
+        <div className={props.className}>
             <Dropdown value={language.code}
                 onChange={(e) => HandlerOnChangeLanguage(e.value)}
                 options={languages}
@@ -81,12 +83,10 @@ function LenguajeSelect() {
                 valueTemplate={selectedCountryTemplate}
                 className="w-full md:w-14rem"
                 dropdownIcon={(opts: { iconProps: ChevronDownIconProps }) => {
-                return <ChevronDownIcon {...opts.iconProps} />;
+                    return <ChevronDownIcon {...opts.iconProps} />;
                 }}
             />
         </div>
 
     )
 }
-
-export default LenguajeSelect
