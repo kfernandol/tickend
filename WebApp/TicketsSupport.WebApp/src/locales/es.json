@@ -6,7 +6,17 @@
       "submit": "Iniciar sesión",
       "labels": {
         "username": "Nombre de usuario",
-        "password": "Contraseña"
+        "password": "Contraseña",
+        "or": "o",
+        "continueGoogle": "Continuar con Google",
+        "areNew": "Eres nuevo?",
+        "createAccount": "Crea una cuenta",
+        "TitleMessage": "Optimiza tu Soporte al Cliente",
+        "SubTitleMessage": "Brindamos soluciones efectivas para mantener a tus clientes satisfechos y seguros."
+      },
+      "placeholder": {
+        "username": "Ingrese su nombre de usuario",
+        "password": "Ingrese su contraseña"
       },
       "usernameRequired": "Se requiere un nombre de usuario",
       "passwordRequired": "Se requiere una contraseña",
@@ -16,7 +26,8 @@
     }
   },
   "navigation": {
-    "Dashboard": "Tablero",
+    "Dashboard": "Dashboard",
+    "Home": "Inicio",
     "Security": "Seguridad",
     "Users": "Usuarios",
     "Roles": "Roles",

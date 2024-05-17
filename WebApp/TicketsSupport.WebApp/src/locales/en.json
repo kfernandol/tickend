@@ -6,7 +6,17 @@
       "submit": "Log in",
       "labels": {
         "username": "Username",
-        "password": "Password"
+        "password": "Password",
+        "or": "or",
+        "continueGoogle": "Continue with Google",
+        "areNew": "Are you new?",
+        "createAccount": "Create an account",
+        "TitleMessage": "Optimize Your Customer Support",
+        "SubTitleMessage": "We provide effective solutions to keep your customers satisfied and secure."
+      },
+      "placeholder": {
+        "username": "Enter your username",
+        "password": "Enter your password"
       },
       "usernameRequired": "Username is required",
       "passwordRequired": "Password is required",
@@ -17,6 +27,7 @@
   },
   "navigation": {
     "Dashboard": "Dashboard",
+    "Home": "Home",
     "Security": "Security",
     "Users": "Users",
     "Roles": "Roles",
