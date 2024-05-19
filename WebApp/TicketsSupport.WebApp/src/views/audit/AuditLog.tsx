@@ -171,10 +171,15 @@ export default function AuditLog() {
         const user = users.find(x => x.id == rowDate.userId);
 
         if (user?.photo)
-            return <Avatar image={`data:image/*;base64,${user.photo}`} size="normal" shape="circle" />;
+            return <>
+                <div className="flex align-items-center ">
+                    <Avatar image={`data:image/*;base64,${user.photo}`} size="large" shape="circle" />
+                    <p className="ml-4">{user?.firstName} {user?.lastName}</p>
+                </div>
+            </>;
         else
             return <>
-                <div className="flex">
+                <div className="flex align-items-center ">
                     <Avatar icon="pi pi-user" size="large" shape="circle" image={'src/assets/imgs/avatar-default.png'} />
                     <p className="ml-4">{user?.firstName} {user?.lastName}</p>
                 </div>
@@ -243,7 +248,7 @@ export default function AuditLog() {
                         value={sidebar.auditLog?.auditLogDetailResponses}
                         showGridlines
                         stripedRows
-                        className="w-full md:w-18rem lg:w-28rem">
+                        className="w-full">
                         <Column field="columnName" header={nameTxt}></Column>
                         <Column field="oldValue" header={oldValueTxt}></Column>
                         <Column field="newValue" header={newValueTxt}></Column>
@@ -254,7 +259,7 @@ export default function AuditLog() {
     }
 
     return <>
-        <h2 className="my-0">{titleTxt}</h2>
+        <h2 className="mb-0 mt-4">{titleTxt}</h2>
         <p className="mt-2 mb-0">{subTitleTxt}</p>
         {/*Filters*/}
         <Card className="mt-4" pt={{ content: { className: "my-0 py-0" }, body: { className: "my-0 py-0" } }}>
@@ -319,7 +324,7 @@ export default function AuditLog() {
             </div>
         </Card>
         {/*Table*/}
-        <Card className="mt-4" pt={{ content: { className: "my-0 py-0" }, body: { className: "m-0 p-0" } }}>
+        <Card className="mt-4 mb-4" pt={{ content: { className: "my-0 py-0" }, body: { className: "m-0 p-0" } }}>
             <DataTable
                 value={auditLogsFiltered}
                 style={{ backgroundColor: "#17212f5D" }}
@@ -329,7 +334,14 @@ export default function AuditLog() {
                 size='small'
                 selectionMode="single"
                 onSelectionChange={(e) => HandlerOnChangeAction(e.value)}
-                emptyMessage={TableNoElements}>
+                emptyMessage={TableNoElements}
+                stripedRows
+                pt={{
+                    root: { className: "h-full flex flex-column" },
+                    header: { className: "bg-white border-0 mb-3" },
+                    wrapper: { className: "h-full" },
+                    column: { headerCell: { className: "bg-yellow-100" } }
+                }}            >
                 <Column field="userId" header={userTxt} body={userBodyTemplate}></Column>
                 <Column field="action" header={actionsTxt} body={actionBodyTemplate}></Column>
                 <Column field="date" dataType="date" header={dateTxt} body={dateBodyTemplate}></Column>
@@ -343,7 +355,7 @@ export default function AuditLog() {
             position="right"
             onHide={() => setSidebar({ visible: false, auditLog: null })}
             content={SidebarTemplate}
-            className="w-full md:w-20rem lg:w-30rem">
+            className="w-auto">
         </Sidebar>
     </>;
 }
