@@ -5,7 +5,6 @@ import './Layout.css'
 // import components
 import Sidebar from "./Sidebar/Sidebar";
 import _Header from "./Header/Header";
-import Footer from "./Footer/Footer";
 
 function Layout() {
     return (
@@ -20,9 +19,6 @@ function Layout() {
                 <main className="Main px-5">
                     <Outlet />
                 </main>
-                <footer className="Footer">
-                    <Footer />
-                </footer>
             </div>
         </>
     );
