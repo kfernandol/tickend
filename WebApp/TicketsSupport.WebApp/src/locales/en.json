@@ -42,7 +42,8 @@
     "TicketsP": "Tickets",
     "Ticket": "Tickets",
     "AuditLogs": "Audit Logs",
-    "StadisticsP": "Stadistics"
+    "StadisticsP": "Stadistics",
+    "Stadistics": "Stadistics"
   },
   "element": {
     "user": "User",

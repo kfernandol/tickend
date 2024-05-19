@@ -42,7 +42,8 @@
     "TicketsP": "Tickets",
     "Ticket": "Tickets",
     "AuditLogs": "Registros de Auditoría",
-    "StadisticsP": "Estadisticas"
+    "StadisticsP": "Estadisticas",
+    "Stadistics": "Estadisticas"
   },
   "element": {
     "user": "Usuario",

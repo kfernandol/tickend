@@ -12,7 +12,6 @@ import { Dropdown } from 'primereact/dropdown';
 import { Toast } from 'primereact/toast';
 import { InputNumber } from 'primereact/inputnumber';
 import { Checkbox } from 'primereact/checkbox';
-import { FloatLabel } from 'primereact/floatlabel';
 import { SelectItemOptionsType } from 'primereact/selectitem';
 //Hooks
 import { useTranslation } from 'react-i18next'
@@ -45,7 +44,7 @@ export default function MenuEdit() {
         ]
 
     //Form
-    const { control, ErrorMessageHtml, errors, handleSubmit, reset, setValue } = useCustomForm<MenuFormModel>(
+    const { control, ErrorMessageHtml, handleSubmit, reset, setValue } = useCustomForm<MenuFormModel>(
         {
             name: "",
             icon: "",
@@ -59,7 +58,7 @@ export default function MenuEdit() {
     const [FilterIcon, setFilterIcon] = useState<string>('');
     //Request Hook
     const { SendPutRequest, putResponse, loadingPut, errorPut, httpCodePut } = usePut<BasicResponse>();
-    const { SendGetRequest, getResponse } = useGet<PermissionLevelResponse | MenusResponse>();
+    const { SendGetRequest } = useGet<PermissionLevelResponse | MenusResponse>();
 
     //Translation
     const { t } = useTranslation();
@@ -82,35 +81,29 @@ export default function MenuEdit() {
 
     //request initial data
     useEffect(() => {
-        SendGetRequest("v1/menus");
-        SendGetRequest("v1/menus/" + id)
+        const requests = [
+            SendGetRequest("v1/menus"),
+            SendGetRequest("v1/menus/" + id)
+        ];
+
+        requests.forEach((request) => {
+            request.then((response) => {
+                switch (response.url) {
+                    case "v1/menus":
+                        setMenus(response.data as MenusResponse[]);
+                        break;
+                    case "v1/menus/" + id:
+                        setValue("name", (response.data as MenusResponse).name);
+                        setValue("url", (response.data as MenusResponse).url);
+                        setValue("icon", (response.data as MenusResponse).icon);
+                        setValue("position", (response.data as MenusResponse).position);
+                        setValue("parentId", (response.data as MenusResponse).parentId);
+                        setValue("show", (response.data as MenusResponse).show);
+                        break;
+                }
+            })
+        })
     }, []);
-
-    //load initial data
-    useEffect(() => {
-        if (getResponse && !Array.isArray(getResponse)) {
-            //Set form data
-            const response = getResponse as MenusResponse;
-            const areAllMenuResponses = 'name' in response && 'id' in response && 'parentId' in response && 'show' in response;
-            if (areAllMenuResponses) {
-                setValue("name", response.name);
-                setValue("url", response.url);
-                setValue("icon", response.icon);
-                setValue("position", response.position);
-                setValue("parentId", response.parentId);
-                setValue("show", response.show);
-
-            }
-        }
-        else if (getResponse && Array.isArray(getResponse)) {
-            const response = getResponse as MenusResponse[];
-            //Set data menu
-            const areAllMenusResponses = response.every(item => Object.prototype.toString.call(item) === '[object Object]' && 'name' in item && 'id' in item && 'parentId' in item && 'show' in item);
-            if (areAllMenusResponses) {
-                setMenus(response);
-            }
-        }
-    }, [getResponse])
 
     //Save New Rol
     useEffect(() => {
@@ -159,7 +152,16 @@ export default function MenuEdit() {
     return (
         <>
             <Toast ref={toast} />
-            <Card title={CardTitle} subTitle={CardSubTitle}>
+            <Card
+                title={CardTitle}
+                subTitle={CardSubTitle}
+                pt={{
+                    root: { className: "my-5 px-4 pt-3" },
+                    title: { className: "mt-3" },
+                    subTitle: { className: "mb-1" },
+                    body: { className: "pb-0 pt-1" },
+                    content: { className: "pt-0" }
+                }}>
                 <form className='mt-5 grid gap-2"' onSubmit={handleSubmit(onSubmit)}>
 
                     {/* Name Input */}
@@ -182,11 +184,8 @@ export default function MenuEdit() {
                                 }}
                             render={({ field }) => (
                                 <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.name })}></label>
-                                    <FloatLabel>
-                                        <Dropdown id={field.name} value={field.value} onChange={(e) => field.onChange(e.target.value)} options={MenusNames} optionLabel="label" className="w-full py-1" />
-                                        <label htmlFor={field.name}>{CardFormName}</label>
-                                    </FloatLabel>
+                                    <label className="align-self-start block mb-1">{CardFormName}</label>
+                                    <Dropdown id={field.name} value={field.value} onChange={(e) => field.onChange(e.target.value)} options={MenusNames} optionLabel="label" className="w-full py-1" />
                                     {ErrorMessageHtml(field.name)}
                                 </>
                             )}
@@ -213,11 +212,8 @@ export default function MenuEdit() {
                                 }}
                             render={({ field, fieldState }) => (
                                 <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.name })}></label>
-                                    <span className="p-float-label">
-                                        <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
-                                        <label htmlFor={field.name}>{CardFormUrl}</label>
-                                    </span>
+                                    <label className="align-self-start block mb-1">{CardFormUrl}</label>
+                                    <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} readOnly />
                                     {ErrorMessageHtml(field.name)}
                                 </>
                             )}
@@ -243,11 +239,8 @@ export default function MenuEdit() {
                                 }}
                             render={({ field, fieldState }) => (
                                 <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.name })}></label>
-                                    <span className="p-float-label">
-                                        <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => { field.onChange(e.target.value); setFilterIcon(e.target.value) }} />
-                                        <label htmlFor={field.name}>{CardFormIcon}</label>
-                                    </span>
+                                    <label className="align-self-start block mb-1">{CardFormIcon}</label>
+                                    <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => { field.onChange(e.target.value); setFilterIcon(e.target.value) }} />
                                     {ErrorMessageHtml(field.name)}
                                 </>
                             )}
@@ -258,7 +251,7 @@ export default function MenuEdit() {
                         <div className='grid text-center' style={{ maxHeight: "250px", overflowY: "auto" }}>
                             {Object.entries(PrimeIcons).filter(([key]) => key.toLowerCase().includes(FilterIcon.toLowerCase())).map(([key, value]) => (
                                 <div key={`${key}-${value}`} className='col-3 md:col-1 mb-5'>
-                                    <Button onClick={() => onClickIcon(value)} type='button' icon={value} rounded text severity='info' aria-label="Bookmark" />
+                                    <Button onClick={() => onClickIcon(value)} type='button' icon={value} rounded text severity="info" aria-label="Bookmark" />
                                 </div>
 
                             ))}
@@ -276,19 +269,16 @@ export default function MenuEdit() {
                                 }}
                             render={({ field, fieldState }) => (
                                 <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.name })}></label>
-                                    <span className="p-float-label">
-                                        <InputNumber
-                                            id={field.name}
-                                            inputRef={field.ref}
-                                            value={field.value}
-                                            onBlur={field.onBlur}
-                                            onValueChange={(e) => field.onChange(e)}
-                                            useGrouping={false}
-                                            className='w-full'
-                                            inputClassName={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} />
-                                        <label htmlFor={field.name}>{CardFormPosition}</label>
-                                    </span>
+                                    <label className="align-self-start block mb-1">{CardFormPosition}</label>
+                                    <InputNumber
+                                        id={field.name}
+                                        inputRef={field.ref}
+                                        value={field.value}
+                                        onBlur={field.onBlur}
+                                        onValueChange={(e) => field.onChange(e)}
+                                        useGrouping={false}
+                                        className='w-full'
+                                        inputClassName={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} />
                                     {ErrorMessageHtml(field.name)}
                                 </>
                             )}
@@ -302,19 +292,16 @@ export default function MenuEdit() {
                             control={control}
                             render={({ field, fieldState }) => (
                                 <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.name })}></label>
-                                    <span className="p-float-label w-full">
-                                        <Dropdown
-                                            id={field.name}
-                                            value={field.value}
-                                            onChange={(e) => field.onChange(e.value)}
-                                            options={Menus.filter(x => x.parentId === null)}
-                                            optionLabel="name"
-                                            optionValue='id'
-                                            showClear
-                                            className={classNames({ 'p-invalid': fieldState.error } + " w-full py-1")} />
-                                        <label htmlFor={field.name}>{CardFormParentId}</label>
-                                    </span>
+                                    <label className="align-self-start block mb-1">{CardFormParentId}</label>
+                                    <Dropdown
+                                        id={field.name}
+                                        value={field.value}
+                                        onChange={(e) => field.onChange(e.value)}
+                                        options={Menus.filter(x => x.parentId === null)}
+                                        optionLabel="name"
+                                        optionValue='id'
+                                        showClear
+                                        className={classNames({ 'p-invalid': fieldState.error } + " w-full py-1")} />
                                     {ErrorMessageHtml(field.name)}
                                 </>
                             )}
@@ -328,10 +315,8 @@ export default function MenuEdit() {
                             control={control}
                             render={({ field, fieldState }) => (
                                 <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.show })}></label>
-
                                     <div className="flex align-items-center">
-                                        <Checkbox inputId={field.name} checked={field.value} className={classNames({ 'p-invalid mr-1': fieldState.error })} onChange={(e) => field.onChange(e.checked)} />
+                                        <Checkbox inputId={field.name} checked={field.value} inputRef={field.ref} className={classNames({ 'p-invalid mr-1': fieldState.error })} onChange={(e) => field.onChange(e.checked)} />
                                         <label htmlFor={field.name} className="ml-2">{CardFormShow}</label>
                                     </div>
 
@@ -344,7 +329,7 @@ export default function MenuEdit() {
                     <div className='col-12'>
                         <div className='flex justify-content-center align-items-center'>
                             <Button label={CardButtonSave} severity="success" className='mr-3' type='submit' loading={loadingPut} />
-                            <Link to={returnToTable}>
+                            <Link to={paths.menus}>
                                 <Button label={CardButtonCancel} severity="secondary" type='button' />
                             </Link>
                         </div>
