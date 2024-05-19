@@ -256,7 +256,7 @@ function Sidebar() {
     return (
         <>
             <div className="flex flex-column justify-content-start align-items-start h-full bg-white">
-                <div id="sidebarLogoContainer" className="w-full py-3 px-5 bg-white">
+                <div id="sidebarLogoContainer" className="flex w-full py-3 px-5 bg-white">
                     <img id="sidebarLogo" className="w-full" alt="logo.png" src={logoBlack} ></img>
                 </div>
                 <div className="w-full relative bg-white h-full">
