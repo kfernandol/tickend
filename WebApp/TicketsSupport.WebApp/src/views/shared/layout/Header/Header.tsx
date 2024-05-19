@@ -130,24 +130,25 @@ function Header() {
 
     const MenubarStart = (
         <div className="flex justify-content-center align-items-center">
-            <i id="MenuBtn" className="pi pi-bars mx-3 cursor-pointer" style={{ fontSize: "1.25rem" }} onClick={showSidebar} />
+            <i id="MenuBtn" className="pi pi-bars mx-3 cursor-pointer" style={{ fontSize: "1.5rem" }} onClick={showSidebar} />
             <BreadCrumb
                 home={home}
                 model={breadcrumbItems}
                 style={{ backgroundColor: "#FFFFFF00" }}
                 pt={{
                     menuitem: { className: "text-gray-900" },
-                    label: { className: "text-gray-900" },
+                    label: { className: "text-gray-900 text-xl" },
                     menu: { className: "text-gray-900" },
-                    root: { className: "border-none" }
+                    icon: { className: "text-xl" },
+                    root: { className: "border-none py-0" }
                 }} />
         </div>
     );
 
     const MenubarEnd = (
         <div className="flex align-items-center gap-2 m-1">
-            <span className="text-lg">{FullName}</span>
-            <Avatar id="headerAvatar" className="p-1" size="large" image={AvatarIMG} shape="circle" onClick={(event) => AvatarMenu != null && AvatarMenu.current != null ? AvatarMenu.current.toggle(event) : ''} />
+            <span className="text-xl">{FullName}</span>
+            <Avatar id="headerAvatar" className="p-1" size="xlarge" image={AvatarIMG} shape="circle" onClick={(event) => AvatarMenu != null && AvatarMenu.current != null ? AvatarMenu.current.toggle(event) : ''} />
         </div>
     );
 
