@@ -27,6 +27,8 @@ namespace TicketsSupport.ApplicationCore.DTOs
         [Required(ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldRequired))]
         [MaxLength(200, ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldMaxLength))]
         public string Email { get; set; }
+        public string? Phone { get; set; }
+        public string? Direction { get; set; }
 
         [Required(ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldRequired))]
         [MaxLength(50, ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldMaxLength))]
@@ -57,6 +59,8 @@ namespace TicketsSupport.ApplicationCore.DTOs
         public string LastName { get; set; }
         public string Username { get; set; }
         public string Email { get; set; }
+        public string? Phone { get; set; }
+        public string? Direction { get; set; }
         public int RolId { get; set; }
         public string? LevelPermission { get; set; }
     }

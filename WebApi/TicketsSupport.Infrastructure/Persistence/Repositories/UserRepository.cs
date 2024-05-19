@@ -93,6 +93,8 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 user.LastName = request.LastName;
                 user.Email = request.Email;
                 user.Rol = request.RolId;
+                user.Phone = request.Phone;
+                user.Direction = request.Direction;
                 user.Active = true;
 
                 if (!string.IsNullOrWhiteSpace(request.Password))

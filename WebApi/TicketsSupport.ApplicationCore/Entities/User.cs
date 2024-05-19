@@ -20,6 +20,10 @@ public partial class User
 
     public string Password { get; set; } = null!;
 
+    public string? Phone { get; set; }
+
+    public string? Direction { get; set; }
+
     public string Salt { get; set; } = null!;
 
     public string? RefreshToken { get; set; }
