@@ -44,14 +44,14 @@
     "AuditLogs": "Audit Logs"
   },
   "element": {
-    "User": "User",
-    "Rol": "Rol",
-    "Menu": "Menu",
-    "Ticket": "Ticket",
-    "TicketStatus": "Ticket Status",
-    "TicketTypes": "Ticket Type",
-    "TicketPriority": "Ticket Priority",
-    "Project": "Project"
+    "user": "User",
+    "rol": "Rol",
+    "menu": "Menu",
+    "ticket": "Ticket",
+    "ticketStatus": "Ticket Status",
+    "ticketTypes": "Ticket Type",
+    "ticketPriority": "Ticket Priority",
+    "project": "Project"
   },
   "sidebar": {
     "logout": "Logout"
@@ -132,7 +132,9 @@
       "role": "Role",
       "new": "New User",
       "password": "Password",
-      "confirmPassword": "Confirm Password"
+      "confirmPassword": "Confirm Password",
+      "direction": "Direction",
+      "phone": "Phone"
     }
   },
   "buttons": {

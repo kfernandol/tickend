@@ -23,26 +23,26 @@ export default function UserNew() {
     const toast = useRef<Toast>(null);
     const navigate = useNavigate();
     //Form
-    const { control, ErrorMessageHtml, errors, handleSubmit, reset, getValues } = useCustomForm<UserFormModel>(
+    const { control, ErrorMessageHtml, handleSubmit, reset, getValues } = useCustomForm<UserFormModel>(
         {
-            firstName: "",
-            lastName: "",
-            email: "",
-            username: "",
-            password: "",
-            confirmPassword: "",
-            rolId: 0
+            firstName: undefined,
+            lastName: undefined,
+            email: undefined,
+            username: undefined,
+            password: undefined,
+            confirmPassword: undefined,
+            rolId: undefined,
         }
     );
     //Api Request
     const { SendPostRequest, postResponse, errorPost, httpCodePost, loadingPost } = usePost<BasicResponse>();
-    const { SendGetRequest, getResponse } = useGet<RolesResponse[]>()
-    const [roles, setRoles] = useState<{ name: string, value: number }[]>([{ name: "", value: 0 }]);
+    const { SendGetRequest } = useGet<RolesResponse[]>()
+    const [roles, setRoles] = useState<RolesResponse[]>();
 
     //Translations
     const { t } = useTranslation();
-    const CardTitle = t("common.cardTitles.new", { 0: t("navigation.Users") });
-    const CardSubTitle = t("common.cardSubTitles.new", { 0: t("navigation.Users") });
+    const CardTitle = t("common.cardTitles.new", { 0: t("element.user") });
+    const CardSubTitle = t("common.cardSubTitles.new", { 0: t("element.user").toLowerCase() });
     const ErrorRequired = t('errors.required');
     const ErrorMaxCaracter = t('errors.maxLength');
     const ErrorMinCaracter = t('errors.minLength');
@@ -55,6 +55,8 @@ export default function UserNew() {
     const CardFormEmail = t("users.labels.email");
     const CardFormPassword = t("users.labels.password");
     const CardFormConfirmPassword = t("users.labels.confirmPassword");
+    const CardFormDirection = t("users.labels.direction");
+    const CardFormPhone = t("users.labels.phone");
     const CardFormRol = t("users.labels.role");
 
     //Links
@@ -76,24 +78,21 @@ export default function UserNew() {
 
     //request initial data
     useEffect(() => {
-        SendGetRequest("v1/roles/");
+        const requests = [
+            SendGetRequest("v1/roles/")
+        ];
+
+        requests.forEach((request) => {
+            Promise.resolve(request)
+                .then((response) => {
+                    switch (response.url) {
+                        case "v1/roles/":
+                            setRoles(response.data as RolesResponse[]);
+                            break;
+                    }
+                })
+        })
     }, []);
-
-    //load initial data
-    useEffect(() => {
-        if (Array.isArray(getResponse)) {
-            const areAllRolResponses = getResponse.every(item => Object.prototype.toString.call(item) === '[object Object]' && 'permissionLevel' in item);
-
-            if (areAllRolResponses) {
-                const roles = getResponse.map(x => ({
-                    name: x.name,
-                    value: x.id
-                }));
-
-                setRoles(roles);
-            }
-        }
-    }, [getResponse])
 
     //Save New Rol
     useEffect(() => {
@@ -124,10 +123,19 @@ export default function UserNew() {
     return (
         <>
             <Toast ref={toast} />
-            <Card title={CardTitle} subTitle={CardSubTitle}>
-                <form className='mt-5 grid gap-2"' onSubmit={handleSubmit(onSubmit)}>
+            <Card
+                title={CardTitle}
+                subTitle={CardSubTitle}
+                pt={{
+                    root: { className: "my-5 px-4 pt-3" },
+                    title: { className: "mt-3" },
+                    subTitle: { className: "mb-1" },
+                    body: { className: "pb-0 pt-1" },
+                    content: { className: "pt-0" }
+                }}>
+                <form className='mt-4 grid gap-2"' onSubmit={handleSubmit(onSubmit)}>
                     {/* FirstName Input */}
-                    <div className='col-12 sm:col-6'>
+                    <div className='col-12 md:col-6'>
                         <Controller
                             name="firstName"
                             control={control}
@@ -146,11 +154,13 @@ export default function UserNew() {
                                 }}
                             render={({ field, fieldState }) => (
                                 <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.firstName })}></label>
-                                    <span className="p-float-label">
-                                        <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
-                                        <label htmlFor={field.name}>{CardFormFirstName}</label>
-                                    </span>
+                                    <label className="align-self-start block mb-1">{CardFormFirstName}</label>
+                                    <InputText
+                                        id={field.name}
+                                        value={field.value}
+                                        className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
+                                        onChange={(e) => field.onChange(e.target.value)}
+                                    />
                                     {ErrorMessageHtml(field.name)}
                                 </>
                             )}
@@ -158,7 +168,7 @@ export default function UserNew() {
                     </div>
 
                     {/* LastName Input */}
-                    <div className='col-12 sm:col-6'>
+                    <div className='col-12 md:col-6'>
                         <Controller
                             name="lastName"
                             control={control}
@@ -177,18 +187,20 @@ export default function UserNew() {
                                 }}
                             render={({ field, fieldState }) => (
                                 <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.firstName })}></label>
-                                    <span className="p-float-label">
-                                        <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
-                                        <label htmlFor={field.name}>{CardFormLastName}</label>
-                                    </span>
+                                    <label className="align-self-start  block mb-1">{CardFormLastName}</label>
+                                    <InputText
+                                        id={field.name}
+                                        value={field.value}
+                                        className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
+                                        onChange={(e) => field.onChange(e.target.value)}
+                                    />
                                     {ErrorMessageHtml(field.name)}
                                 </>
                             )}
                         />
                     </div>
                     {/* Username Input */}
-                    <div className='col-12 sm:col-6'>
+                    <div className='col-12'>
                         <Controller
                             name="username"
                             control={control}
@@ -207,11 +219,13 @@ export default function UserNew() {
                                 }}
                             render={({ field, fieldState }) => (
                                 <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.firstName })}></label>
-                                    <span className="p-float-label">
-                                        <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
-                                        <label htmlFor={field.name}>{CardFormUsername}</label>
-                                    </span>
+                                    <label className="align-self-start block mb-1">{CardFormUsername}</label>
+                                    <InputText
+                                        id={field.name}
+                                        value={field.value}
+                                        className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
+                                        onChange={(e) => field.onChange(e.target.value)}
+                                    />
                                     {ErrorMessageHtml(field.name)}
                                 </>
                             )}
@@ -220,7 +234,7 @@ export default function UserNew() {
                     </div>
 
                     {/* Email Input */}
-                    <div className='col-12 sm:col-6'>
+                    <div className='col-12 md:col-6'>
                         <Controller
                             name="email"
                             control={control}
@@ -239,20 +253,61 @@ export default function UserNew() {
                                 }}
                             render={({ field, fieldState }) => (
                                 <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.firstName })}></label>
-                                    <span className="p-float-label">
-                                        <InputText id={field.name} value={field.value} type='email' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
-                                        <label htmlFor={field.name}>{CardFormEmail}</label>
-                                    </span>
+                                    <label className="align-self-start block mb-1">{CardFormEmail}</label>
+                                    <InputText
+                                        id={field.name}
+                                        value={field.value}
+                                        className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
+                                        onChange={(e) => field.onChange(e.target.value)}
+                                    />
                                     {ErrorMessageHtml(field.name)}
                                 </>
                             )}
                         />
                     </div>
 
+                    {/* Phone Input */}
+                    <div className='col-12 md:col-6'>
+                        <Controller
+                            name="phone"
+                            control={control}
+                            render={({ field, fieldState }) => (
+                                <>
+                                    <label className="align-self-start block mb-1">{CardFormPhone}</label>
+                                    <InputText
+                                        id={field.name}
+                                        value={field.value}
+                                        className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
+                                        onChange={(e) => field.onChange(e.target.value)}
+                                    />
+                                    {ErrorMessageHtml(field.name)}
+                                </>
+                            )}
+                        />
+                    </div>
+
+                    {/* Direction Input */}
+                    <div className='col-12'>
+                        <Controller
+                            name="direction"
+                            control={control}
+                            render={({ field, fieldState }) => (
+                                <>
+                                    <label className="align-self-start block mb-1">{CardFormDirection}</label>
+                                    <InputText
+                                        id={field.name}
+                                        value={field.value}
+                                        className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
+                                        onChange={(e) => field.onChange(e.target.value)}
+                                    />
+                                    {ErrorMessageHtml(field.name)}
+                                </>
+                            )}
+                        />
+                    </div>
 
                     {/* Password Input */}
-                    <div className='col-12 sm:col-6'>
+                    <div className='col-12 md:col-6'>
                         <Controller
                             name="password"
                             control={control}
@@ -274,19 +329,22 @@ export default function UserNew() {
                                 }}
                             render={({ field, fieldState }) => (
                                 <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.firstName })}></label>
-                                    <span className="p-float-label">
-                                        <InputText id={field.name} value={field.value} type='password' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
-                                        <label htmlFor={field.name}>{CardFormPassword}</label>
-                                    </span>
+                                    <label className="align-self-start block mb-1">{CardFormPassword}</label>
+                                    <InputText
+                                        id={field.name}
+                                        value={field.value}
+                                        type="password"
+                                        className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
+                                        onChange={(e) => field.onChange(e.target.value)}
+                                    />
                                     {ErrorMessageHtml(field.name)}
                                 </>
                             )}
                         />
                     </div>
 
-                    {/* Password Input */}
-                    <div className='col-12 sm:col-6'>
+                    {/* Password Confirm Input */}
+                    <div className='col-12 md:col-6'>
                         <Controller
                             name="confirmPassword"
                             control={control}
@@ -308,18 +366,21 @@ export default function UserNew() {
                                 }}
                             render={({ field, fieldState }) => (
                                 <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.firstName })}></label>
-                                    <span className="p-float-label">
-                                        <InputText id={field.name} value={field.value} type='password' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
-                                        <label htmlFor={field.name}>{CardFormConfirmPassword}</label>
-                                    </span>
+                                    <label className="align-self-start block mb-1">{CardFormConfirmPassword}</label>
+                                    <InputText
+                                        id={field.name}
+                                        value={field.value}
+                                        type="password"
+                                        className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
+                                        onChange={(e) => field.onChange(e.target.value)}
+                                    />
                                     {ErrorMessageHtml(field.name)}
                                 </>
                             )}
                         />
                     </div>
 
-                    {/* Rol slect */}
+                    {/* Rol select */}
                     <div className='col-12'>
                         <Controller
                             name="rolId"
@@ -334,19 +395,18 @@ export default function UserNew() {
                                 }}
                             render={({ field, fieldState }) => (
                                 <>
-                                    <span className="p-float-label w-full">
-                                        <Dropdown
-                                            id={field.name}
-                                            value={field.value}
-                                            optionLabel="name"
-                                            options={roles}
-                                            focusInputRef={field.ref}
-                                            onChange={(e) => field.onChange(e.value)}
-                                            className={classNames({ 'p-invalid': fieldState.error }) + " w-full py-1"}
-                                        />
-                                        <label htmlFor={field.name}>{CardFormRol}</label>
-                                        {ErrorMessageHtml(field.name)}
-                                    </span>
+                                    <label className="align-self-start block mb-1">{CardFormRol}</label>
+                                    <Dropdown
+                                        id={field.name}
+                                        value={field.value}
+                                        optionLabel="name"
+                                        optionValue="id"
+                                        options={roles}
+                                        focusInputRef={field.ref}
+                                        onChange={(e) => field.onChange(e.value)}
+                                        className={classNames({ 'p-invalid': fieldState.error }) + " w-full py-1"}
+                                    />
+                                    {ErrorMessageHtml(field.name)}
                                 </>
 
                             )}
@@ -358,7 +418,7 @@ export default function UserNew() {
                         <div className='flex justify-content-center align-items-center'>
                             <Button label={CardButtonSave} severity="success" className='mr-3' type='submit' loading={loadingPost} />
                             <Link to={returnToTable}>
-                                <Button label={CardButtonCancel} severity="secondary" type='button' />
+                                <Button label={CardButtonCancel} severity="secondary" type='button' outlined />
                             </Link>
                         </div>
                     </div>

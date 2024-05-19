@@ -28,13 +28,15 @@ export default function UserEdit() {
     const { id } = useParams();
     const navigate = useNavigate();
     //Form
-    const { control, ErrorMessageHtml, errors, handleSubmit, reset, getValues, setValue } = useCustomForm<UserFormModel>(
+    const { control, ErrorMessageHtml, handleSubmit, reset, getValues, setValue } = useCustomForm<UserFormModel>(
         {
             firstName: "",
             lastName: "",
             email: "",
             username: "",
             password: "",
+            direction: "",
+            phone: "",
             confirmPassword: "",
             rolId: 0
         }
@@ -42,8 +44,8 @@ export default function UserEdit() {
 
     //Api Request
     const { SendPutRequest, putResponse, loadingPut, errorPut, httpCodePut } = usePut<BasicResponse>();
-    const { SendGetRequest, getResponse, loadingGet } = useGet<UserResponse | RolesResponse>()
-    const [roles, setRoles] = useState<{ name: string, value: number }[]>([{ name: "", value: 0 }]);
+    const { SendGetRequest, loadingGet } = useGet<UserResponse | RolesResponse>()
+    const [roles, setRoles] = useState<RolesResponse[]>();
 
     //Translations
     const { t } = useTranslation();
@@ -61,6 +63,8 @@ export default function UserEdit() {
     const CardFormEmail = t("users.labels.email");
     const CardFormPassword = t("users.labels.password");
     const CardFormConfirmPassword = t("users.labels.confirmPassword");
+    const CardFormDirection = t("users.labels.direction");
+    const CardFormPhone = t("users.labels.phone");
     const CardFormRol = t("users.labels.role");
 
     //Links
@@ -77,6 +81,8 @@ export default function UserEdit() {
                 rolId: data.rolId,
                 username: data.username,
                 password: data.password,
+                phone: data.phone,
+                direction: data.direction
             };
 
             SendPutRequest("v1/users/" + id, userData)
@@ -85,39 +91,31 @@ export default function UserEdit() {
 
     //request user data
     useEffect(() => {
-        SendGetRequest("v1/users/" + id);
-        SendGetRequest("v1/roles/");
+        const request = [
+            SendGetRequest("v1/users/" + id),
+            SendGetRequest("v1/roles/"),
+        ];
+
+        request.forEach((request) => {
+            Promise.resolve(request)
+                .then((result) => {
+                    switch (result.url) {
+                        case "v1/users/" + id:
+                            setValue("firstName", (result.data as UserResponse).firstName);
+                            setValue("lastName", (result.data as UserResponse).lastName);
+                            setValue("email", (result.data as UserResponse).email);
+                            setValue("rolId", (result.data as UserResponse).rolId);
+                            setValue("username", (result.data as UserResponse).username);
+                            setValue("direction", (result.data as UserResponse).direction);
+                            setValue("phone", (result.data as UserResponse).phone);
+                            break;
+                        case "v1/roles/":
+                            setRoles((result.data as RolesResponse[]));
+                            break;
+                    }
+                })
+        })
     }, [])
-
-    //Load user data
-
-    useEffect(() => {
-
-        if (getResponse) {
-            if (Array.isArray(getResponse)) {
-
-                //Is Rol List Response
-                const areAllRolResponses = getResponse.every(item => Object.prototype.toString.call(item) === '[object Object]' && 'permissionLevel' in item);
-                if (areAllRolResponses) {
-                    const roles = getResponse.map(x => ({
-                        name: x.name,
-                        value: x.id
-                    }));
-
-                    setRoles(roles);
-                }
-
-                //Is User Response
-            } else if ('firstName' in getResponse) {
-                setValue("firstName", getResponse.firstName);
-                setValue("lastName", getResponse.lastName);
-                setValue("email", getResponse.email);
-                setValue("rolId", getResponse.rolId);
-                setValue("username", getResponse.username);
-            }
-        }
-
-    }, [getResponse]);
 
     //Save New Rol
     useEffect(() => {
@@ -156,10 +154,19 @@ export default function UserEdit() {
 
                 <>
                     <Toast ref={toast} />
-                    <Card title={CardTitle} subTitle={CardSubTitle}>
-                        <form className='mt-5 grid gap-2"' onSubmit={handleSubmit(onSubmit)}>
+                    <Card
+                        title={CardTitle}
+                        subTitle={CardSubTitle}
+                        pt={{
+                            root: { className: "my-5 px-4 pt-3" },
+                            title: { className: "mt-3" },
+                            subTitle: { className: "mb-1" },
+                            body: { className: "pb-0 pt-1" },
+                            content: { className: "pt-0" }
+                        }}>
+                        <form className='mt-4 grid gap-2"' onSubmit={handleSubmit(onSubmit)}>
                             {/* FirstName Input */}
-                            <div className='col-12 sm:col-6'>
+                            <div className='col-12 md:col-6'>
                                 <Controller
                                     name="firstName"
                                     control={control}
@@ -178,11 +185,13 @@ export default function UserEdit() {
                                         }}
                                     render={({ field, fieldState }) => (
                                         <>
-                                            <label htmlFor={field.name} className={classNames({ 'p-error': errors.firstName })}></label>
-                                            <span className="p-float-label">
-                                                <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
-                                                <label htmlFor={field.name}>{CardFormFirstName}</label>
-                                            </span>
+                                            <label className="align-self-start block mb-1">{CardFormFirstName}</label>
+                                            <InputText
+                                                id={field.name}
+                                                value={field.value}
+                                                className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
+                                                onChange={(e) => field.onChange(e.target.value)}
+                                            />
                                             {ErrorMessageHtml(field.name)}
                                         </>
                                     )}
@@ -190,7 +199,7 @@ export default function UserEdit() {
                             </div>
 
                             {/* LastName Input */}
-                            <div className='col-12 sm:col-6'>
+                            <div className='col-12 md:col-6'>
                                 <Controller
                                     name="lastName"
                                     control={control}
@@ -209,18 +218,20 @@ export default function UserEdit() {
                                         }}
                                     render={({ field, fieldState }) => (
                                         <>
-                                            <label htmlFor={field.name} className={classNames({ 'p-error': errors.firstName })}></label>
-                                            <span className="p-float-label">
-                                                <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
-                                                <label htmlFor={field.name}>{CardFormLastName}</label>
-                                            </span>
+                                            <label className="align-self-start  block mb-1">{CardFormLastName}</label>
+                                            <InputText
+                                                id={field.name}
+                                                value={field.value}
+                                                className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
+                                                onChange={(e) => field.onChange(e.target.value)}
+                                            />
                                             {ErrorMessageHtml(field.name)}
                                         </>
                                     )}
                                 />
                             </div>
                             {/* Username Input */}
-                            <div className='col-12 sm:col-6'>
+                            <div className='col-12'>
                                 <Controller
                                     name="username"
                                     control={control}
@@ -239,11 +250,13 @@ export default function UserEdit() {
                                         }}
                                     render={({ field, fieldState }) => (
                                         <>
-                                            <label htmlFor={field.name} className={classNames({ 'p-error': errors.firstName })}></label>
-                                            <span className="p-float-label">
-                                                <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
-                                                <label htmlFor={field.name}>{CardFormUsername}</label>
-                                            </span>
+                                            <label className="align-self-start block mb-1">{CardFormUsername}</label>
+                                            <InputText
+                                                id={field.name}
+                                                value={field.value}
+                                                className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
+                                                onChange={(e) => field.onChange(e.target.value)}
+                                            />
                                             {ErrorMessageHtml(field.name)}
                                         </>
                                     )}
@@ -252,7 +265,7 @@ export default function UserEdit() {
                             </div>
 
                             {/* Email Input */}
-                            <div className='col-12 sm:col-6'>
+                            <div className='col-12 md:col-6'>
                                 <Controller
                                     name="email"
                                     control={control}
@@ -271,20 +284,61 @@ export default function UserEdit() {
                                         }}
                                     render={({ field, fieldState }) => (
                                         <>
-                                            <label htmlFor={field.name} className={classNames({ 'p-error': errors.firstName })}></label>
-                                            <span className="p-float-label">
-                                                <InputText id={field.name} value={field.value} type='email' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
-                                                <label htmlFor={field.name}>{CardFormEmail}</label>
-                                            </span>
+                                            <label className="align-self-start block mb-1">{CardFormEmail}</label>
+                                            <InputText
+                                                id={field.name}
+                                                value={field.value}
+                                                className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
+                                                onChange={(e) => field.onChange(e.target.value)}
+                                            />
                                             {ErrorMessageHtml(field.name)}
                                         </>
                                     )}
                                 />
                             </div>
 
+                            {/* Phone Input */}
+                            <div className='col-12 md:col-6'>
+                                <Controller
+                                    name="phone"
+                                    control={control}
+                                    render={({ field, fieldState }) => (
+                                        <>
+                                            <label className="align-self-start block mb-1">{CardFormPhone}</label>
+                                            <InputText
+                                                id={field.name}
+                                                value={field.value}
+                                                className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
+                                                onChange={(e) => field.onChange(e.target.value)}
+                                            />
+                                            {ErrorMessageHtml(field.name)}
+                                        </>
+                                    )}
+                                />
+                            </div>
+
+                            {/* Direction Input */}
+                            <div className='col-12'>
+                                <Controller
+                                    name="direction"
+                                    control={control}
+                                    render={({ field, fieldState }) => (
+                                        <>
+                                            <label className="align-self-start block mb-1">{CardFormDirection}</label>
+                                            <InputText
+                                                id={field.name}
+                                                value={field.value}
+                                                className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
+                                                onChange={(e) => field.onChange(e.target.value)}
+                                            />
+                                            {ErrorMessageHtml(field.name)}
+                                        </>
+                                    )}
+                                />
+                            </div>
 
                             {/* Password Input */}
-                            <div className='col-12 sm:col-6'>
+                            <div className='col-12 md:col-6'>
                                 <Controller
                                     name="password"
                                     control={control}
@@ -299,26 +353,28 @@ export default function UserEdit() {
                                                 message: ErrorMinCaracter.replace("{{0}}", "5")
                                             },
                                             validate: (value) => {
-                                                const { password } = getValues();
-                                                return password === value || ErrorNoMatch;
+                                                const { confirmPassword } = getValues();
+                                                return confirmPassword === value || ErrorNoMatch;
                                             }
-
                                         }}
                                     render={({ field, fieldState }) => (
                                         <>
-                                            <label htmlFor={field.name} className={classNames({ 'p-error': errors.firstName })}></label>
-                                            <span className="p-float-label">
-                                                <InputText id={field.name} value={field.value} type='password' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
-                                                <label htmlFor={field.name}>{CardFormPassword}</label>
-                                            </span>
+                                            <label className="align-self-start block mb-1">{CardFormPassword}</label>
+                                            <InputText
+                                                id={field.name}
+                                                value={field.value}
+                                                type="password"
+                                                className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
+                                                onChange={(e) => field.onChange(e.target.value)}
+                                            />
                                             {ErrorMessageHtml(field.name)}
                                         </>
                                     )}
                                 />
                             </div>
 
-                            {/* Password Input */}
-                            <div className='col-12 sm:col-6'>
+                            {/* Password Confirm Input */}
+                            <div className='col-12 md:col-6'>
                                 <Controller
                                     name="confirmPassword"
                                     control={control}
@@ -339,18 +395,21 @@ export default function UserEdit() {
                                         }}
                                     render={({ field, fieldState }) => (
                                         <>
-                                            <label htmlFor={field.name} className={classNames({ 'p-error': errors.firstName })}></label>
-                                            <span className="p-float-label">
-                                                <InputText id={field.name} value={field.value} type='password' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
-                                                <label htmlFor={field.name}>{CardFormConfirmPassword}</label>
-                                            </span>
+                                            <label className="align-self-start block mb-1">{CardFormConfirmPassword}</label>
+                                            <InputText
+                                                id={field.name}
+                                                value={field.value}
+                                                type="password"
+                                                className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
+                                                onChange={(e) => field.onChange(e.target.value)}
+                                            />
                                             {ErrorMessageHtml(field.name)}
                                         </>
                                     )}
                                 />
                             </div>
 
-                            {/* Rol Select */}
+                            {/* Rol select */}
                             <div className='col-12'>
                                 <Controller
                                     name="rolId"
@@ -365,20 +424,18 @@ export default function UserEdit() {
                                         }}
                                     render={({ field, fieldState }) => (
                                         <>
-                                            <span className="p-float-label w-full">
-                                                <Dropdown
-                                                    id={field.name}
-                                                    value={field.value}
-                                                    optionLabel="name"
-                                                    placeholder={CardFormRol}
-                                                    options={roles}
-                                                    focusInputRef={field.ref}
-                                                    onChange={(e) => field.onChange(e.value)}
-                                                    className={classNames({ 'p-invalid': fieldState.error }) + " w-full py-1"}
-                                                />
-                                                <label htmlFor={field.name}>{CardFormRol}</label>
-                                                {ErrorMessageHtml(field.name)}
-                                            </span>
+                                            <label className="align-self-start block mb-1">{CardFormRol}</label>
+                                            <Dropdown
+                                                id={field.name}
+                                                value={field.value}
+                                                optionLabel="name"
+                                                optionValue="id"
+                                                options={roles}
+                                                focusInputRef={field.ref}
+                                                onChange={(e) => field.onChange(e.value)}
+                                                className={classNames({ 'p-invalid': fieldState.error }) + " w-full py-1"}
+                                            />
+                                            {ErrorMessageHtml(field.name)}
                                         </>
 
                                     )}
@@ -390,7 +447,7 @@ export default function UserEdit() {
                                 <div className='flex justify-content-center align-items-center'>
                                     <Button label={CardButtonSave} severity="success" className='mr-3' type='submit' loading={loadingPut} />
                                     <Link to={returnToTable}>
-                                        <Button label={CardButtonCancel} severity="secondary" type='button' />
+                                        <Button label={CardButtonCancel} severity="secondary" type='button' outlined />
                                     </Link>
                                 </div>
                             </div>

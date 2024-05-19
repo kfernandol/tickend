@@ -44,14 +44,14 @@
     "AuditLogs": "Registros de Auditoría"
   },
   "element": {
-    "User": "Usuario",
-    "Rol": "Rol",
-    "Menu": "Menú",
-    "Ticket": "Ticket",
-    "TicketStatus": "Estado de Ticket",
-    "TicketTypes": "Tipo de Ticket",
-    "TicketPriority": "Prioridad de Ticket",
-    "Project": "Proyecto"
+    "user": "Usuario",
+    "rol": "Rol",
+    "menu": "Menú",
+    "ticket": "Ticket",
+    "ticketStatus": "Estado de Ticket",
+    "ticketTypes": "Tipo de Ticket",
+    "ticketPriority": "Prioridad de Ticket",
+    "project": "Proyecto"
   },
   "sidebar": {
     "logout": "Cerrar sesión"
@@ -132,7 +132,9 @@
       "role": "Rol",
       "new": "Nuevo Usuario",
       "password": "Contraseña",
-      "confirmPassword": "Confirmar Contraseña"
+      "confirmPassword": "Confirmar Contraseña",
+      "direction": "Dirección",
+      "phone": "Telefono"
     }
   },
   "buttons": {

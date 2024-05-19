@@ -235,26 +235,40 @@ export default function Users() {
                             : null}
                     </div>
                     {/*Table*/}
-                    <DataTable
-                        value={TableData}
-                        header={header}
-                        dataKey="id"
-                        paginator
-                        rows={10}
-                        size='small'
-                        filters={filters}
-                        globalFilterFields={['id', 'username', 'firstName', 'lastName', 'email']}
-                        emptyMessage={TableNoElements}
-                    >
-                        <Column field="id" header={TableHeaderId} sortable />
-                        <Column body={imageBodyTemplate} header={TableHeaderPhoto} />
-                        <Column field="username" header={TableHeaderUsername} sortable />
-                        <Column field="firstname" header={TableHeaderFirstName} sortable />
-                        <Column field="lastname" header={TableHeaderLastName} sortable />
-                        <Column field="email" header={TableHeaderEmail} sortable />
-                        <Column field="rol" header={TableHeaderRol} sortable />
-                        {getTokenData?.PermissionLevel === "Administrator" ? <Column header={TableHeaderActions} body={ActionsTableTemplate} sortable /> : <></>}
-                    </DataTable>
+                    <Card
+                        style={{ height: "calc(100% - 125px)" }}
+                        pt={{
+                            body: { className: "h-full pb-0" },
+                            content: { className: "h-full py-0" },
+                        }}>
+                        <DataTable
+                            value={TableData}
+                            header={header}
+                            dataKey="id"
+                            paginator
+                            rows={10}
+                            size='small'
+                            stripedRows
+                            filters={filters}
+                            globalFilterFields={['id', 'username', 'firstName', 'lastName', 'email']}
+                            emptyMessage={TableNoElements}
+                            pt={{
+                                root: { className: "h-full flex flex-column" },
+                                header: { className: "bg-white border-0 mb-3" },
+                                wrapper: { className: "h-full" },
+                                column: { headerCell: { className: "bg-yellow-100" } }
+                            }}
+                        >
+                            <Column field="id" header={TableHeaderId} sortable />
+                            <Column body={imageBodyTemplate} header={TableHeaderPhoto} />
+                            <Column field="username" header={TableHeaderUsername} sortable />
+                            <Column field="firstname" header={TableHeaderFirstName} sortable />
+                            <Column field="lastname" header={TableHeaderLastName} sortable />
+                            <Column field="email" header={TableHeaderEmail} sortable />
+                            <Column field="rol" header={TableHeaderRol} sortable />
+                            {getTokenData?.PermissionLevel === "Administrator" ? <Column header={TableHeaderActions} body={ActionsTableTemplate} sortable /> : <></>}
+                        </DataTable>
+                    </Card>
                 </>
             }
 
