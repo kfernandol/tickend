@@ -88,9 +88,9 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             if (user == null)
                 throw new NotFoundException(ExceptionMessage.NotFound("User", Username));
 
-            var tokenIsExpired = (DateTime.Now - (user.RefreshTokenExpirationTime ?? DateTime.Now)).Minutes >= 0;
+            bool refreshTokenIsExpired = user.RefreshTokenExpirationTime.HasValue && DateTime.Now >= user.RefreshTokenExpirationTime.Value;
 
-            if (tokenIsExpired)
+            if (refreshTokenIsExpired)
             {
                 user.RefreshToken = "";
                 user.RefreshTokenExpirationTime = null;
@@ -108,6 +108,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             if (!ValidateRefreshToken)
             {
                 user.RefreshToken = "";
+                user.RefreshTokenExpirationTime = null;
                 _context.Update(user);
                 await _context.SaveChangesAsync(user.Id, InterceptorActions.Modified);
 
