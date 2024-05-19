@@ -17,7 +17,8 @@ namespace TicketsSupport.ApplicationCore.Mappings
 
             //Rol
             CreateMap<CreateRolRequest, Rol>();
-            CreateMap<Rol, RolResponse>();
+            CreateMap<Rol, RolResponse>()
+                .ForMember(dest => dest.PermissionLevelId, opt => opt.MapFrom(src => src.PermissionLevel));
 
             //Menu
             CreateMap<CreateMenuRequest, Menu>();

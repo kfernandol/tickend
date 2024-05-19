@@ -17,6 +17,8 @@ namespace TicketsSupport.ApplicationCore.DTOs
         [Display(Name = "RolName", ResourceType = typeof(PropertiesLocalitation))]
         public string Name { get; set; } = null!;
 
+        public string? Description { get; set; }
+
         [Required(ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldRequired))]
         [Display(Name = "PermissionLevel", ResourceType = typeof(PropertiesLocalitation))]
         public PermissionLevel PermissionLevel { get; set; }
@@ -35,7 +37,8 @@ namespace TicketsSupport.ApplicationCore.DTOs
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;
-        public string PermissionLevel { get; set; }
-        public List<Menu> Menus { get; set; }
+        public string? Description { get; set; }
+        public int PermissionLevelId { get; set; }
+        public List<MenuResponse> Menus { get; set; }
     }
 }

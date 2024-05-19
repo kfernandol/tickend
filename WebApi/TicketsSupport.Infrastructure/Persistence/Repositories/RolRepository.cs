@@ -98,7 +98,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 role.Menus = _context.MenuXrols.Include(x => x.Menu)
                                                .AsNoTracking()
                                                .Where(x => x.RoleId == role.Id && x.Menu.Active == true)
-                                               .Select(z => z.Menu)
+                                               .Select(z => _mapper.Map<MenuResponse>(z.Menu))
                                                .ToList();
             }
 
@@ -115,7 +115,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             rol.Menus = _context.MenuXrols.Include(x => x.Menu)
                                           .AsNoTracking()
                                           .Where(x => x.RoleId == rol.Id && x.Menu.Active == true)
-                                          .Select(x => x.Menu)
+                                          .Select(x => _mapper.Map<MenuResponse>(x.Menu))
                                           .ToList();
             if (rol != null)
                 return this._mapper.Map<RolResponse>(rol);
@@ -130,6 +130,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             {
                 //Update Rol
                 rol.Name = request.Name;
+                rol.Description = request.Description;
                 rol.PermissionLevel = request.PermissionLevel;
                 rol.Active = true;
 

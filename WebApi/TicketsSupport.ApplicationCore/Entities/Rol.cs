@@ -10,6 +10,8 @@ public partial class Rol
 
     public string Name { get; set; } = null!;
 
+    public string? Description { get; set; }
+
     public PermissionLevel PermissionLevel { get; set; }
 
     public bool Active { get; set; }
