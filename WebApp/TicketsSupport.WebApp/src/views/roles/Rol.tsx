@@ -166,7 +166,7 @@ export default function Roles() {
     const ActionsTableTemplate = (rowData: { id: string; }) => {
         const editUrlPath = EditItemUrl.slice(0, EditItemUrl.length - 3);
         return <>
-            <div className='flex gap-2'>
+            <div className='flex justify-content-center gap-2'>
                 <Link to={editUrlPath + rowData.id}>
                     <Button icon="pi pi-pencil" severity='warning' aria-label="Bookmark"></Button>
                 </Link>
