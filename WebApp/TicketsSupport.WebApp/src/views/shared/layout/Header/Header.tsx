@@ -87,23 +87,28 @@ function Header() {
     }
 
     useEffect(() => {
-        const fetchMenus = async () => {
-            try {
-                SendGetRequest("v1/users/" + getTokenData?.id).then((response) => {
-                    const resp = response.data as UserResponse;
-                    setFullName(resp.firstName + " " + resp.lastName);
-                    if (resp.photo != "")
-                        setAvatarIMG(`data:image/*;base64,${resp.photo}`)
-                    else {
-                        setAvatarIMG("src/assets/imgs/avatar-default.png")
-                    }
-                });
-            } catch (error) {
-                //console.error("Error en las solicitudes:", error);
-            }
-        };
+        const requests = [
+            SendGetRequest("v1/users/" + getTokenData?.id)
+        ]
 
-        fetchMenus();
+        requests.forEach((request) => {
+            Promise.resolve(request)
+                .then((response) => {
+                    let user;
+                    switch (response.url) {
+                        case "v1/users/" + getTokenData?.id:
+                            user = response.data as UserResponse;
+                            setFullName(user.firstName + " " + user.lastName);
+
+                            //set Avatar
+                            if (user.photo && user.photo !== "")
+                                setAvatarIMG(`data:image/*;base64,${user.photo}`)
+                            else
+                                setAvatarIMG("/src/assets/imgs/avatar-default.png")
+                            break;
+                    }
+                })
+        })
     }, []);
 
     //OnChange Language
