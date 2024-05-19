@@ -1,12 +1,7 @@
-export interface RolesRequestPost {
+export interface RolesRequest {
+    id?: number,
     name: string,
-    permissionLevel: number,
-    menus: number[]
-}
-
-export interface RolesRequestPut {
-    id: number,
-    name: string,
+    description?: string,
     permissionLevel: number,
     menus: number[]
 }

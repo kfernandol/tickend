@@ -10,6 +10,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Dropdown } from 'primereact/dropdown';
 import { Toast } from 'primereact/toast';
 import { Checkbox, CheckboxChangeEvent } from 'primereact/checkbox';
+import { InputTextarea } from 'primereact/inputtextarea';
 
 //Hookss
 import { useTranslation } from 'react-i18next'
@@ -17,7 +18,7 @@ import { useGet, usePost } from '../../services/api_services';
 import useCustomForm from '../../hooks/useCustomForm';
 
 //Models
-import { RolesRequestPost } from '../../models/requests/roles.request';
+import { RolesRequest } from '../../models/requests/roles.request';
 import { BasicResponse } from '../../models/responses/basic.response';
 import { RolFormModel } from '../../models/forms/rol.form';
 import { PermissionLevelResponse } from '../../models/responses/permissionLevel.response';
@@ -27,18 +28,18 @@ export default function RolNew() {
     const toast = useRef<Toast>(null);
     const navigate = useNavigate();
     //Form
-    const { control, ErrorMessageHtml, errors, handleSubmit, reset } = useCustomForm<RolFormModel>({ name: "", permissionLevel: 0, menus: [] });
-    const [PermissionLevels, setPermissionLevels] = useState<{ name: string, value: number }[]>([{ name: "", value: 0 }]);
+    const { control, ErrorMessageHtml, handleSubmit, reset } = useCustomForm<RolFormModel>({ name: "", permissionLevel: 0, menus: [] });
+    const [PermissionLevels, setPermissionLevels] = useState<PermissionLevelResponse[]>();
     const [Menus, setMenus] = useState<MenusResponse[]>([]);
     const [SelectedMenus, setSelectedMenus] = useState<MenusResponse[]>([]);
+    const [MenusTranslation, setMenusTranslation] = useState<{ name: string, value: string }[]>([]);
     //Request Hook
     const { SendPostRequest, postResponse, loadingPost, errorPost, httpCodePost } = usePost<BasicResponse>();
-    const { SendGetRequest, getResponse } = useGet<PermissionLevelResponse | MenusResponse>();
-
+    const { SendGetRequest } = useGet<PermissionLevelResponse | MenusResponse>();
     //Translation
     const { t } = useTranslation();
-    const CardTitle = t("common.cardTitles.new", { 0: t("navigation.Roles") });
-    const CardSubTitle = t("common.cardSubTitles.new", { 0: t("navigation.Roles") });
+    const CardTitle = t("common.cardTitles.new", { 0: t("element.rol") });
+    const CardSubTitle = t("common.cardSubTitles.new", { 0: t("element.rol").toLowerCase() });
     const ErrorRequired = t('errors.required');
     const ErrorMaxCaracter = t('errors.maxLength');
     const ErrorMinCaracter = t('errors.minLength');
@@ -46,36 +47,32 @@ export default function RolNew() {
     const CardButtonCancel = t('buttons.cancel');
     const RolesCardFormName = t('common.labels.name');
     const RolesCardFormPermissionLevel = t("roles.labels.permissionLevel");
+    const RolesCardFormDescription = t("roles.labels.description");
 
     //Links
     const returnToTable = paths.roles;
 
     //request initial data
     useEffect(() => {
-        SendGetRequest("v1/roles/PermissionLevels");
-        SendGetRequest("v1/menus");
+        const requests = [
+            SendGetRequest("v1/roles/PermissionLevels"),
+            SendGetRequest("v1/menus")
+        ];
+
+        requests.forEach((request) => {
+            Promise.resolve(request)
+                .then((response) => {
+                    switch (response.url) {
+                        case "v1/roles/PermissionLevels":
+                            setPermissionLevels(response.data as PermissionLevelResponse[]);
+                            break;
+                        case "v1/menus":
+                            setMenus(response.data as MenusResponse[]);
+                            break;
+                    }
+                })
+        })
     }, []);
-
-    //load initial data
-    useEffect(() => {
-        if (Array.isArray(getResponse)) {
-            const areAllPermissionLevelResponses = getResponse.every(item => Object.prototype.toString.call(item) === '[object Object]' && 'name' in item && 'id' in item && !('parentId' in item));
-            const areAllMenuResponses = getResponse.every(item => Object.prototype.toString.call(item) === '[object Object]' && 'name' in item && 'id' in item && 'parentId' in item && 'show' in item);
-            //Is permission level response
-            if (areAllPermissionLevelResponses) {
-                const permissionLevel = getResponse.map(x => ({
-                    name: x.name,
-                    value: x.id
-                }));
-                setPermissionLevels(permissionLevel);
-            }
-
-            //Is Menu response
-            if (areAllMenuResponses) {
-                setMenus(getResponse);
-            }
-        }
-    }, [getResponse])
 
     //Save New Rol
     useEffect(() => {
@@ -103,10 +100,18 @@ export default function RolNew() {
 
     }, [errorPost, httpCodePost, postResponse])
 
+    //load translation
+    useEffect(() => {
+        if (Menus) {
+            setMenusTranslation(Menus.map(x => ({ name: x.name, value: t("navigation." + x.name) })));
+        }
+    }, [Menus, t])
+
     const onSubmit = async (data: RolFormModel) => {
 
-        const rolData: RolesRequestPost = {
+        const rolData: RolesRequest = {
             name: data.name,
+            description: data.description,
             permissionLevel: data.permissionLevel,
             menus: SelectedMenus.map(x => x.id)
         };
@@ -128,11 +133,20 @@ export default function RolNew() {
     return (
         <>
             <Toast ref={toast} />
-            <Card title={CardTitle} subTitle={CardSubTitle}>
+            <Card
+                title={CardTitle}
+                subTitle={CardSubTitle}
+                pt={{
+                    root: { className: "my-5 px-4 pt-3" },
+                    title: { className: "mt-3" },
+                    subTitle: { className: "mb-1" },
+                    body: { className: "pb-0 pt-1" },
+                    content: { className: "pt-0" }
+                }}>
                 <form className='mt-5 grid gap-2"' onSubmit={handleSubmit(onSubmit)}>
 
                     {/* Name Input */}
-                    <div className='col-12 sm: col-6'>
+                    <div className='col-12'>
                         <Controller
                             name="name"
                             control={control}
@@ -151,11 +165,43 @@ export default function RolNew() {
                                 }}
                             render={({ field, fieldState }) => (
                                 <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.name })}></label>
-                                    <span className="p-float-label">
-                                        <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
-                                        <label htmlFor={field.name}>{RolesCardFormName}</label>
-                                    </span>
+                                    <label className="align-self-start block mb-1">{RolesCardFormName}</label>
+                                    <InputText
+                                        id={field.name}
+                                        value={field.value}
+                                        type='text'
+                                        className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"}
+                                        onChange={(e) => field.onChange(e.target.value)} />
+
+                                    {ErrorMessageHtml(field.name)}
+                                </>
+                            )}
+                        />
+                    </div>
+
+                    <div className='col-12'>
+                        <Controller
+                            name="description"
+                            control={control}
+                            rules={
+                                {
+                                    maxLength: {
+                                        value: 300,
+                                        message: ErrorMaxCaracter.replace("{{0}}", "300")
+                                    },
+                                }}
+                            render={({ field, fieldState }) => (
+                                <>
+                                    <label className="align-self-start block mb-1">{RolesCardFormDescription}</label>
+                                    <InputTextarea
+                                        id={field.name}
+                                        autoResize
+                                        value={field.value}
+                                        onChange={(e) => field.onChange(e.target.value)}
+                                        className={classNames({ 'p-invalid': fieldState.error }) + " w-full py-1"}
+                                        rows={5}
+                                        cols={30} />
+
                                     {ErrorMessageHtml(field.name)}
                                 </>
                             )}
@@ -177,20 +223,18 @@ export default function RolNew() {
                                 }}
                             render={({ field, fieldState }) => (
                                 <>
-                                    <span className="p-float-label w-full">
-                                        <Dropdown
-                                            id={field.name}
-                                            value={field.value}
-                                            optionLabel="name"
-                                            placeholder={RolesCardFormPermissionLevel}
-                                            options={PermissionLevels}
-                                            focusInputRef={field.ref}
-                                            onChange={(e) => field.onChange(e.value)}
-                                            className={classNames({ 'p-invalid': fieldState.error }) + " w-full py-1"}
-                                        />
-                                        <label htmlFor={field.name}>{RolesCardFormPermissionLevel}</label>
-                                        {ErrorMessageHtml(field.name)}
-                                    </span>
+                                    <label className="align-self-start block mb-1">{RolesCardFormPermissionLevel}</label>
+                                    <Dropdown
+                                        id={field.name}
+                                        value={field.value}
+                                        optionLabel="name"
+                                        optionValue="id"
+                                        options={PermissionLevels}
+                                        focusInputRef={field.ref}
+                                        onChange={(e) => field.onChange(e.value)}
+                                        className={classNames({ 'p-invalid': fieldState.error }) + " w-full py-1"}
+                                    />
+                                    {ErrorMessageHtml(field.name)}
                                 </>
 
                             )}
@@ -198,14 +242,15 @@ export default function RolNew() {
                     </div>
 
                     {/* menus checkbox */}
-
                     <div className='col-12 grid'>
                         {Menus.filter(x => x.parentId === null).map((value: MenusResponse) => (
                             <div className='col-2 px-4' key={`parent-${value.id}`}>
                                 <div className='flex flex-column gap-3 h-full'>
-                                    <Card title={value.name} className='text-center h-full' pt={{
-                                        body: { className: "px-2" }
-                                    }} >
+                                    <Card
+                                        title={MenusTranslation.find(x => x.name == value.name)?.value}
+                                        className='text-center h-full' pt={{
+                                            body: { className: "px-2" }
+                                        }} >
                                         {Menus.filter(x => x.parentId === value.id).map((childValue: MenusResponse) => (
                                             <div key={`child-${childValue.id}`} className="flex align-items-center pb-2 px-0">
                                                 <Checkbox
@@ -228,7 +273,7 @@ export default function RolNew() {
                         <div className='flex justify-content-center align-items-center'>
                             <Button label={CardButtonSave} severity="success" className='mr-3' type='submit' loading={loadingPost} />
                             <Link to={returnToTable}>
-                                <Button label={CardButtonCancel} severity="secondary" type='button' />
+                                <Button label={CardButtonCancel} severity="secondary" type='button' outlined />
                             </Link>
                         </div>
                     </div>

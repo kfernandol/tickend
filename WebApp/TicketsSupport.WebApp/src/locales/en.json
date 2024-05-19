@@ -41,7 +41,8 @@
     "ProjectsP": "Projects",
     "TicketsP": "Tickets",
     "Ticket": "Tickets",
-    "AuditLogs": "Audit Logs"
+    "AuditLogs": "Audit Logs",
+    "StadisticsP": "Stadistics"
   },
   "element": {
     "user": "User",
@@ -95,6 +96,7 @@
     "tableTitle": "List of Roles",
     "labels": {
       "new": "New Role",
+      "description": "Description",
       "permissionLevel": "Permission Level",
       "menus": "Menus"
     }

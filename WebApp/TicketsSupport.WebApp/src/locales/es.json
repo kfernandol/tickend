@@ -41,7 +41,8 @@
     "ProjectsP": "Proyectos",
     "TicketsP": "Tickets",
     "Ticket": "Tickets",
-    "AuditLogs": "Registros de Auditoría"
+    "AuditLogs": "Registros de Auditoría",
+    "StadisticsP": "Estadisticas"
   },
   "element": {
     "user": "Usuario",
@@ -95,6 +96,7 @@
     "tableTitle": "Lista de Roles",
     "labels": {
       "new": "Nuevo Rol",
+      "description": "Descripcion",
       "permissionLevel": "Nivel de Permiso",
       "menus": "Menús"
     }

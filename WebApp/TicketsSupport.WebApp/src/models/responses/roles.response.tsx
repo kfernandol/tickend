@@ -3,6 +3,7 @@ import { MenusResponse } from "./menus.response";
 export interface RolesResponse {
     id: number,
     name: string,
-    permissionLevel: string,
+    description?: string,
+    permissionLevelId: number,
     menus: MenusResponse[]
 }

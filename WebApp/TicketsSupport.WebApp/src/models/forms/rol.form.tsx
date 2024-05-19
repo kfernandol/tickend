@@ -1,7 +1,8 @@
 export interface RolFormModel {
-    name: string;
-    permissionLevel: number;
-    menus: menus[];
+    name: string,
+    description: string,
+    permissionLevel: number,
+    menus: menus[],
 }
 
 interface menus {
