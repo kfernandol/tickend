@@ -33,25 +33,25 @@ END;
 IF NOT EXISTS (SELECT 1 FROM [Menu] WHERE Name = 'Users')
 BEGIN 
     INSERT INTO [Menu](Name,  Icon, Url, ParentId, Position, Show, Active) 
-    VALUES('Users', 'pi-users', '/Users', 1, 1, 1, 1)
+    VALUES('Users', 'pi pi-users', '/Users', 1, 1, 1, 1)
 END;
 
 IF NOT EXISTS (SELECT 1 FROM [Menu] WHERE Name = 'Roles')
 BEGIN 
     INSERT INTO [Menu](Name,  Icon, Url, ParentId, Position, Show, Active) 
-    VALUES('Roles', 'pi-id-card', '/Roles', 1, 2, 1, 1)
+    VALUES('Roles', 'pi pi-id-card', '/Roles', 1, 2, 1, 1)
 END;
 
 IF NOT EXISTS (SELECT 1 FROM [Menu] WHERE Name = 'Menus')
 BEGIN 
     INSERT INTO [Menu](Name,  Icon, Url, ParentId, Position, Show, Active) 
-    VALUES('Menus', 'pi-th-large', '/Menus', 1, 3, 1, 1)
+    VALUES('Menus', 'pi pi-th-large', '/Menus', 1, 3, 1, 1)
 END;
 
 IF NOT EXISTS (SELECT 1 FROM [Menu] WHERE Name = 'AuditLogs')
 BEGIN 
     INSERT INTO [Menu](Name,  Icon, Url, ParentId, Position, Show, Active) 
-    VALUES('AuditLogs', 'pi-book', '/Audit', 1, 4, 1, 1)
+    VALUES('AuditLogs', 'pi pi-book', '/Audit', 1, 4, 1, 1)
 END;
 
 IF NOT EXISTS (SELECT 1 FROM [Menu] WHERE Name = 'ProjectsP')
@@ -94,6 +94,18 @@ IF NOT EXISTS (SELECT 1 FROM [Menu] WHERE Name = 'TicketPriority')
 BEGIN 
     INSERT INTO [Menu](Name,  Icon, Url, ParentId, Position, Show, Active) 
     VALUES('TicketPriority', 'pi pi-sort-amount-up', '/Ticket/Priorities', 8, 4, 1, 1)
+END;
+
+IF NOT EXISTS (SELECT 1 FROM [Menu] WHERE Name = 'StadisticsP')
+BEGIN 
+    INSERT INTO [Menu](Name,  Icon, Url, ParentId, Position, Show, Active) 
+    VALUES('StadisticsP', '', '#', NULL, 4, 1, 1)
+END;
+
+IF NOT EXISTS (SELECT 1 FROM [Menu] WHERE Name = 'Stadistics')
+BEGIN 
+    INSERT INTO [Menu](Name,  Icon, Url, ParentId, Position, Show, Active) 
+    VALUES('Stadistics', '', '/Stadistics', 13, 1, 1, 1)
 END;
 
 /* Default insert in MenuXRol */
@@ -158,4 +170,11 @@ BEGIN
     /* Tickets Priorities Menu */
     INSERT INTO [MenuXRol](MenuId, RoleId) 
     VALUES(12,1)
+END;
+
+IF NOT EXISTS (SELECT 1 FROM [MenuXRol] WHERE MenuId = 12)
+BEGIN 
+    /* Stadistics Menu */
+    INSERT INTO [MenuXRol](MenuId, RoleId) 
+    VALUES(14,1)
 END;
