@@ -73,7 +73,7 @@ function Header() {
 
             const item: BreadCrumbModel = {
                 label: segment,
-                template: () => <Link to={routePath} className="no-underline"><span>{segment}</span></Link>
+                template: () => <Link to={routePath} className="no-underline text-gray-900"><span>{segment}</span></Link>
             }
             return item;
         });
