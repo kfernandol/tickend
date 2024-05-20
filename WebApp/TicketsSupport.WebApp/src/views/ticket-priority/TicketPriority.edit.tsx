@@ -19,16 +19,17 @@ import { TicketStatusFormModel } from '../../models/forms/ticketStatus.form';
 import { TicketStatusRequest } from '../../models/requests/ticketStatus.request';
 import { TicketStatusResponse } from '../../models/responses/ticketStatus.response';
 import { TicketPriorityFormModel } from '../../models/forms/ticketPriority.form';
+import { TicketPriorityResponse } from '../../models/responses/ticketPriority.response';
 
 export default function TicketPriorityEdit() {
     const { id } = useParams();
     const toast = useRef<Toast>(null);
     const navigate = useNavigate();
     //Form
-    const { control, ErrorMessageHtml, errors, handleSubmit, reset, setValue } = useCustomForm<TicketPriorityFormModel>({ name: "", color: "#FF0000" });
+    const { control, ErrorMessageHtml, handleSubmit, reset, setValue } = useCustomForm<TicketPriorityFormModel>({ name: "", color: "#FF0000" });
     //Request Hook
     const { SendPutRequest, putResponse, loadingPut, errorPut, httpCodePut } = usePut<BasicResponse>();
-    const { SendGetRequest, getResponse } = useGet<TicketStatusResponse>();
+    const { SendGetRequest } = useGet<TicketStatusResponse>();
 
     //Translation
     const { t } = useTranslation();
@@ -47,16 +48,23 @@ export default function TicketPriorityEdit() {
 
     //Request data initial
     useEffect(() => {
-        SendGetRequest("v1/ticket/priorities/" + id)
-    }, [])
+        const requests = [
+            SendGetRequest("v1/ticket/priorities/" + id)
+        ]
 
-    //Process response
-    useEffect(() => {
-        if (getResponse) {
-            setValue("name", getResponse.name);
-            setValue("color", getResponse.color);
-        }
-    }, [getResponse])
+        requests.forEach((request) => {
+            Promise.resolve(request)
+                .then((response) => {
+                    switch (response.url) {
+                        case "v1/ticket/priorities/" + id:
+                            setValue("name", (response.data as TicketPriorityResponse).name);
+                            setValue("color", (response.data as TicketPriorityResponse).color);
+                            break;
+                    }
+                })
+        })
+
+    }, [])
 
     //Save New Rol
     useEffect(() => {
@@ -96,7 +104,16 @@ export default function TicketPriorityEdit() {
     return (
         <>
             <Toast ref={toast} />
-            <Card title={CardTitle} subTitle={CardSubTitle}>
+            <Card
+                title={CardTitle}
+                subTitle={CardSubTitle}
+                pt={{
+                    root: { className: "my-5 px-4 pt-3" },
+                    title: { className: "mt-3" },
+                    subTitle: { className: "mb-1" },
+                    body: { className: "pb-0 pt-1" },
+                    content: { className: "pt-0" }
+                }}>
                 <form className='mt-5 grid gap-2"' onSubmit={handleSubmit(onSubmit)}>
 
                     {/* Name Input */}
@@ -119,11 +136,13 @@ export default function TicketPriorityEdit() {
                                 }}
                             render={({ field, fieldState }) => (
                                 <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.name })}></label>
-                                    <span className="p-float-label">
-                                        <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
-                                        <label htmlFor={field.name}>{CardFormName}</label>
-                                    </span>
+                                    <label className="align-self-start block mb-1">{CardFormName}</label>
+                                    <InputText
+                                        id={field.name}
+                                        value={field.value}
+                                        type='text'
+                                        className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"}
+                                        onChange={(e) => field.onChange(e.target.value)} />
                                     {ErrorMessageHtml(field.name)}
                                 </>
                             )}
@@ -149,17 +168,19 @@ export default function TicketPriorityEdit() {
                                 }}
                             render={({ field, fieldState }) => (
                                 <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.name })}></label>
                                     <div className='grid'>
                                         <div className='col-1 flex align-items-center justify-content-center'>
                                             <ColorPicker format="hex" value={field.value} onChange={(e) => { field.onChange("#" + e.value); }} />
                                         </div>
 
                                         <div className='col'>
-                                            <span className="p-float-label">
-                                                <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => { field.onChange(e.target.value); }} />
-                                                <label htmlFor={field.name}>{CardFormColor}</label>
-                                            </span>
+                                            <label className="align-self-start block mb-1">{CardFormColor}</label>
+                                            <InputText
+                                                id={field.name}
+                                                value={field.value}
+                                                type='text'
+                                                className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"}
+                                                onChange={(e) => { field.onChange(e.target.value); }} />
                                         </div>
                                     </div>
 
@@ -173,7 +194,7 @@ export default function TicketPriorityEdit() {
                         <div className='flex justify-content-center align-items-center'>
                             <Button label={CardButtonSave} severity="success" className='mr-3' type='submit' loading={loadingPut} />
                             <Link to={returnToTable}>
-                                <Button label={CardButtonCancel} severity="secondary" type='button' />
+                                <Button label={CardButtonCancel} severity="secondary" type='button' outlined />
                             </Link>
                         </div>
                     </div>

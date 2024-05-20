@@ -23,14 +23,14 @@ export default function TicketPriorityNew() {
     const toast = useRef<Toast>(null);
     const navigate = useNavigate();
     //Form
-    const { control, ErrorMessageHtml, errors, handleSubmit, reset } = useCustomForm<TicketPriorityFormModel>({ name: "", color: "#FF0000" });
+    const { control, ErrorMessageHtml, handleSubmit, reset } = useCustomForm<TicketPriorityFormModel>({ name: "", color: "#FF0000" });
     //Request Hook
     const { SendPostRequest, postResponse, loadingPost, errorPost, httpCodePost } = usePost<BasicResponse>();
 
     //Translation
     const { t } = useTranslation();
-    const CardTitle = t("common.cardTitles.new", { 0: t("navigation.TicketPriority") });
-    const CardSubTitle = t("common.cardSubTitles.new", { 0: t("navigation.TicketPriority") });
+    const CardTitle = t("common.cardTitles.new", { 0: t("element.ticketPriority") });
+    const CardSubTitle = t("common.cardSubTitles.new", { 0: t("element.ticketPriority").toLowerCase() });
     const ErrorRequired = t('errors.required');
     const ErrorMaxCaracter = t('errors.maxLength');
     const ErrorMinCaracter = t('errors.minLength');
@@ -80,7 +80,16 @@ export default function TicketPriorityNew() {
     return (
         <>
             <Toast ref={toast} />
-            <Card title={CardTitle} subTitle={CardSubTitle}>
+            <Card
+                title={CardTitle}
+                subTitle={CardSubTitle}
+                pt={{
+                    root: { className: "my-5 px-4 pt-3" },
+                    title: { className: "mt-3" },
+                    subTitle: { className: "mb-1" },
+                    body: { className: "pb-0 pt-1" },
+                    content: { className: "pt-0" }
+                }}>
                 <form className='mt-5 grid gap-2"' onSubmit={handleSubmit(onSubmit)}>
 
                     {/* Name Input */}
@@ -103,11 +112,13 @@ export default function TicketPriorityNew() {
                                 }}
                             render={({ field, fieldState }) => (
                                 <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.name })}></label>
-                                    <span className="p-float-label">
-                                        <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
-                                        <label htmlFor={field.name}>{CardFormName}</label>
-                                    </span>
+                                    <label className="align-self-start block mb-1">{CardFormName}</label>
+                                    <InputText
+                                        id={field.name}
+                                        value={field.value}
+                                        type='text'
+                                        className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"}
+                                        onChange={(e) => field.onChange(e.target.value)} />
                                     {ErrorMessageHtml(field.name)}
                                 </>
                             )}
@@ -133,17 +144,19 @@ export default function TicketPriorityNew() {
                                 }}
                             render={({ field, fieldState }) => (
                                 <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.name })}></label>
                                     <div className='grid'>
                                         <div className='col-1 flex align-items-center justify-content-center'>
                                             <ColorPicker format="hex" value={field.value} onChange={(e) => { field.onChange("#" + e.value); }} />
                                         </div>
 
                                         <div className='col'>
-                                            <span className="p-float-label">
-                                                <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => { field.onChange(e.target.value); }} />
-                                                <label htmlFor={field.name}>{CardFormColor}</label>
-                                            </span>
+                                            <label className="align-self-start block mb-1">{CardFormColor}</label>
+                                            <InputText
+                                                id={field.name}
+                                                value={field.value}
+                                                type='text'
+                                                className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"}
+                                                onChange={(e) => { field.onChange(e.target.value); }} />
                                         </div>
                                     </div>
 
@@ -157,7 +170,7 @@ export default function TicketPriorityNew() {
                         <div className='flex justify-content-center align-items-center'>
                             <Button label={CardButtonSave} severity="success" className='mr-3' type='submit' loading={loadingPost} />
                             <Link to={returnToTable}>
-                                <Button label={CardButtonCancel} severity="secondary" type='button' />
+                                <Button label={CardButtonCancel} severity="secondary" type='button' outlined />
                             </Link>
                         </div>
                     </div>
