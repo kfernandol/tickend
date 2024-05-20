@@ -11,22 +11,22 @@ namespace TicketsSupport.ApplicationCore.DTOs
 {
     public class CreateProjectRequest
     {
-        public IFormFile? Photo { get; set; }
+        public string? Photo { get; set; }
 
         [Required(ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldRequired))]
         public string Name { get; set; }
 
         public string Description { get; set; }
 
-        public string? TicketStatusJson { get; set; }
+        public List<int>? TicketStatus { get; set; }
 
-        public string? TicketPrioritiesJson { get; set; }
+        public List<int>? TicketPriorities { get; set; }
 
-        public string? TicketTypesJson { get; set; }
+        public List<int>? TicketTypes { get; set; }
 
-        public string? ClientsJson { get; set; }
+        public List<int>? Clients { get; set; }
 
-        public string? DevelopersJson { get; set; }
+        public List<int>? Developers { get; set; }
     }
 
     public class UpdateProjectRequest : CreateProjectRequest

@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[User]
 (
 	[Id] INT NOT NULL PRIMARY KEY IDENTITY,
-	[Photo] VARBINARY(MAX) NULL,
+	[Photo] VARCHAR(MAX) NULL,
 	[FirstName] VARCHAR(150) NULL,
 	[LastName] Varchar(150) NULL,
 	[Username] VARCHAR(50) NOT NULL,

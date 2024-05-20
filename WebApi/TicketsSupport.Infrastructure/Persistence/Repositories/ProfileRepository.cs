@@ -36,6 +36,12 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                     user.LastName = request.LastName;
                 if (!string.IsNullOrWhiteSpace(request.Email))
                     user.Email = request.Email;
+                if (!string.IsNullOrWhiteSpace(request.Photo))
+                    user.Photo = request.Photo;
+                if (!string.IsNullOrWhiteSpace(request.Direction))
+                    user.Direction = request.Direction;
+                if (!string.IsNullOrWhiteSpace(request.Phone))
+                    user.Phone = request.Phone;
 
                 if (!string.IsNullOrWhiteSpace(request.Password))
                 {
@@ -43,16 +49,6 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                     var passwordHashed = HashUtils.HashPassword(request.Password);
                     user.Password = passwordHashed.hashedPassword;
                     user.Salt = passwordHashed.salt;
-                }
-
-                if (request.Photo != null)
-                {
-                    using (var ms = new MemoryStream())
-                    {
-                        await request.Photo.CopyToAsync(ms);
-                        var fileBytes = ms.ToArray();
-                        user.Photo = fileBytes;
-                    }
                 }
 
                 user.Active = true;

@@ -121,6 +121,7 @@ public partial class TS_DatabaseContext : DbContext
                 .IsRequired()
                 .HasMaxLength(100)
                 .IsUnicode(false);
+            entity.Property(e => e.Photo).IsUnicode(false);
         });
 
         modelBuilder.Entity<ProjectXclient>(entity =>
@@ -192,6 +193,9 @@ public partial class TS_DatabaseContext : DbContext
         {
             entity.ToTable("Rol");
 
+            entity.Property(e => e.Description)
+                .HasMaxLength(1000)
+                .IsUnicode(false);
             entity.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(150)
@@ -279,6 +283,9 @@ public partial class TS_DatabaseContext : DbContext
         {
             entity.ToTable("User");
 
+            entity.Property(e => e.Direction)
+                .HasMaxLength(100)
+                .IsUnicode(false);
             entity.Property(e => e.Email)
                 .HasMaxLength(200)
                 .IsUnicode(false);
@@ -292,6 +299,10 @@ public partial class TS_DatabaseContext : DbContext
                 .IsRequired()
                 .HasMaxLength(100)
                 .IsUnicode(false);
+            entity.Property(e => e.Phone)
+                .HasMaxLength(16)
+                .IsUnicode(false);
+            entity.Property(e => e.Photo).IsUnicode(false);
             entity.Property(e => e.RefreshToken)
                 .HasMaxLength(100)
                 .IsUnicode(false);

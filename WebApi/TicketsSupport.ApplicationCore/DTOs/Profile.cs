@@ -6,7 +6,7 @@ namespace TicketsSupport.ApplicationCore.DTOs
 {
     public class UpdateProfileRequest
     {
-        public IFormFile? Photo { get; set; }
+        public string? Photo { get; set; }
 
         [MaxLength(150, ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldMaxLength))]
         public string? FirstName { get; set; }
@@ -19,5 +19,11 @@ namespace TicketsSupport.ApplicationCore.DTOs
 
         [MaxLength(200, ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldMaxLength))]
         public string? Email { get; set; }
+
+        [MaxLength(100, ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldMaxLength))]
+        public string? Direction { get; set; }
+
+        [MaxLength(16, ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldMaxLength))]
+        public string? Phone { get; set; }
     }
 }

@@ -1,12 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
 using TicketsSupport.ApplicationCore.DTOs;
 using TicketsSupport.ApplicationCore.Entities;
 using TicketsSupport.ApplicationCore.Exceptions;
@@ -37,15 +31,8 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             var project = _mapper.Map<Project>(request);
 
             //Save Photo
-            if (request.Photo != null)
-            {
-                using (var ms = new MemoryStream())
-                {
-                    await request.Photo.CopyToAsync(ms);
-                    var fileBytes = ms.ToArray();
-                    project.Photo = fileBytes;
-                }
-            }
+            if (!string.IsNullOrEmpty(request.Photo))
+                project.Photo = request.Photo;
 
             project.Active = true;
 
@@ -53,10 +40,9 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
 
             //Add Tickets Type
-            if (!string.IsNullOrWhiteSpace(request.TicketTypesJson))
+            if (request.TicketTypes != null)
             {
-                List<int>? TicketTypes = JsonSerializer.Deserialize<List<int>>(request.TicketTypesJson);
-                foreach (var TicketStatusId in TicketTypes)
+                foreach (var TicketStatusId in request.TicketTypes)
                 {
                     var ticketType = new ProjectXticketType
                     {
@@ -71,10 +57,9 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
 
             //Add Tickets Priorities
-            if (!string.IsNullOrWhiteSpace(request.TicketPrioritiesJson))
+            if (request.TicketPriorities != null)
             {
-                List<int>? TicketPriorities = JsonSerializer.Deserialize<List<int>>(request.TicketPrioritiesJson);
-                foreach (var TicketPriorityId in TicketPriorities)
+                foreach (var TicketPriorityId in request.TicketPriorities)
                 {
                     var ticketPriority = new ProjectXticketPriority
                     {
@@ -89,10 +74,9 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
 
             //Add Tickets Status
-            if (!string.IsNullOrWhiteSpace(request.TicketStatusJson))
+            if (request.TicketStatus != null)
             {
-                List<int>? TicketStatus = JsonSerializer.Deserialize<List<int>>(request.TicketStatusJson);
-                foreach (var TicketStatusId in TicketStatus)
+                foreach (var TicketStatusId in request.TicketStatus)
                 {
                     var ticketStatus = new ProjectXticketStatus
                     {
@@ -107,10 +91,9 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
 
             //Add Clients
-            if (!string.IsNullOrWhiteSpace(request.ClientsJson))
+            if (request.Clients != null)
             {
-                List<int>? Clients = JsonSerializer.Deserialize<List<int>>(request.ClientsJson);
-                foreach (var ClientsId in Clients)
+                foreach (var ClientsId in request.Clients)
                 {
                     var projectXclient = new ProjectXclient
                     {
@@ -125,10 +108,9 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
 
             //Add Developer
-            if (!string.IsNullOrWhiteSpace(request.DevelopersJson))
+            if (request.Developers != null)
             {
-                List<int> Developers = JsonSerializer.Deserialize<List<int>>(request.DevelopersJson);
-                foreach (var DeveloperId in Developers)
+                foreach (var DeveloperId in request.Developers)
                 {
                     var projectXDeveloper = new ProjectXdeveloper
                     {
@@ -236,26 +218,15 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 throw new NotFoundException(ExceptionMessage.NotFound("Project"));
 
             //Update Photo
-            if (request.Photo != null)
-            {
-                using (var ms = new MemoryStream())
-                {
-                    await request.Photo.CopyToAsync(ms);
-                    var fileBytes = ms.ToArray();
-                    project.Photo = fileBytes;
-                }
-            }
-
+            if (!string.IsNullOrWhiteSpace(request.Photo))
+                project.Photo = request.Photo;
 
             //Delete all Tickets Types
             var TicketsType = await _context.ProjectXticketTypes.Where(x => x.ProjectId == project.Id).ToListAsync();
             _context.ProjectXticketTypes.RemoveRange(TicketsType);
             await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Delete);
 
-            //Add Tickets Type
-            List<int> TicketTypes = JsonSerializer.Deserialize<List<int>>(request.TicketTypesJson);
-
-            foreach (var TicketStatusId in TicketTypes)
+            foreach (var TicketStatusId in request.TicketTypes)
             {
                 var ticketType = new ProjectXticketType
                 {
@@ -273,8 +244,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Delete);
 
             //Add Tickets Priorities
-            List<int> TicketPriorities = JsonSerializer.Deserialize<List<int>>(request.TicketPrioritiesJson);
-            foreach (var TicketPriorityId in TicketPriorities)
+            foreach (var TicketPriorityId in request.TicketPriorities)
             {
                 var ticketPriority = new ProjectXticketPriority
                 {
@@ -292,8 +262,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Delete);
 
             //Add Tickets Status
-            List<int> TicketStatus = JsonSerializer.Deserialize<List<int>>(request.TicketStatusJson);
-            foreach (var TicketStatusId in TicketStatus)
+            foreach (var TicketStatusId in request.TicketStatus)
             {
                 var ticketStatus = new ProjectXticketStatus
                 {
@@ -311,8 +280,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Delete);
 
             //Add Clients
-            List<int> clients = JsonSerializer.Deserialize<List<int>>(request.ClientsJson);
-            foreach (var ClientsId in clients)
+            foreach (var ClientsId in request.Clients)
             {
                 var projectXclient = new ProjectXclient
                 {
@@ -330,8 +298,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Delete);
 
             //Add Developer
-            List<int> developers = JsonSerializer.Deserialize<List<int>>(request.DevelopersJson);
-            foreach (var DeveloperId in developers)
+            foreach (var DeveloperId in request.Developers)
             {
                 var projectXDeveloper = new ProjectXdeveloper
                 {

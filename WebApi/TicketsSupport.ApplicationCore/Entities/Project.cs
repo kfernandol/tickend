@@ -12,7 +12,7 @@ public partial class Project
 
     public string Description { get; set; } = null!;
 
-    public byte[]? Photo { get; set; }
+    public string? Photo { get; set; }
 
     public DateOnly? ExpirationSupportDate { get; set; }
 

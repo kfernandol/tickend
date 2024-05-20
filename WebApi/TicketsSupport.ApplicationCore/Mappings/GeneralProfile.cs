@@ -12,7 +12,6 @@ namespace TicketsSupport.ApplicationCore.Mappings
             CreateMap<CreateUserRequest, User>();
             CreateMap<User, UserResponse>()
                 .ForMember(dest => dest.RolId, opt => opt.MapFrom(src => src.Rol))
-                .ForMember(dest => dest.Photo, opt => opt.MapFrom(src => Convert.ToBase64String(src.Photo ?? new byte[0])))
                 .ForMember(dest => dest.LevelPermission, opt => opt.MapFrom(src => (src.RolNavigation ?? new Rol()).PermissionLevel));
 
             //Rol
@@ -37,10 +36,8 @@ namespace TicketsSupport.ApplicationCore.Mappings
             CreateMap<TicketType, TicketTypeResponse>();
 
             //Projects
-            CreateMap<CreateProjectRequest, Project>()
-                .ForMember(dest => dest.Photo, opt => opt.Ignore());
+            CreateMap<CreateProjectRequest, Project>();
             CreateMap<Project, ProjectResponse>()
-                .ForMember(dest => dest.Photo, opt => opt.MapFrom(src => Convert.ToBase64String(src.Photo ?? new byte[0])))
                 .ForMember(dest => dest.TicketStatus, opt => opt.MapFrom(src => src.ProjectXticketStatuses.Select(x => x.TicketStatusId)))
                 .ForMember(dest => dest.TicketPriorities, opt => opt.MapFrom(src => src.ProjectXticketPriorities.Select(x => x.TicketPriorityId)))
                 .ForMember(dest => dest.TicketTypes, opt => opt.MapFrom(src => src.ProjectXticketTypes.Select(x => x.TicketTypeId)))
