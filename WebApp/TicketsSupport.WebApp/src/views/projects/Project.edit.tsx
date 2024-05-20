@@ -23,6 +23,7 @@ import { TicketTypeResponse } from '../../models/responses/ticketType.response';
 import { UserResponse } from '../../models/responses/users.response';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { ProjectResponse } from '../../models/responses/project.response';
+import { ProjectRequest } from '../../models/requests/project.request';
 
 export default function ProjectEdit() {
     const toast = useRef<Toast>(null);
@@ -74,18 +75,18 @@ export default function ProjectEdit() {
     //Submit Form
     const onSubmit = async () => {
 
-        const formData = new FormData();
+        const formData: ProjectRequest = {
+            photo: getValues("photo"),
+            name: getValues("name"),
+            description: getValues("description"),
+            ticketStatus: getValues("ticketStatus"),
+            ticketPriorities: getValues("ticketPriorities"),
+            ticketTypes: getValues("ticketTypes"),
+            clients: getValues("clients"),
+            developers: getValues("developers")
+        }
 
-        formData.append('Photo', getValues('photo'));
-        formData.append('name', getValues("name"));
-        formData.append('description', getValues("description"));
-        formData.append('ticketStatusJson', JSON.stringify(getValues("ticketStatus")));
-        formData.append('ticketPrioritiesJson', JSON.stringify(getValues("ticketPriorities")));
-        formData.append('ticketTypesJson', JSON.stringify(getValues("ticketTypes")));
-        formData.append('ClientsJson', JSON.stringify(getValues("clients")));
-        formData.append('DevelopersJson', JSON.stringify(getValues("developers")));
-
-        SendPutRequest("v1/projects/" + id, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+        SendPutRequest("v1/projects/" + id, formData)
     };
 
     //request initial data
