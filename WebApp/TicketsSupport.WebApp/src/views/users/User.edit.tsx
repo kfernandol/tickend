@@ -49,7 +49,7 @@ export default function UserEdit() {
 
     //Translations
     const { t } = useTranslation();
-    const CardTitle = t("common.cardTitles.edit", { 0: t("navigation.Users") });
+    const CardTitle = t("common.cardTitles.edit", { 0: t("element.user") });
     const CardSubTitle = t("common.cardSubTitles.edit");
     const ErrorRequired = t('errors.required');
     const ErrorMaxCaracter = t('errors.maxLength');

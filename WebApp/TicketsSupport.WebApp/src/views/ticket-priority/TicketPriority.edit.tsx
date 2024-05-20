@@ -33,7 +33,7 @@ export default function TicketPriorityEdit() {
 
     //Translation
     const { t } = useTranslation();
-    const CardTitle = t("common.cardTitles.edit", { 0: t("navigation.TicketPriority") });
+    const CardTitle = t("common.cardTitles.edit", { 0: t("element.ticketPriority") });
     const CardSubTitle = t("common.cardSubTitles.edit");
     const ErrorRequired = t('errors.required');
     const ErrorMaxCaracter = t('errors.maxLength');

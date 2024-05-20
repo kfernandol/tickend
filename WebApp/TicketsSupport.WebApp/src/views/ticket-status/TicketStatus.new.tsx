@@ -28,8 +28,8 @@ export default function TicketStatusNew() {
 
     //Translation
     const { t } = useTranslation();
-    const CardTitle = t("common.cardTitles.new", { 0: t("navigation.TicketStatus") });
-    const CardSubTitle = t("common.cardSubTitles.new", { 0: t("navigation.TicketStatus") });
+    const CardTitle = t("common.cardTitles.new", { 0: t("element.ticketStatus") });
+    const CardSubTitle = t("common.cardSubTitles.new", { 0: t("element.ticketStatus").toLowerCase() });
     const ErrorRequired = t('errors.required');
     const ErrorMaxCaracter = t('errors.maxLength');
     const ErrorMinCaracter = t('errors.minLength');

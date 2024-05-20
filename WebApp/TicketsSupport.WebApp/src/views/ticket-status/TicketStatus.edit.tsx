@@ -31,7 +31,7 @@ export default function TicketStatusEdit() {
 
     //Translation
     const { t } = useTranslation();
-    const CardTitle = t("common.cardTitles.edit", { 0: t("navigation.TicketStatus") });
+    const CardTitle = t("common.cardTitles.edit", { 0: t("element.ticketStatus") });
     const CardSubTitle = t("common.cardSubTitles.edit");
     const ErrorRequired = t('errors.required');
     const ErrorMaxCaracter = t('errors.maxLength');

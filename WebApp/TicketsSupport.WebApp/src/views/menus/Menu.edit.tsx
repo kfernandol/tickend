@@ -62,7 +62,7 @@ export default function MenuEdit() {
 
     //Translation
     const { t } = useTranslation();
-    const CardTitle = t("common.cardTitles.edit", { 0: t("navigation.Menus") });
+    const CardTitle = t("common.cardTitles.edit", { 0: t("element.menu") });
     const CardSubTitle = t("common.cardSubTitles.edit");
     const ErrorRequired = t('errors.required');
     const ErrorMaxCaracter = t('errors.maxLength');

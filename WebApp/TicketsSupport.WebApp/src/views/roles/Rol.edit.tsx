@@ -41,7 +41,7 @@ export default function RolEdit() {
 
     //Translation
     const { t } = useTranslation();
-    const CardTitle = t("common.cardTitles.edit", { 0: t("navigation.Roles") });
+    const CardTitle = t("common.cardTitles.edit", { 0: t("element.rol") });
     const CardSubTitle = t("common.cardSubTitles.edit");
     const ErrorRequired = t('errors.required');
     const ErrorMaxCaracter = t('errors.maxLength');

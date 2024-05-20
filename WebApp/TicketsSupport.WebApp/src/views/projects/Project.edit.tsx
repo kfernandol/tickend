@@ -53,7 +53,7 @@ export default function ProjectEdit() {
 
     //Translations
     const { t } = useTranslation();
-    const CardTitle = t("common.cardTitles.edit", { 0: t("navigation.Projects") });
+    const CardTitle = t("common.cardTitles.edit", { 0: t("element.project") });
     const CardSubTitle = t("common.cardSubTitles.edit");
     const ErrorRequired = t('errors.required');
     const ErrorMaxCaracter = t('errors.maxLength');
