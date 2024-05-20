@@ -102,7 +102,7 @@ function Header() {
 
                             //set Avatar
                             if (user.photo && user.photo !== "")
-                                setAvatarIMG(`data:image/*;base64,${user.photo}`)
+                                setAvatarIMG(user.photo)
                             else
                                 setAvatarIMG("/src/assets/imgs/avatar-default.png")
                             break;

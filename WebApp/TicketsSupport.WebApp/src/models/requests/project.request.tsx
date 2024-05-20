@@ -1,7 +1,7 @@
-export interface ProjectForm {
+export interface ProjectRequest {
+    photo: string,
     name: string,
     description: string,
-    photo: string,
     ticketStatus: number[],
     ticketPriorities: number[],
     ticketTypes: number[],

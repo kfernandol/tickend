@@ -53,7 +53,8 @@
     "ticketStatus": "Ticket Status",
     "ticketTypes": "Ticket Type",
     "ticketPriority": "Ticket Priority",
-    "project": "Project"
+    "project": "Project",
+    "profile": "Profile"
   },
   "sidebar": {
     "logout": "Logout"
@@ -181,7 +182,10 @@
       "lastName": "Last Name",
       "email": "Email",
       "password": "Password",
-      "confirmPassword": "Confirm Password"
+      "confirmPassword": "Confirm Password",
+      "direction": "Direction",
+      "phone": "Phone",
+      "file": "Choose a file"
     },
     "errors": {
       "fileSize": {

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 //components
 import { classNames } from 'primereact/utils';
 import { Controller } from 'react-hook-form';
@@ -19,24 +19,29 @@ import { AuthToken } from '../../models/tokens/token.model';
 import { UserResponse } from '../../models/responses/users.response';
 import { BasicResponse } from '../../models/responses/basic.response';
 import { ProfileForm } from '../../models/forms/profile.form'
+import { Card } from 'primereact/card';
+import { ProfileRequest } from '../../models/requests/profile.request';
 
 export default function Profile() {
     const toast = useRef<Toast>(null);
     //Hooks
     const authenticated = useSelector((state: RootState) => state.auth);
     const getTokenData = useTokenData<AuthToken>(authenticated?.token);
-    const { control, errors, getValues, setValue, ErrorMessageHtml, handleSubmit, reset } = useCustomForm<ProfileForm>(
+    const { control, getValues, setValue, ErrorMessageHtml, handleSubmit, reset } = useCustomForm<ProfileForm>(
         {
             firstName: '',
             lastName: '',
             email: '',
             password: '',
             photo: undefined,
-            confirmPassword: ''
+            confirmPassword: '',
+            direction: '',
+            phone: ''
         });
+    const [user, setUser] = useState<UserResponse>();
+    //Api Requet
     const { SendPutRequest, errorPut, httpCodePut, loadingPut, putResponse } = usePut();
-    const { SendGetRequest, getResponse } = useGet<UserResponse>()
-
+    const { SendGetRequest } = useGet<UserResponse>()
     //translate
     const { t } = useTranslation();
     const labelFirstName = t("profile.labels.firstName");
@@ -45,37 +50,52 @@ export default function Profile() {
     const CardButtonSave = t('buttons.save');
     const labelLastName = t("profile.labels.lastName");
     const ErrorNoMatch = t("errors.noMatch", { 0: t("users.labels.password") });
-    const CardTitle = t("common.cardTitles.edit", { 0: t("navigation.Profile") });
+    const CardTitle = t("common.cardTitles.edit", { 0: t("element.profile") });
     const labelEmail = t("profile.labels.email");
     const labelPassword = t("profile.labels.password");
     const labelConfirmPassword = t("profile.labels.confirmPassword");
+    const labelDirection = t("profile.labels.direction");
+    const labelPhone = t("profile.labels.phone");
+    const CardSubTitle = t("common.cardSubTitles.edit");
 
-    const onSubmitProfile = (data: ProfileForm) => {
-        const formData = new FormData();
 
-        formData.append('photo', getValues("photo"));
-        formData.append('firstName', getValues("firstName"));
-        formData.append('lastName', getValues("lastName"));
-        formData.append('password', getValues("password"));
-        formData.append('email', getValues("email"));
-
-        SendPutRequest("v1/users/profile/" + getTokenData?.id, data, { headers: { 'Content-Type': 'multipart/form-data' } })
-    }
-
+    //Request Dataa
     useEffect(() => {
-        SendGetRequest("v1/users/" + getTokenData?.id);
+        const requests = [
+            SendGetRequest("v1/users/" + getTokenData?.id)
+        ]
+
+        requests.forEach((request) => {
+            Promise.resolve(request)
+                .then((response) => {
+                    switch (response.url) {
+                        case "v1/users/" + getTokenData?.id:
+                            setUser(response.data as UserResponse);
+                            setValue("firstName", (response.data as UserResponse).firstName);
+                            setValue("lastName", (response.data as UserResponse).lastName);
+                            setValue("email", (response.data as UserResponse).email);
+                            setValue("direction", (response.data as UserResponse).direction);
+                            setValue("phone", (response.data as UserResponse).phone);
+                            break;
+                    }
+                })
+        })
     }, [])
 
-    //Load initial data
-    useEffect(() => {
+    const onSubmitProfile = (data: ProfileForm) => {
 
-        if (getResponse) {
-            setValue("firstName", getResponse.firstName);
-            setValue("lastName", getResponse.lastName);
-            setValue("email", getResponse.email);
+        const formData: ProfileRequest = {
+            photo: data.photo,
+            firstName: data.firstName,
+            lastName: data.lastName,
+            password: data.password,
+            email: data.email,
+            direction: data.direction ?? '',
+            phone: data.phone ?? ''
         }
 
-    }, [getResponse]);
+        SendPutRequest("v1/users/profile/" + getTokenData?.id, formData)
+    }
 
     //Update Profile
     useEffect(() => {
@@ -106,176 +126,263 @@ export default function Profile() {
     return (
         <>
             <Toast ref={toast} />
-            <form onSubmit={handleSubmit(onSubmitProfile)} className="flex flex-column gap-2">
-                <div className='grid'>
-                    {/* Photo */}
-                    <div className='col-12 flex justify-content-center align-item-center mb-5'>
-                        <AvatarEditor onChangeAvatar={(file) => setValue("photo", file)} />
-                    </div>
-                    {/* FirstName Input */}
-                    <div className='col-12 sm:col-6 py-0'>
-                        <Controller
-                            name="firstName"
-                            control={control}
-                            rules={
-                                {
-                                    maxLength: {
-                                        value: 150,
-                                        message: ErrorMaxCaracter.replace("{{0}}", "150")
-                                    },
-                                    minLength: {
-                                        value: 3,
-                                        message: ErrorMinCaracter.replace("{{0}}", "3")
-                                    }
-
-                                }}
-                            render={({ field, fieldState }) => (
-                                <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.firstName })}></label>
-                                    <span className="p-float-label">
-                                        <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
-                                        <label htmlFor={field.name}>{labelFirstName}</label>
-                                    </span>
-                                    {ErrorMessageHtml(field.name)}
-                                </>
-                            )}
-                        />
-                    </div>
-
-                    {/* LastName Input */}
-                    <div className='col-12 sm:col-6 py-0'>
-                        <Controller
-                            name="lastName"
-                            control={control}
-                            rules={
-                                {
-                                    maxLength: {
-                                        value: 150,
-                                        message: ErrorMaxCaracter.replace("{{0}}", "150")
-                                    },
-                                    minLength: {
-                                        value: 3,
-                                        message: ErrorMinCaracter.replace("{{0}}", "3")
-                                    }
-
-                                }}
-                            render={({ field, fieldState }) => (
-                                <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.firstName })}></label>
-                                    <span className="p-float-label">
-                                        <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
-                                        <label htmlFor={field.name}>{labelLastName}</label>
-                                    </span>
-                                    {ErrorMessageHtml(field.name)}
-                                </>
-                            )}
-                        />
-                    </div>
-
-                    {/* Password Input */}
-                    <div className='col-12 sm:col-6 py-0'>
-                        <Controller
-                            name="password"
-                            control={control}
-                            rules={
-                                {
-                                    maxLength: {
-                                        value: 50,
-                                        message: ErrorMaxCaracter.replace("{{0}}", "50")
-                                    },
-                                    minLength: {
-                                        value: 5,
-                                        message: ErrorMinCaracter.replace("{{0}}", "5")
-                                    },
-                                    validate: (value) => {
-                                        const { confirmPassword } = getValues();
-                                        return confirmPassword === value || ErrorNoMatch;
-                                    }
-                                }}
-                            render={({ field, fieldState }) => (
-                                <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.firstName })}></label>
-                                    <span className="p-float-label">
-                                        <InputText id={field.name} value={field.value} type='password' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
-                                        <label htmlFor={field.name}>{labelPassword}</label>
-                                    </span>
-                                    {ErrorMessageHtml(field.name)}
-                                </>
-                            )}
-                        />
-                    </div>
-
-                    {/* Password Input */}
-                    <div className='col-12 sm:col-6 py-0'>
-                        <Controller
-                            name="confirmPassword"
-                            control={control}
-                            rules={
-                                {
-                                    maxLength: {
-                                        value: 50,
-                                        message: ErrorMaxCaracter.replace("{{0}}", "50")
-                                    },
-                                    minLength: {
-                                        value: 5,
-                                        message: ErrorMinCaracter.replace("{{0}}", "5")
-                                    },
-                                    validate: (value) => {
-                                        const { password } = getValues();
-                                        return password === value || ErrorNoMatch;
-                                    }
-                                }}
-                            render={({ field, fieldState }) => (
-                                <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.firstName })}></label>
-                                    <span className="p-float-label">
-                                        <InputText id={field.name} value={field.value} type='password' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
-                                        <label htmlFor={field.name}>{labelConfirmPassword}</label>
-                                    </span>
-                                    {ErrorMessageHtml(field.name)}
-                                </>
-                            )}
-                        />
-                    </div>
-
-                    {/* Email Input */}
-                    <div className='col-12 sm:col-6 py-0'>
-                        <Controller
-                            name="email"
-                            control={control}
-                            rules={
-                                {
-                                    maxLength: {
-                                        value: 200,
-                                        message: ErrorMaxCaracter.replace("{{0}}", "200")
-                                    },
-                                    minLength: {
-                                        value: 5,
-                                        message: ErrorMinCaracter.replace("{{0}}", "5")
-                                    }
-
-                                }}
-                            render={({ field, fieldState }) => (
-                                <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.firstName })}></label>
-                                    <span className="p-float-label">
-                                        <InputText id={field.name} value={field.value} type='email' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
-                                        <label htmlFor={field.name}>{labelEmail}</label>
-                                    </span>
-                                    {ErrorMessageHtml(field.name)}
-                                </>
-                            )}
-                        />
-                    </div>
-
-                    <div className='col-12'>
-                        <div className='flex justify-content-center align-items-center'>
-                            <Button label={CardButtonSave} severity="success" className='mr-3' type='submit' loading={loadingPut} />
+            <Card
+                title={CardTitle}
+                subTitle={CardSubTitle}
+                pt={{
+                    root: { className: "my-5 px-4 pt-3" },
+                    title: { className: "mt-3" },
+                    subTitle: { className: "mb-1" },
+                    body: { className: "pb-0 pt-1" },
+                    content: { className: "pt-0" }
+                }}>
+                <form onSubmit={handleSubmit(onSubmitProfile)} className="flex flex-column gap-2">
+                    <div className='grid'>
+                        {/* Photo */}
+                        <div className='col-12 flex justify-content-center align-item-center mb-5'>
+                            <AvatarEditor onChangeAvatar={(file) => setValue("photo", file)} PhotoBase64={user?.photo} />
                         </div>
-                    </div>
+                        {/* FirstName Input */}
+                        <div className='col-12 sm:col-6 py-0'>
+                            <Controller
+                                name="firstName"
+                                control={control}
+                                rules={
+                                    {
+                                        maxLength: {
+                                            value: 150,
+                                            message: ErrorMaxCaracter.replace("{{0}}", "150")
+                                        },
+                                        minLength: {
+                                            value: 3,
+                                            message: ErrorMinCaracter.replace("{{0}}", "3")
+                                        }
 
-                </div>
-            </form>
+                                    }}
+                                render={({ field, fieldState }) => (
+                                    <>
+                                        <label className="align-self-start block mb-1">{labelFirstName}</label>
+                                        <InputText
+                                            id={field.name}
+                                            value={field.value}
+                                            type='text'
+                                            className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"}
+                                            onChange={(e) => field.onChange(e.target.value)} />
+                                        {ErrorMessageHtml(field.name)}
+                                    </>
+                                )}
+                            />
+                        </div>
+
+                        {/* LastName Input */}
+                        <div className='col-12 sm:col-6 py-0'>
+                            <Controller
+                                name="lastName"
+                                control={control}
+                                rules={
+                                    {
+                                        maxLength: {
+                                            value: 150,
+                                            message: ErrorMaxCaracter.replace("{{0}}", "150")
+                                        },
+                                        minLength: {
+                                            value: 3,
+                                            message: ErrorMinCaracter.replace("{{0}}", "3")
+                                        }
+
+                                    }}
+                                render={({ field, fieldState }) => (
+                                    <>
+                                        <label className="align-self-start block mb-1">{labelLastName}</label>
+                                        <InputText
+                                            id={field.name}
+                                            value={field.value}
+                                            type='text'
+                                            className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"}
+                                            onChange={(e) => field.onChange(e.target.value)} />
+                                        {ErrorMessageHtml(field.name)}
+                                    </>
+                                )}
+                            />
+                        </div>
+
+                        {/* Direction Input */}
+                        <div className='col-12'>
+                            <Controller
+                                name="direction"
+                                control={control}
+                                rules={
+                                    {
+                                        maxLength: {
+                                            value: 100,
+                                            message: ErrorMaxCaracter.replace("{{0}}", "100")
+                                        },
+                                        minLength: {
+                                            value: 3,
+                                            message: ErrorMinCaracter.replace("{{0}}", "3")
+                                        }
+
+                                    }}
+                                render={({ field, fieldState }) => (
+                                    <>
+                                        <label className="align-self-start block mb-1">{labelDirection}</label>
+                                        <InputText
+                                            id={field.name}
+                                            value={field.value}
+                                            type='text'
+                                            className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"}
+                                            onChange={(e) => field.onChange(e.target.value)} />
+                                        {ErrorMessageHtml(field.name)}
+                                    </>
+                                )}
+                            />
+                        </div>
+
+                        {/* Email Input */}
+                        <div className='col-12 sm:col-6 py-0'>
+                            <Controller
+                                name="email"
+                                control={control}
+                                rules={
+                                    {
+                                        maxLength: {
+                                            value: 200,
+                                            message: ErrorMaxCaracter.replace("{{0}}", "200")
+                                        },
+                                        minLength: {
+                                            value: 5,
+                                            message: ErrorMinCaracter.replace("{{0}}", "5")
+                                        }
+
+                                    }}
+                                render={({ field, fieldState }) => (
+                                    <>
+                                        <label className="align-self-start block mb-1">{labelEmail}</label>
+                                        <InputText
+                                            id={field.name}
+                                            value={field.value}
+                                            type='email'
+                                            className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"}
+                                            onChange={(e) => field.onChange(e.target.value)} />
+                                        {ErrorMessageHtml(field.name)}
+                                    </>
+                                )}
+                            />
+                        </div>
+
+                        {/* Phone Input */}
+                        <div className='col-12 sm:col-6 py-0'>
+                            <Controller
+                                name="phone"
+                                control={control}
+                                rules={
+                                    {
+                                        maxLength: {
+                                            value: 16,
+                                            message: ErrorMaxCaracter.replace("{{0}}", "16")
+                                        },
+                                        minLength: {
+                                            value: 8,
+                                            message: ErrorMinCaracter.replace("{{0}}", "8")
+                                        }
+
+                                    }}
+                                render={({ field, fieldState }) => (
+                                    <>
+                                        <label className="align-self-start block mb-1">{labelPhone}</label>
+                                        <InputText
+                                            id={field.name}
+                                            value={field.value}
+                                            type='phone'
+                                            className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"}
+                                            onChange={(e) => field.onChange(e.target.value)} />
+                                        {ErrorMessageHtml(field.name)}
+                                    </>
+                                )}
+                            />
+                        </div>
+
+
+                        {/* Password Input */}
+                        <div className='col-12 sm:col-6 py-0'>
+                            <Controller
+                                name="password"
+                                control={control}
+                                rules={
+                                    {
+                                        maxLength: {
+                                            value: 50,
+                                            message: ErrorMaxCaracter.replace("{{0}}", "50")
+                                        },
+                                        minLength: {
+                                            value: 5,
+                                            message: ErrorMinCaracter.replace("{{0}}", "5")
+                                        },
+                                        validate: (value) => {
+                                            const { confirmPassword } = getValues();
+                                            return confirmPassword === value || ErrorNoMatch;
+                                        }
+                                    }}
+                                render={({ field, fieldState }) => (
+                                    <>
+                                        <label className="align-self-start block mb-1">{labelPassword}</label>
+                                        <InputText
+                                            id={field.name}
+                                            value={field.value}
+                                            type='password'
+                                            className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"}
+                                            onChange={(e) => field.onChange(e.target.value)} />
+                                        {ErrorMessageHtml(field.name)}
+                                    </>
+                                )}
+                            />
+                        </div>
+
+                        {/* Password Input */}
+                        <div className='col-12 sm:col-6 py-0'>
+                            <Controller
+                                name="confirmPassword"
+                                control={control}
+                                rules={
+                                    {
+                                        maxLength: {
+                                            value: 50,
+                                            message: ErrorMaxCaracter.replace("{{0}}", "50")
+                                        },
+                                        minLength: {
+                                            value: 5,
+                                            message: ErrorMinCaracter.replace("{{0}}", "5")
+                                        },
+                                        validate: (value) => {
+                                            const { password } = getValues();
+                                            return password === value || ErrorNoMatch;
+                                        }
+                                    }}
+                                render={({ field, fieldState }) => (
+                                    <>
+                                        <label className="align-self-start block mb-1">{labelConfirmPassword}</label>
+                                        <InputText
+                                            id={field.name}
+                                            value={field.value}
+                                            type='password'
+                                            className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"}
+                                            onChange={(e) => field.onChange(e.target.value)} />
+                                        {ErrorMessageHtml(field.name)}
+                                    </>
+                                )}
+                            />
+                        </div>
+
+
+                        <div className='col-12'>
+                            <div className='flex justify-content-center align-items-center'>
+                                <Button label={CardButtonSave} severity="success" className='mr-3' type='submit' loading={loadingPut} />
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </Card>
         </>
 
 

@@ -22,12 +22,13 @@ import { TicketStatusResponse } from '../../models/responses/ticketStatus.respon
 import { TicketTypeResponse } from '../../models/responses/ticketType.response';
 import { UserResponse } from '../../models/responses/users.response';
 import { InputTextarea } from 'primereact/inputtextarea';
+import { ProjectRequest } from '../../models/requests/project.request';
 
 export default function ProjectNew() {
     const toast = useRef<Toast>(null);
     const navigate = useNavigate();
     //Form
-    const { control, ErrorMessageHtml, errors, handleSubmit, reset, getValues, setValue } = useCustomForm<ProjectForm>(
+    const { control, ErrorMessageHtml, handleSubmit, reset, getValues, setValue } = useCustomForm<ProjectForm>(
         {
             photo: undefined,
             name: "",
@@ -50,8 +51,8 @@ export default function ProjectNew() {
 
     //Translations
     const { t } = useTranslation();
-    const CardTitle = t("common.cardTitles.new", { 0: t("navigation.Projects") });
-    const CardSubTitle = t("common.cardSubTitles.new", { 0: t("navigation.Projects") });
+    const CardTitle = t("common.cardTitles.new", { 0: t("element.project") });
+    const CardSubTitle = t("common.cardSubTitles.new", { 0: t("element.project").toLowerCase() });
     const ErrorRequired = t('errors.required');
     const ErrorMaxCaracter = t('errors.maxLength');
     const ErrorMinCaracter = t('errors.minLength');
@@ -70,18 +71,18 @@ export default function ProjectNew() {
 
     const onSubmit = async () => {
 
-        const formData = new FormData();
+        const formData: ProjectRequest = {
+            photo: getValues("photo"),
+            name: getValues("name"),
+            description: getValues("description"),
+            ticketStatus: getValues("ticketStatus"),
+            ticketPriorities: getValues("ticketPriorities"),
+            ticketTypes: getValues("ticketTypes"),
+            clients: getValues("clients"),
+            developers: getValues("developers")
+        }
 
-        formData.append('Photo', getValues('photo'));
-        formData.append('name', getValues("name"));
-        formData.append('description', getValues("description"));
-        formData.append('ticketStatusJson', JSON.stringify(getValues("ticketStatus")));
-        formData.append('ticketPrioritiesJson', JSON.stringify(getValues("ticketPriorities")));
-        formData.append('ticketTypesJson', JSON.stringify(getValues("ticketTypes")));
-        formData.append('ClientsJson', JSON.stringify(getValues("clients")));
-        formData.append('DevelopersJson', JSON.stringify(getValues("developers")));
-
-        SendPostRequest("v1/projects/", formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+        SendPostRequest("v1/projects/", formData)
     };
 
     //request initial data
@@ -93,9 +94,9 @@ export default function ProjectNew() {
             SendGetRequest("v1/users"),
         ];
 
-        Promise.all(requests)
-            .then((responses) => {
-                responses.forEach((response) => {
+        requests.forEach((request) => {
+            Promise.resolve(request)
+                .then((response) => {
                     if (response.url === "v1/ticket/priorities") {
                         const resp = response.data as TicketPriorityResponse[];
 
@@ -144,13 +145,8 @@ export default function ProjectNew() {
                         }));
                         setDevelopers(developers);
                     }
-
-                });
-            })
-            .catch((error) => {
-                console.error("Error en las solicitudes:", error);
-            });
-
+                })
+        })
     }, []);
 
     //Save New Project
@@ -181,15 +177,27 @@ export default function ProjectNew() {
 
     const MultiSelectedItem = (e: number, data: { value: number, name: string, color: string }[]) => {
         const item = data.find(x => x.value == e);
-        return (
-            <span style={{ color: `${item?.color}` }}>{item?.name}, </span>
-        );
+        return <>
+            {item
+                ? <span style={{ color: `${item?.color}` }}>{item?.name}, </span>
+                : <span className="block py-2"></span>}
+        </>
+
     };
 
     return (
         <>
             <Toast ref={toast} />
-            <Card title={CardTitle} subTitle={CardSubTitle}>
+            <Card
+                title={CardTitle}
+                subTitle={CardSubTitle}
+                pt={{
+                    root: { className: "my-5 px-4 pt-3" },
+                    title: { className: "mt-3" },
+                    subTitle: { className: "mb-1" },
+                    body: { className: "pb-0 pt-1" },
+                    content: { className: "pt-0" }
+                }}>
                 <form className='mt-5 grid gap-2"' onSubmit={handleSubmit(onSubmit)}>
                     {/* Photo */}
                     <div className='col-12 flex justify-content-center align-item-center mb-5'>
@@ -215,11 +223,13 @@ export default function ProjectNew() {
                                 }}
                             render={({ field, fieldState }) => (
                                 <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.name })}></label>
-                                    <span className="p-float-label">
-                                        <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
-                                        <label htmlFor={field.name}>{LabelName}</label>
-                                    </span>
+                                    <label className="align-self-start block mb-1">{LabelName}</label>
+                                    <InputText
+                                        id={field.name}
+                                        value={field.value}
+                                        type='text'
+                                        className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"}
+                                        onChange={(e) => field.onChange(e.target.value)} />
                                     {ErrorMessageHtml(field.name)}
                                 </>
                             )}
@@ -246,11 +256,13 @@ export default function ProjectNew() {
                                 }}
                             render={({ field, fieldState }) => (
                                 <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.description })}></label>
-                                    <span className="p-float-label">
-                                        <InputTextarea autoResize id={field.name} {...field} rows={4} cols={30} className={classNames({ 'p-invalid': fieldState.error }) + " w-full"} />
-                                        <label htmlFor="username">{LabelDescription}</label>
-                                    </span>
+                                    <label className="align-self-start block mb-1">{LabelDescription}</label>
+                                    <InputTextarea
+                                        autoResize
+                                        id={field.name} {...field}
+                                        rows={4}
+                                        cols={30}
+                                        className={classNames({ 'p-invalid': fieldState.error }) + " w-full"} />
                                     {ErrorMessageHtml(field.name)}
                                 </>
                             )}
@@ -264,10 +276,18 @@ export default function ProjectNew() {
                             control={control}
                             render={({ field }) => (
                                 <>
-                                    <span className="p-float-label w-full">
-                                        <MultiSelect id={field.name} name="value" selectedItemTemplate={(e) => MultiSelectedItem(e, Priorities)} className='w-full py-1' value={field.value} filter options={Priorities} onChange={(e) => field.onChange(e.value)} optionLabel="name" placeholder={SelectPriorities} maxSelectedLabels={10} />
-                                        <label htmlFor={field.name} >{SelectPriorities}</label>
-                                    </span>
+                                    <label className="align-self-start block mb-1">{SelectPriorities}</label>
+                                    <MultiSelect
+                                        id={field.name}
+                                        name="value"
+                                        selectedItemTemplate={(e) => MultiSelectedItem(e, Priorities)}
+                                        className='w-full py-1'
+                                        value={field.value}
+                                        filter options={Priorities}
+                                        onChange={(e) => field.onChange(e.value)}
+                                        optionLabel="name"
+                                        placeholder={SelectPriorities}
+                                        maxSelectedLabels={10} />
                                     {ErrorMessageHtml(field.name)}
                                 </>
                             )}
@@ -281,21 +301,19 @@ export default function ProjectNew() {
                             control={control}
                             render={({ field }) => (
                                 <>
-                                    <span className="p-float-label w-full">
-                                        <MultiSelect
-                                            id={field.name}
-                                            name="value"
-                                            selectedItemTemplate={(e) => MultiSelectedItem(e, Statuses)}
-                                            className='w-full py-1'
-                                            value={field.value}
-                                            filter
-                                            options={Statuses}
-                                            onChange={(e) => field.onChange(e.value)}
-                                            optionLabel="name"
-                                            placeholder={SelectStatus}
-                                            maxSelectedLabels={10} />
-                                        <label htmlFor={field.name} >{SelectStatus}</label>
-                                    </span>
+                                    <label className="align-self-start block mb-1">{SelectStatus}</label>
+                                    <MultiSelect
+                                        id={field.name}
+                                        name="value"
+                                        selectedItemTemplate={(e) => MultiSelectedItem(e, Statuses)}
+                                        className='w-full py-1'
+                                        value={field.value}
+                                        filter
+                                        options={Statuses}
+                                        onChange={(e) => field.onChange(e.value)}
+                                        optionLabel="name"
+                                        placeholder={SelectStatus}
+                                        maxSelectedLabels={10} />
                                     {ErrorMessageHtml(field.name)}
                                 </>
                             )}
@@ -309,21 +327,19 @@ export default function ProjectNew() {
                             control={control}
                             render={({ field }) => (
                                 <>
-                                    <span className="p-float-label w-full">
-                                        <MultiSelect
-                                            id={field.name}
-                                            name="value"
-                                            selectedItemTemplate={(e) => MultiSelectedItem(e, Types)}
-                                            className='w-full py-1'
-                                            value={field.value}
-                                            filter
-                                            options={Types}
-                                            onChange={(e) => field.onChange(e.value)}
-                                            optionLabel="name"
-                                            placeholder={SelectTypes}
-                                            maxSelectedLabels={10} />
-                                        <label htmlFor={field.name} >{SelectTypes}</label>
-                                    </span>
+                                    <label className="align-self-start block mb-1">{SelectTypes}</label>
+                                    <MultiSelect
+                                        id={field.name}
+                                        name="value"
+                                        selectedItemTemplate={(e) => MultiSelectedItem(e, Types)}
+                                        className='w-full py-1'
+                                        value={field.value}
+                                        filter
+                                        options={Types}
+                                        onChange={(e) => field.onChange(e.value)}
+                                        optionLabel="name"
+                                        placeholder={SelectTypes}
+                                        maxSelectedLabels={10} />
                                     {ErrorMessageHtml(field.name)}
                                 </>
                             )}
@@ -337,21 +353,19 @@ export default function ProjectNew() {
                             control={control}
                             render={({ field }) => (
                                 <>
-                                    <span className="p-float-label w-full">
-                                        <MultiSelect
-                                            id={field.name}
-                                            name="value"
-                                            selectedItemTemplate={(e) => MultiSelectedItem(e, Clients)}
-                                            className='w-full py-1'
-                                            value={field.value}
-                                            filter
-                                            options={Clients}
-                                            onChange={(e) => field.onChange(e.value)}
-                                            optionLabel="name"
-                                            placeholder={SelectClients}
-                                            maxSelectedLabels={10} />
-                                        <label htmlFor={field.name} >{SelectClients}</label>
-                                    </span>
+                                    <label className="align-self-start block mb-1">{SelectClients}</label>
+                                    <MultiSelect
+                                        id={field.name}
+                                        name="value"
+                                        selectedItemTemplate={(e) => MultiSelectedItem(e, Clients)}
+                                        className='w-full py-1'
+                                        value={field.value}
+                                        filter
+                                        options={Clients}
+                                        onChange={(e) => field.onChange(e.value)}
+                                        optionLabel="name"
+                                        placeholder={SelectClients}
+                                        maxSelectedLabels={10} />
                                     {ErrorMessageHtml(field.name)}
                                 </>
                             )}
@@ -365,34 +379,30 @@ export default function ProjectNew() {
                             control={control}
                             render={({ field }) => (
                                 <>
-                                    <span className="p-float-label w-full">
-                                        <MultiSelect
-                                            id={field.name}
-                                            name="value"
-                                            selectedItemTemplate={(e) => MultiSelectedItem(e, Developers)}
-                                            className='w-full py-1'
-                                            value={field.value}
-                                            filter
-                                            options={Developers}
-                                            onChange={(e) => field.onChange(e.value)}
-                                            optionLabel="name"
-                                            placeholder={SelectDeveloper}
-                                            maxSelectedLabels={10} />
-                                        <label htmlFor={field.name} >{SelectDeveloper}</label>
-                                    </span>
+                                    <label className="align-self-start block mb-1">{SelectDeveloper}</label>
+                                    <MultiSelect
+                                        id={field.name}
+                                        name="value"
+                                        selectedItemTemplate={(e) => MultiSelectedItem(e, Developers)}
+                                        className='w-full py-1'
+                                        value={field.value}
+                                        filter
+                                        options={Developers}
+                                        onChange={(e) => field.onChange(e.value)}
+                                        optionLabel="name"
+                                        placeholder={SelectDeveloper}
+                                        maxSelectedLabels={10} />
                                     {ErrorMessageHtml(field.name)}
                                 </>
                             )}
                         />
                     </div>
 
-
-
                     <div className='col-12'>
                         <div className='flex justify-content-center align-items-center'>
                             <Button label={CardButtonSave} severity="success" className='mr-3' type='submit' loading={loadingPost} />
                             <Link to={returnToTable}>
-                                <Button label={CardButtonCancel} severity="secondary" type='button' />
+                                <Button label={CardButtonCancel} severity="secondary" type='button' outlined />
                             </Link>
                         </div>
                     </div>

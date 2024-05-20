@@ -14,10 +14,10 @@ import { useTranslation } from 'react-i18next'
 import { useGet, usePost } from '../../services/api_services';
 import useCustomForm from '../../hooks/useCustomForm';
 //Models
-import { UserRequestPost } from '../../models/requests/users.request';
 import { UserFormModel } from '../../models/forms/user.form';
 import { BasicResponse } from '../../models/responses/basic.response';
 import { RolesResponse } from '../../models/responses/roles.response';
+import { UserRequest } from '../../models/requests/users.request';
 
 export default function UserNew() {
     const toast = useRef<Toast>(null);
@@ -64,7 +64,7 @@ export default function UserNew() {
 
     const onSubmit = async (data: UserFormModel) => {
 
-        const userData: UserRequestPost = {
+        const userData: UserRequest = {
             firstName: data.firstName,
             lastName: data.lastName,
             email: data.email,

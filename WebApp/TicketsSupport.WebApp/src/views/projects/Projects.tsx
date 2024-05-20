@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { FilterMatchMode } from 'primereact/api';
 import { paths } from '../../routes/paths';
-import { Toast } from 'primereact/toast';
+import { RootState } from '../../redux/store';
 //components
+import { Toast } from 'primereact/toast';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
@@ -12,6 +13,8 @@ import { ProgressSpinner } from 'primereact/progressspinner';
 import Swal from 'sweetalert2'
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
+import { Card } from 'primereact/card';
+import { Avatar } from 'primereact/avatar';
 //hooks
 import { useDelete, useGet } from "../../services/api_services";
 import { useTranslation } from 'react-i18next';
@@ -23,9 +26,7 @@ import { ProjectResponse } from '../../models/responses/project.response';
 import { TicketPriorityResponse } from '../../models/responses/ticketPriority.response';
 import { TicketStatusResponse } from '../../models/responses/ticketStatus.response';
 import { TicketTypeResponse } from '../../models/responses/ticketType.response';
-import { Avatar } from 'primereact/avatar';
 import { UserResponse } from '../../models/responses/users.response';
-import { RootState } from '../../redux/store';
 import { AuthToken } from '../../models/tokens/token.model';
 
 export default function Projects() {
@@ -79,6 +80,7 @@ export default function Projects() {
     const TableHeaderClients = t("projects.labels.clients");
     const TableHeaderDeveloper = t("projects.labels.developer");
     const TableNoElements = t("common.table.noElements");
+    const PageName = t("navigation.Projects");
 
     //Links
     const NewItemUrl = paths.newProject;
@@ -131,7 +133,7 @@ export default function Projects() {
             id: x.id,
             name: x.name,
             description: x.description,
-            photo: x.photo !== null && x.photo !== "" ? <Avatar image={`data:image/*;base64,${x.photo}`} size='large' /> : <Avatar image={'/src/assets/imgs/project-default.png'} size='large' />,
+            photo: x.photo !== null && x.photo !== "" ? <Avatar image={`${x.photo}`} size='large' /> : <Avatar image={'/src/assets/imgs/project-default.png'} size='large' />,
             ticketStatus: TicketStatus.map(status => { const IncludeItem = x.ticketStatus.includes(status.id); return IncludeItem === false ? "" : `${status.name}, `; }),
             ticketPriorities: TicketPriorities.map(priority => { const IncludeItem = x.ticketPriorities.includes(priority.id); return IncludeItem === false ? "" : `${priority.name}, `; }),
             ticketTypes: TicketType.map(type => { const IncludeItem = x.ticketTypes.includes(type.id); return IncludeItem === false ? "" : `${type.name}, `; }),
@@ -185,20 +187,12 @@ export default function Projects() {
     const TableHeader = (
         <div className="flex flex-wrap justify-content-between align-items-center gap-2 p-2" >
             {/* Table Title */}
-            <span className='text-2xl text-white'>{TableTitle}</span>
+            <span className='text-xl text-black'>{TableTitle}</span>
             {/* Filter */}
             <IconField iconPosition="left">
                 <InputIcon className="pi pi-search"> </InputIcon>
                 <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder={GlobalSearch} />
             </IconField>
-            {/* Add new */}
-            {getTokenData?.PermissionLevel === "Administrator" ?
-                <Link to={NewItemUrl}>
-                    <Button icon="pi pi-plus" severity='success'>
-                        <span className='pl-2'>{TableHeaderNew}</span>
-                    </Button>
-                </Link>
-                : null}
         </div>
     );
 
@@ -243,11 +237,27 @@ export default function Projects() {
                 :
                 <>
                     <Toast ref={toast} />
-                    <div className="card" style={{ backgroundColor: "#17212f5D" }}>
+                    {/*Title*/}
+                    <div className="flex justify-content-between align-items-center my-4">
+                        <h2 className="my-0">{PageName}</h2>
+                        {/* Add new */}
+                        {getTokenData?.PermissionLevel === "Administrator"
+                            ? <Link to={NewItemUrl}>
+                                <Button icon="pi pi-plus" severity='success'>
+                                    <span className='pl-2'>{TableHeaderNew}</span>
+                                </Button>
+                            </Link>
+                            : null}
+                    </div>
+                    <Card
+                        style={{ height: "calc(100% - 125px)" }}
+                        pt={{
+                            body: { className: "h-full pb-0" },
+                            content: { className: "h-full py-0" },
+                        }}>
                         <DataTable
                             value={TableData}
                             header={TableHeader}
-                            style={{ backgroundColor: "#17212f5D" }}
                             dataKey="id"
                             paginator
                             rows={10}
@@ -255,6 +265,13 @@ export default function Projects() {
                             filters={filters}
                             globalFilterFields={['id', 'name', 'url', 'icon', 'position', 'parentId', 'show']}
                             emptyMessage={TableNoElements}
+                            stripedRows
+                            pt={{
+                                root: { className: "h-full flex flex-column" },
+                                header: { className: "bg-white border-0 mb-3" },
+                                wrapper: { className: "h-full" },
+                                column: { headerCell: { className: "bg-yellow-100" } }
+                            }}
                         >
                             <Column style={{ width: '5rem' }} />
                             <Column field="id" header={TableHeaderId} sortable />
@@ -268,7 +285,7 @@ export default function Projects() {
                             <Column field="developers" header={TableHeaderDeveloper} sortable />
                             {getTokenData?.PermissionLevel === "Administrator" ? <Column header={TableHeaderActions} body={ActionsTableTemplate} sortable /> : <></>}
                         </DataTable>
-                    </div>
+                    </Card>
                 </>
             }
 

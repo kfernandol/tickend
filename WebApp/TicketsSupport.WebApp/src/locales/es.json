@@ -53,7 +53,8 @@
     "ticketStatus": "Estado de Ticket",
     "ticketTypes": "Tipo de Ticket",
     "ticketPriority": "Prioridad de Ticket",
-    "project": "Proyecto"
+    "project": "Proyecto",
+    "profile": "Perfil"
   },
   "sidebar": {
     "logout": "Cerrar sesión"
@@ -181,7 +182,10 @@
       "lastName": "Apellido",
       "email": "Correo electrónico",
       "password": "Contraseña",
-      "confirmPassword": "Confirmar Contraseña"
+      "confirmPassword": "Confirmar Contraseña",
+      "direction": "Direccion",
+      "phone": "Telefono",
+      "file": "Selecciona un archivo"
     },
     "errors": {
       "fileSize": {

@@ -193,9 +193,9 @@ export default function Users() {
         </div>
     );
 
-    const imageBodyTemplate = (rowData: { photo: unknown; }) => {
-        if (rowData.photo)
-            return <Avatar image={`data:image/*;base64,${rowData.photo}`} size="large" shape="circle" />;
+    const imageBodyTemplate = (rowData: { photo: string | undefined; }) => {
+        if (rowData.photo && rowData.photo !== '')
+            return <Avatar image={rowData.photo} size="large" shape="circle" />;
         else
             return <Avatar icon="pi pi-user" size="large" shape="circle" />;
     };

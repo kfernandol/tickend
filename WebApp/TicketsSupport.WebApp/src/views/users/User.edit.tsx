@@ -15,11 +15,11 @@ import { useTranslation } from 'react-i18next'
 import { useGet, usePut } from '../../services/api_services';
 import useCustomForm from '../../hooks/useCustomForm';
 //Models
-import { UserRequestPut } from '../../models/requests/users.request';
 import { UserFormModel } from '../../models/forms/user.form';
 import { BasicResponse } from '../../models/responses/basic.response';
 import { UserResponse } from '../../models/responses/users.response';
 import { RolesResponse } from '../../models/responses/roles.response';
+import { UserRequest } from '../../models/requests/users.request';
 
 
 
@@ -73,7 +73,7 @@ export default function UserEdit() {
     const onSubmit = async (data: UserFormModel) => {
 
         if (id) {
-            const userData: UserRequestPut = {
+            const userData: UserRequest = {
                 id: parseInt(id),
                 firstName: data.firstName,
                 lastName: data.lastName,
