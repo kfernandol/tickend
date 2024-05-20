@@ -23,6 +23,7 @@ import { BasicResponse, ErrorResponse, ErrorsResponse } from '../../models/respo
 import { TicketStatusResponse } from '../../models/responses/ticketStatus.response';
 import { RootState } from '../../redux/store';
 import { AuthToken } from '../../models/tokens/token.model';
+import { Card } from 'primereact/card';
 
 export default function TicketStatus() {
     const toast = useRef<Toast>(null);
@@ -59,6 +60,7 @@ export default function TicketStatus() {
     const TableHeaderColor = t("ticketStatuses.labels.color");
     const TableHeaderActions = t("common.labels.actions");
     const TableNoElements = t("common.table.noElements");
+    const PageName = t("navigation.TicketStatus");
 
     //Links
     const NewItemUrl = paths.newTicketStatus;
@@ -139,27 +141,19 @@ export default function TicketStatus() {
     const TableHeader = (
         <div className="flex flex-wrap justify-content-between align-items-center gap-2 p-2" >
             {/* Table Title */}
-            <span className='text-2xl text-white'>{TableTitle}</span>
+            <span className='text-2xl text-dark'>{TableTitle}</span>
             {/* Filter */}
             <IconField iconPosition="left">
                 <InputIcon className="pi pi-search"> </InputIcon>
                 <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder={GlobalSearch} />
             </IconField>
-            {/* Add new */}
-            {getTokenData?.PermissionLevel === "Administrator" ?
-                <Link to={NewItemUrl}>
-                    <Button icon="pi pi-plus" severity='success'>
-                        <span className='pl-2'>{TableHeaderNew}</span>
-                    </Button>
-                </Link>
-                : null}
         </div>
     );
 
     const ActionsTableTemplate = (rowData: { id: string; }) => {
         const editUrlPath = EditItemUrl.slice(0, EditItemUrl.length - 3);
         return <>
-            <div className='flex gap-2'>
+            <div className='flex justify-content-center gap-2'>
                 <Link to={editUrlPath + rowData.id}>
                     <Button icon="pi pi-pencil" severity='warning' aria-label="Bookmark"></Button>
                 </Link>
@@ -196,11 +190,27 @@ export default function TicketStatus() {
                 :
                 <>
                     <Toast ref={toast} />
-                    <div className="card" style={{ backgroundColor: "#17212f5D" }}>
+                    {/*Title*/}
+                    <div className="flex justify-content-between align-items-center my-4">
+                        <h2 className="my-0">{PageName}</h2>
+                        {/* Add new */}
+                        {getTokenData?.PermissionLevel === "Administrator"
+                            ? <Link to={NewItemUrl}>
+                                <Button icon="pi pi-plus" severity='success'>
+                                    <span className='pl-2'>{TableHeaderNew}</span>
+                                </Button>
+                            </Link>
+                            : null}
+                    </div>
+                    <Card
+                        style={{ height: "calc(100% - 125px)" }}
+                        pt={{
+                            body: { className: "h-full pb-0" },
+                            content: { className: "h-full py-0" },
+                        }}>
                         <DataTable
                             value={TicketStatus}
                             header={TableHeader}
-                            style={{ backgroundColor: "#17212f5D" }}
                             dataKey="id"
                             paginator
                             rows={10}
@@ -208,6 +218,13 @@ export default function TicketStatus() {
                             filters={filters}
                             globalFilterFields={['id', 'name', 'color']}
                             emptyMessage={TableNoElements}
+                            stripedRows
+                            pt={{
+                                root: { className: "h-full flex flex-column" },
+                                header: { className: "bg-white border-0 mb-3" },
+                                wrapper: { className: "h-full" },
+                                column: { headerCell: { className: "bg-yellow-100" } }
+                            }}
                         >
                             <Column style={{ width: '5rem' }} />
                             <Column field="id" header={TableHeaderId} sortable />
@@ -215,7 +232,7 @@ export default function TicketStatus() {
                             <Column field="color" header={TableHeaderColor} sortable />
                             {getTokenData?.PermissionLevel === "Administrator" ? <Column header={TableHeaderActions} body={ActionsTableTemplate} sortable /> : <></>}
                         </DataTable>
-                    </div>
+                    </Card>
                 </>
             }
 
