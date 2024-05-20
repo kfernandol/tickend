@@ -25,7 +25,7 @@ export default function ChangePassword() {
     const { hash } = useParams();
     const [SendRequest, setSendRequest] = useState(false);
     //hooks
-    const { ErrorMessageHtml, control, errors, handleSubmit, getValues } = useCustomForm<ChangePasswordForm>({ password: '', confirmPassword: '' });
+    const { ErrorMessageHtml, control, handleSubmit, getValues } = useCustomForm<ChangePasswordForm>({ password: '', confirmPassword: '' });
     const { SendPutRequest, httpCodePut, loadingPut, putResponse } = usePut<BasicResponse>();
 
     //Translate
