@@ -11,17 +11,18 @@ import { Link } from 'react-router-dom';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
+import { Card } from 'primereact/card';
+import Swal from 'sweetalert2';
+import { Badge } from 'primereact/badge';
 //hooks
 import { useDelete, useGet } from "../../services/api_services";
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import useTokenData from '../../hooks/useTokenData';
+import { RootState } from '../../redux/store';
 //models
 import { BasicResponse, ErrorResponse, ErrorsResponse } from '../../models/responses/basic.response';
-import { Badge } from 'primereact/badge';
 import { TicketTypeResponse } from '../../models/responses/ticketType.response';
-import Swal from 'sweetalert2';
-import { RootState } from '../../redux/store';
 import { AuthToken } from '../../models/tokens/token.model';
 
 export default function TicketTypes() {
@@ -36,7 +37,7 @@ export default function TicketTypes() {
     });
     //Api Request
     const { SendDeleteRequest, deleteResponse, errorDelete, httpCodeDelete } = useDelete<BasicResponse>();
-    const { SendGetRequest, getResponse, loadingGet } = useGet<TicketTypeResponse[]>();
+    const { SendGetRequest, loadingGet } = useGet<TicketTypeResponse[]>();
     const [TicketTypes, setTicketTypes] = useState<{
         id: number,
         name: string,
@@ -60,6 +61,7 @@ export default function TicketTypes() {
     const TableHeaderIconColor = t("ticketTypes.labels.iconColor");
     const TableHeaderActions = t("common.labels.actions");
     const TableNoElements = t("common.table.noElements");
+    const PageName = t("navigation.TicketTypes");
 
     //Links
     const NewItemUrl = paths.newTicketType;
@@ -143,27 +145,19 @@ export default function TicketTypes() {
     const TableHeader = (
         <div className="flex flex-wrap justify-content-between align-items-center gap-2 p-2" >
             {/* Table Title */}
-            <span className='text-2xl text-white'>{TableTitle}</span>
+            <span className='text-xl text-black'>{TableTitle}</span>
             {/* Filter */}
             <IconField iconPosition="left">
                 <InputIcon className="pi pi-search"> </InputIcon>
                 <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder={GlobalSearch} />
             </IconField>
-            {/* Add new */}
-            {getTokenData?.PermissionLevel === "Administrator" ?
-                <Link to={NewItemUrl}>
-                    <Button icon="pi pi-plus" severity='success'>
-                        <span className='pl-2'>{TableHeaderNew}</span>
-                    </Button>
-                </Link>
-                : null}
         </div>
     );
 
     const ActionsTableTemplate = (rowData: { id: string; }) => {
         const editUrlPath = EditItemUrl.slice(0, EditItemUrl.length - 3);
         return <>
-            <div className='flex gap-2'>
+            <div className='flex justify-content-center gap-2'>
                 <Link to={editUrlPath + rowData.id}>
                     <Button icon="pi pi-pencil" severity='warning' aria-label="Bookmark"></Button>
                 </Link>
@@ -200,11 +194,27 @@ export default function TicketTypes() {
                 :
                 <>
                     <Toast ref={toast} />
-                    <div className="card" style={{ backgroundColor: "#17212f5D" }}>
+                    {/*Title*/}
+                    <div className="flex justify-content-between align-items-center my-4">
+                        <h2 className="my-0">{PageName}</h2>
+                        {/* Add new */}
+                        {getTokenData?.PermissionLevel === "Administrator"
+                            ? <Link to={NewItemUrl}>
+                                <Button icon="pi pi-plus" severity='success'>
+                                    <span className='pl-2'>{TableHeaderNew}</span>
+                                </Button>
+                            </Link>
+                            : null}
+                    </div>
+                    <Card
+                        style={{ height: "calc(100% - 125px)" }}
+                        pt={{
+                            body: { className: "h-full pb-0" },
+                            content: { className: "h-full py-0" },
+                        }}>
                         <DataTable
                             value={TicketTypes}
                             header={TableHeader}
-                            style={{ backgroundColor: "#17212f5D" }}
                             dataKey="id"
                             paginator
                             rows={10}
@@ -212,6 +222,13 @@ export default function TicketTypes() {
                             filters={filters}
                             globalFilterFields={['id', 'name', 'icon', 'iconColor']}
                             emptyMessage={TableNoElements}
+                            stripedRows
+                            pt={{
+                                root: { className: "h-full flex flex-column" },
+                                header: { className: "bg-white border-0 mb-3" },
+                                wrapper: { className: "h-full" },
+                                column: { headerCell: { className: "bg-yellow-100" } }
+                            }}
                         >
                             <Column style={{ width: '5rem' }} />
                             <Column field="id" header={TableHeaderId} sortable />
@@ -220,7 +237,7 @@ export default function TicketTypes() {
                             <Column field="iconColor" header={TableHeaderIconColor} sortable />
                             {getTokenData?.PermissionLevel === "Administrator" ? <Column header={TableHeaderActions} body={ActionsTableTemplate} sortable /> : <></>}
                         </DataTable>
-                    </div>
+                    </Card>
                 </>
             }
 

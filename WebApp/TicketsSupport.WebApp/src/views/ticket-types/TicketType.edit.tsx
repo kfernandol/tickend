@@ -30,11 +30,11 @@ export default function TicketTypeEdit() {
     const [IconColor, setIconColor] = useState<string>('');
     //Request API
     const { SendPutRequest, putResponse, loadingPut, errorPut, httpCodePut } = usePut<BasicResponse>();
-    const { SendGetRequest, getResponse } = useGet<TicketTypeResponse>();
+    const { SendGetRequest } = useGet<TicketTypeResponse>();
 
     //Translation
     const { t } = useTranslation();
-    const CardTitle = t("common.cardTitles.edit", { 0: t("navigation.TicketTypes") });
+    const CardTitle = t("common.cardTitles.edit", { 0: t("element.ticketTypes") });
     const CardSubTitle = t("common.cardSubTitles.edit");
     const ErrorRequired = t('errors.required');
     const ErrorMaxCaracter = t('errors.maxLength');
@@ -50,18 +50,23 @@ export default function TicketTypeEdit() {
 
     //Request data
     useEffect(() => {
-        SendGetRequest("/v1/ticket/types/" + id);
-    }, [])
+        const requests = [
+            SendGetRequest("/v1/ticket/types/" + id)
+        ];
 
-    //Process response
-    useEffect(() => {
-        if (getResponse) {
-            const response = getResponse as TicketTypeResponse;
-            setValue("name", response.name);
-            setValue("icon", response.icon);
-            setValue("iconColor", response.iconColor);
-        }
-    }, [getResponse])
+        requests.forEach((request) => {
+            Promise.resolve(request)
+                .then((response) => {
+                    switch (response.url) {
+                        case "/v1/ticket/types/" + id:
+                            setValue("name", (response.data as TicketTypeResponse).name)
+                            setValue("icon", (response.data as TicketTypeResponse).icon)
+                            setValue("iconColor", (response.data as TicketTypeResponse).iconColor)
+                            break;
+                    }
+                })
+        })
+    }, [])
 
     //Save New Rol
     useEffect(() => {
@@ -106,9 +111,16 @@ export default function TicketTypeEdit() {
     return (
         <>
             <Toast ref={toast} />
-            <Card title={CardTitle} subTitle={CardSubTitle}>
+            <Card
+                title={CardTitle}
+                subTitle={CardSubTitle} pt={{
+                    root: { className: "my-5 px-4 pt-3" },
+                    title: { className: "mt-3" },
+                    subTitle: { className: "mb-1" },
+                    body: { className: "pb-0 pt-1" },
+                    content: { className: "pt-0" }
+                }}>
                 <form className='mt-5 grid gap-2"' onSubmit={handleSubmit(onSubmit)}>
-
                     {/* Name Input */}
                     <div className='col-12 sm: col-6'>
                         <Controller
@@ -129,18 +141,19 @@ export default function TicketTypeEdit() {
                                 }}
                             render={({ field, fieldState }) => (
                                 <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.name })}></label>
-                                    <span className="p-float-label">
-                                        <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
-                                        <label htmlFor={field.name}>{CardFormName}</label>
-                                    </span>
+                                    <label className="align-self-start block mb-1">{CardFormName}</label>
+                                    <InputText
+                                        id={field.name}
+                                        value={field.value}
+                                        type='text'
+                                        className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"}
+                                        onChange={(e) => field.onChange(e.target.value)} />
                                     {ErrorMessageHtml(field.name)}
                                 </>
                             )}
                         />
                     </div>
 
-                    {/* Icon Input */}
                     <div className='col-12 sm: col-6'>
                         <Controller
                             name="icon"
@@ -163,10 +176,12 @@ export default function TicketTypeEdit() {
                                     <label htmlFor={field.name} className={classNames({ 'p-error': errors.name })}></label>
                                     <div className='grid'>
                                         <div className='col'>
-                                            <span className="p-float-label">
-                                                <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => { field.onChange(e.target.value); setFilterIcon(e.target.value) }} />
-                                                <label htmlFor={field.name}>{CardFormIcon}</label>
-                                            </span>
+                                            <label className="align-self-start block mb-1">{CardFormIcon}</label>
+                                            <InputText
+                                                id={field.name}
+                                                value={field.value}
+                                                type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"}
+                                                onChange={(e) => { field.onChange(e.target.value); setFilterIcon(e.target.value) }} />
                                         </div>
                                         <div className='col-1 flex justify-content-center align-items-center'>
                                             <i className={field.value} style={{ fontSize: '24px', color: IconColor }}></i>
@@ -215,10 +230,13 @@ export default function TicketTypeEdit() {
                                         </div>
 
                                         <div className='col'>
-                                            <span className="p-float-label">
-                                                <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => { field.onChange(e.target.value); setIconColor(e.target.value) }} />
-                                                <label htmlFor={field.name}>{CardFormIconColor}</label>
-                                            </span>
+                                            <label className="align-self-start block mb-1">{CardFormIconColor}</label>
+                                            <InputText
+                                                id={field.name}
+                                                value={field.value}
+                                                type='text'
+                                                className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"}
+                                                onChange={(e) => { field.onChange(e.target.value); setIconColor(e.target.value) }} />
                                         </div>
                                     </div>
 
@@ -232,7 +250,7 @@ export default function TicketTypeEdit() {
                         <div className='flex justify-content-center align-items-center'>
                             <Button label={CardButtonSave} severity="success" className='mr-3' type='submit' loading={loadingPut} />
                             <Link to={returnToTable}>
-                                <Button label={CardButtonCancel} severity="secondary" type='button' />
+                                <Button label={CardButtonCancel} severity="secondary" type='button' outlined />
                             </Link>
                         </div>
                     </div>

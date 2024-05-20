@@ -31,8 +31,8 @@ export default function TicketTypeNew() {
 
     //Translation
     const { t } = useTranslation();
-    const CardTitle = t("common.cardTitles.new", { 0: t("navigation.TicketTypes") });
-    const CardSubTitle = t("common.cardSubTitles.new", { 0: t("navigation.TicketTypes") });
+    const CardTitle = t("common.cardTitles.new", { 0: t("element.ticketTypes") });
+    const CardSubTitle = t("common.cardSubTitles.new", { 0: t("element.ticketTypes").toLowerCase() });
     const ErrorRequired = t('errors.required');
     const ErrorMaxCaracter = t('errors.maxLength');
     const ErrorMinCaracter = t('errors.minLength');
@@ -88,9 +88,16 @@ export default function TicketTypeNew() {
     return (
         <>
             <Toast ref={toast} />
-            <Card title={CardTitle} subTitle={CardSubTitle}>
+            <Card
+                title={CardTitle}
+                subTitle={CardSubTitle} pt={{
+                    root: { className: "my-5 px-4 pt-3" },
+                    title: { className: "mt-3" },
+                    subTitle: { className: "mb-1" },
+                    body: { className: "pb-0 pt-1" },
+                    content: { className: "pt-0" }
+                }}>
                 <form className='mt-5 grid gap-2"' onSubmit={handleSubmit(onSubmit)}>
-
                     {/* Name Input */}
                     <div className='col-12 sm: col-6'>
                         <Controller
@@ -111,11 +118,13 @@ export default function TicketTypeNew() {
                                 }}
                             render={({ field, fieldState }) => (
                                 <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.name })}></label>
-                                    <span className="p-float-label">
-                                        <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
-                                        <label htmlFor={field.name}>{CardFormName}</label>
-                                    </span>
+                                    <label className="align-self-start block mb-1">{CardFormName}</label>
+                                    <InputText
+                                        id={field.name}
+                                        value={field.value}
+                                        type='text'
+                                        className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"}
+                                        onChange={(e) => field.onChange(e.target.value)} />
                                     {ErrorMessageHtml(field.name)}
                                 </>
                             )}
@@ -144,10 +153,12 @@ export default function TicketTypeNew() {
                                     <label htmlFor={field.name} className={classNames({ 'p-error': errors.name })}></label>
                                     <div className='grid'>
                                         <div className='col'>
-                                            <span className="p-float-label">
-                                                <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => { field.onChange(e.target.value); setFilterIcon(e.target.value) }} />
-                                                <label htmlFor={field.name}>{CardFormIcon}</label>
-                                            </span>
+                                            <label className="align-self-start block mb-1">{CardFormIcon}</label>
+                                            <InputText
+                                                id={field.name}
+                                                value={field.value}
+                                                type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"}
+                                                onChange={(e) => { field.onChange(e.target.value); setFilterIcon(e.target.value) }} />
                                         </div>
                                         <div className='col-1 flex justify-content-center align-items-center'>
                                             <i className={field.value} style={{ fontSize: '24px', color: IconColor }}></i>
@@ -196,10 +207,13 @@ export default function TicketTypeNew() {
                                         </div>
 
                                         <div className='col'>
-                                            <span className="p-float-label">
-                                                <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => { field.onChange(e.target.value); setIconColor(e.target.value) }} />
-                                                <label htmlFor={field.name}>{CardFormIconColor}</label>
-                                            </span>
+                                            <label className="align-self-start block mb-1">{CardFormIconColor}</label>
+                                            <InputText
+                                                id={field.name}
+                                                value={field.value}
+                                                type='text'
+                                                className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"}
+                                                onChange={(e) => { field.onChange(e.target.value); setIconColor(e.target.value) }} />
                                         </div>
                                     </div>
 
@@ -213,7 +227,7 @@ export default function TicketTypeNew() {
                         <div className='flex justify-content-center align-items-center'>
                             <Button label={CardButtonSave} severity="success" className='mr-3' type='submit' loading={loadingPost} />
                             <Link to={returnToTable}>
-                                <Button label={CardButtonCancel} severity="secondary" type='button' />
+                                <Button label={CardButtonCancel} severity="secondary" type='button' outlined />
                             </Link>
                         </div>
                     </div>
