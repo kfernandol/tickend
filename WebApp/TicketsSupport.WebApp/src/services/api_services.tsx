@@ -12,6 +12,10 @@ import { AuthToken } from "../models/tokens/token.model";
 import { RefreshTokenRequest } from "../models/requests/refreshToken.request";
 import { ErrorResponse, ErrorsDetail, ErrorsResponse } from "../models/responses/basic.response";
 
+const RefreshToken = {
+    isRefreshing: false
+};
+
 const useApiClient = () => {
     const authenticated = useSelector((state: RootState) => state.auth);
     const language = useSelector((state: RootState) => state.language);
@@ -35,7 +39,7 @@ const useApiClient = () => {
     apiClient.interceptors.response.use((response) => response, async (error) => {
 
         const originalRequest = error.config;
-        if (error.response.status === 401 && !originalRequest._retry) {
+        if (error.response.status === 401 && !originalRequest._retry && !RefreshToken.isRefreshing) {
             try {
                 originalRequest._retry = true;
 
@@ -57,6 +61,7 @@ const useApiClient = () => {
                 dispatch(logout());
             }
 
+            RefreshToken.isRefreshing = false;
         }
         else {
             return Promise.reject(error);
@@ -201,11 +206,11 @@ function usePost<T>() {
         setLoadingPost(true);
         setErrorPost(undefined); // Resetea el error antes de cada solicitud
 
-        apiClient.post(url, dataSend, config)
-
+        return apiClient.post(url, dataSend, config)
             .then((response) => {
                 setPostResponse(response.data);
                 setHttpCodePost(response.status);
+                return { data: response.data, url: url }
             })
             .catch((error: unknown) => {
                 if (axios.isAxiosError(error)) {
@@ -243,6 +248,7 @@ function usePost<T>() {
                         setErrorPost(errorResponse);
                     }
                 }
+                return Promise.reject(error);
             })
             .finally(() => {
                 setLoadingPost(false);
@@ -322,7 +328,7 @@ function useDelete<T>() {
     const [errorDelete, setErrorDelete] = useState<ErrorResponse | ErrorsResponse | null>();
     const [httpCodeDelete, setHttpDeleteCode] = useState(0);
 
-    function SendDeleteRequest (url: string, config?: AxiosRequestConfig) {
+    function SendDeleteRequest(url: string, config?: AxiosRequestConfig) {
         setLoadingDelete(true);
         setErrorDelete(undefined);
 

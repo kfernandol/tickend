@@ -1,22 +1,30 @@
 import { useEffect, useRef, useState } from 'react'
 import { paths } from '../../routes/paths';
 //Components
-import { ProgressSpinner } from 'primereact/progressspinner';
 import { Toast } from 'primereact/toast';
-import { DataTable } from 'primereact/datatable';
-import { Column, ColumnFilterElementTemplateOptions } from 'primereact/column';
-import { Calendar } from 'primereact/calendar';
-import { MultiSelect } from 'primereact/multiselect';
 import { Button } from 'primereact/button';
-import { FilterMatchMode } from 'primereact/api';
 import { Badge } from 'primereact/badge';
 import { Tooltip } from 'primereact/tooltip';
+import { Editor } from 'primereact/editor';
+import { Chip } from 'primereact/chip';
+import { Controller } from 'react-hook-form';
+import { Dropdown } from 'primereact/dropdown';
+import { classNames } from 'primereact/utils';
+import { Card } from 'primereact/card';
+import { ScrollPanel } from 'primereact/scrollpanel';
+import { InputText } from 'primereact/inputtext';
+import { InputIcon } from 'primereact/inputicon';
+import { IconField } from 'primereact/iconfield';
+import { Avatar } from 'primereact/avatar';
+import { Divider } from 'primereact/divider';
+import { InputSwitch } from 'primereact/inputswitch';
 //Hooks
-import { useGet } from '../../services/api_services';
+import { useGet, usePost, usePut } from '../../services/api_services';
 import { useTranslation } from 'react-i18next';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import useTokenData from '../../hooks/useTokenData';
+import useCustomForm from '../../hooks/useCustomForm';
 //Models
 import { MenusResponse } from '../../models/responses/menus.response';
 import { ProjectResponse } from '../../models/responses/project.response';
@@ -26,39 +34,61 @@ import { TicketPriorityResponse } from '../../models/responses/ticketPriority.re
 import { TicketResponse } from '../../models/responses/ticket.response';
 import { RootState } from '../../redux/store';
 import { AuthToken } from '../../models/tokens/token.model';
+import { UserResponse } from '../../models/responses/users.response';
+import { TicketForm } from '../../models/forms/ticket.form';
+import { BasicResponse } from '../../models/responses/basic.response';
+import { TicketRequest } from '../../models/requests/ticket.request';
 
 export default function Tickets() {
+    const { id } = useParams();
     const [Tickets, setTickets] = useState<TicketResponse[]>([]);
     const [Projects, setProjects] = useState<ProjectResponse[]>([]);
     const [TicketPriorities, setTicketPriorities] = useState<TicketPriorityResponse[]>([]);
     const [TicketStatus, setTicketStatus] = useState<TicketStatusResponse[]>([]);
     const [TicketType, setTicketType] = useState<TicketTypeResponse[]>([]);
-
+    const [Users, setUsers] = useState<UserResponse[]>([]);
+    const [TicketSelected, setTicketSelected] = useState<TicketResponse>();
+    const [TicketReplySelected, setTicketReplySelected] = useState<TicketResponse[]>();
+    const [TicketReplyDesc, setTicketReplyDesc] = useState<string>();
+    //Form
+    const { control, ErrorMessageHtml, errors, reset, setValue, getValues } = useCustomForm<TicketForm>({ Title: '', Description: '', Priority: null, Project: null, Status: null, Type: null, });
     //Redux
     const authenticated = useSelector((state: RootState) => state.auth);
     const language = useSelector((state: RootState) => state.language);
     const getTokenData = useTokenData<AuthToken>(authenticated?.token);
     //Hooks
     const toast = useRef<Toast>(null);
-    const { SendGetRequest, loadingGet } = useGet<MenusResponse[] | TicketResponse[]>();
-    const navigate = useNavigate();
+    const { SendGetRequest } = useGet<MenusResponse[] | TicketResponse[]>();
+    const { SendPutRequest, putResponse, loadingPut, errorPut, httpCodePut } = usePut<BasicResponse>();
+    const { SendPostRequest, postResponse, loadingPost, errorPost, httpCodePost } = usePost<BasicResponse>();
     //Translate
     const { t } = useTranslation();
-    const TableTitle = t('tickets.tableTitle');
     const TableHeaderNew = t('tickets.labels.new');
-    const title = t('tickets.labels.title');
-    const project = t('tickets.labels.project');
-    const priority = t('tickets.labels.priority');
-    const type = t('tickets.labels.type');
-    const status = t('tickets.labels.status');
     const dateCreated = t('tickets.labels.dateCreated');
     const dateUpdated = t('tickets.labels.dateUpdated');
     const statusOpen = t('tickets.status.open');
     const statusClosed = t('tickets.status.closed');
-    const TableNoElements = t("common.table.noElements");
+    const PageName = t("navigation.Tickets");
+    const ErrorRequired = t('errors.required');
+    const CardTitle = t("common.cardTitles.new", { 0: t("element.ticket") });
+    const CardButtonUpdated = t('buttons.updated');
+    const CardFormProject = t("tickets.labels.project");
+    const CardFormType = t("tickets.labels.type");
+    const CardFormPriority = t("tickets.labels.priority");
+    const CardFormStatus = t("tickets.labels.status");
+    const CardFormClosed = t("tickets.labels.closed");
+    const replyTxt = t("tickets.labels.reply");
+    const detailsTxt = t("tickets.labels.details");
+    const createByTxt = t("tickets.labels.createdBy")
+    const emailTxt = t("users.labels.email");
+    const phoneTxt = t("users.labels.phone");
+    const deviceInfoTxt = t("tickets.labels.deviceInfo");
+    const browserTxt = t("tickets.labels.browser");
+    const optionsTxt = t("tickets.labels.options");
+    const replyTitleTxt = t("tickets.labels.replyTitle");
+
     //Links
     const NewItemUrl = paths.newTicket;
-    const EditItemUrl = paths.editTicketWithId;
 
     //Send Request
     useEffect(() => {
@@ -68,6 +98,8 @@ export default function Tickets() {
             SendGetRequest("v1/ticket/priorities"),
             SendGetRequest("v1/ticket/status"),
             SendGetRequest("v1/ticket/types"),
+            SendGetRequest("v1/ticket/types"),
+            SendGetRequest("v1/users"),
         ];
 
         Promise.all(requests)
@@ -87,7 +119,14 @@ export default function Tickets() {
                                     dateCreated: new Date(value.dateCreated),
                                     dateUpdated: new Date(value.dateUpdated),
                                     createBy: value.createBy,
-                                    isClosed: value.isClosed
+                                    closedBy: value.closedBy,
+                                    isClosed: value.isClosed,
+                                    browser: value.browser,
+                                    ip: value.ip,
+                                    os: value.os,
+                                    dateClosed: new Date(value.dateClosed),
+                                    lastUpdatedBy: value.lastUpdatedBy,
+                                    reply: value.reply
                                 }
                             )));
                             break;
@@ -103,6 +142,9 @@ export default function Tickets() {
                         case "v1/ticket/types":
                             setTicketType(response.data as TicketTypeResponse[]);
                             break;
+                        case "v1/users":
+                            setUsers(response.data as UserResponse[]);
+                            break;
                         default:
                             break;
                     }
@@ -113,62 +155,165 @@ export default function Tickets() {
             });
     }, [])
 
-    //Table Filters
-    const filters = {
-        title: { value: null, matchMode: FilterMatchMode.EQUALS },
-        projectId: { value: null, matchMode: FilterMatchMode.IN },
-        ticketTypeId: { value: null, matchMode: FilterMatchMode.IN },
-        ticketStatusId: { value: null, matchMode: FilterMatchMode.IN },
-        ticketPriorityId: { value: null, matchMode: FilterMatchMode.IN },
-        dateCreated: { value: null, matchMode: FilterMatchMode.DATE_IS },
-        dateUpdated: { value: null, matchMode: FilterMatchMode.DATE_IS },
-    };
+    //Load ticket with id
+    useEffect(() => {
+        if (id) {
+            const idNbr = parseInt(id);
+            const ticketSelected = Tickets.find(x => x.id == idNbr);
+            const ticketCards = document.querySelectorAll('.ticket-card');
 
-    const projectBodyTemplate = (rowData: { projectId: number; }) => {
-        const project = Projects.find(x => x.id === rowData.projectId);
-        return (
-            <>
-                <div className="flex align-items-center gap-2">
-                    {project?.photo !== "" && project?.photo !== null ?
-                        <img alt={project?.name} src={`data:image/*;base64,${project?.photo}`} width="32" />
-                        :
-                        <img alt={project?.name} src={`/src/assets/imgs/project-default.png`} width="32" />}
+            if (ticketSelected) {
+                const ticketCard = Array.from(ticketCards).find(card => {
+                    const paragraphs = card.querySelectorAll('p');
+                    return Array.from(paragraphs).some(p => p.textContent?.trim() === `#${ticketSelected.id}`);
+                });
 
-                    <span>{project?.name}</span>
-                </div>
-            </>
-        );
-    };
+                if (ticketCard)
+                    handlerTicketClick(ticketCard, ticketSelected)
+            }
+        }
+    }, [id, Tickets])
 
-    const projectItemTemplate = (option: { name: string, photo: string }) => {
-        return (
-            <>
-                {option.photo !== null && option.photo !== "" ?
-                    (
-                        <div className="flex align-items-center gap-2">
-                            <img alt={option.name} src={`data:image/*;base64,${option.photo}`} width="32" />
-                            <span>{option.name}</span>
-                        </div>
-                    )
-                    :
-                    (
-                        <>
-                            <div className="flex align-items-center gap-2">
-                                <img alt={option.name} src={`/src/assets/imgs/project-default.png`} width="32" />
-                                <span>{option.name}</span>
-                            </div>
-                        </>
-                    )}
+    //Update Ticket Toast
+    useEffect(() => {
+        if (httpCodePut === 200) {
+            const { message } = putResponse as BasicResponse;
+            toast?.current?.show({ severity: 'success', summary: CardTitle, detail: message, life: 3000 });
+            reset();
+            setTimeout(() => SendGetRequest("v1/tickets").then((response) => {
+                setTickets((response.data as TicketResponse[]).map((value) => (
+                    {
+                        id: value.id,
+                        title: value.title,
+                        projectId: value.projectId,
+                        description: value.description,
+                        ticketPriorityId: value.ticketPriorityId,
+                        ticketStatusId: value.ticketStatusId,
+                        ticketTypeId: value.ticketTypeId,
+                        dateCreated: new Date(value.dateCreated),
+                        dateUpdated: new Date(value.dateUpdated),
+                        createBy: value.createBy,
+                        closedBy: value.closedBy,
+                        isClosed: value.isClosed,
+                        browser: value.browser,
+                        ip: value.ip,
+                        os: value.os,
+                        dateClosed: new Date(value.dateClosed),
+                        lastUpdatedBy: value.lastUpdatedBy,
+                        reply: value.reply
+                    }
+                )));
 
-            </>
-        );
-    };
+                const TicketInfoContainer: HTMLDivElement | null = document.querySelector("#ticketInfo");
+                const TicketDataContainer: HTMLDivElement | null = document.querySelector("#ticketData");
+                const TicketsCard: NodeListOf<HTMLDivElement> = document.querySelectorAll(".ticket-card");
 
-    const typeBodyTemplate = (rowData: { ticketTypeId: number }) => {
-        const type = TicketType.find(x => x.id === rowData.ticketTypeId);
+                if (TicketInfoContainer) {
+                    TicketInfoContainer.style.setProperty("display", "none", "important");
+                    TicketInfoContainer.style.setProperty("opacity", "0", "important");
+                }
+
+                if (TicketDataContainer) {
+                    TicketDataContainer.style.setProperty("display", "none", "important");
+                    TicketDataContainer.style.setProperty("opacity", "0", "important");
+                }
+
+                TicketsCard.forEach((card) => {
+                    card.style.setProperty("background-color", "#fff");
+                });
+
+            }), 3000);
+        }
+        if (errorPut && httpCodePut !== 0) {
+            if ('errors' in errorPut) {
+                const errorsHtml = Object.entries(errorPut.errors).map(([_field, errors], index) => (
+                    errors.map((error, errorIndex) => (
+                        <li key={`${index}-${errorIndex}`}>{error}</li>
+                    ))
+                )).flat();
+                toast?.current?.show({ severity: 'error', summary: CardTitle, detail: <ul id='errors-toast' className='pl-0'>{errorsHtml}</ul>, life: 50000 });
+            } else if ('details' in errorPut) {
+                toast?.current?.show({
+                    severity: 'error', summary: CardTitle, detail: errorPut.details, life: 3000
+                });
+            }
+        }
+
+    }, [errorPut, httpCodePut, putResponse])
+
+    //Reply Ticket Toast
+    useEffect(() => {
+        if (httpCodePost === 200) {
+            const { message } = postResponse as BasicResponse;
+            toast?.current?.show({ severity: 'success', summary: replyTitleTxt, detail: message, life: 3000 });
+            reset();
+        }
+        if (errorPost && httpCodePost !== 0) {
+            if ('errors' in errorPost) {
+                const errorsHtml = Object.entries(errorPost.errors).map(([_field, errors], index) => (
+                    errors.map((error, errorIndex) => (
+                        <li key={`${index}-${errorIndex}`}>{error}</li>
+                    ))
+                )).flat();
+                toast?.current?.show({ severity: 'error', summary: CardTitle, detail: <ul id='errors-toast' className='pl-0'>{errorsHtml}</ul>, life: 50000 });
+            } else if ('details' in errorPost) {
+                toast?.current?.show({
+                    severity: 'error', summary: CardTitle, detail: errorPost.details, life: 3000
+                });
+            }
+        }
+
+    }, [errorPost, httpCodePost, postResponse])
+
+    useEffect(() => {
+        const fetchReplies = async () => {
+            const TicketsSelectedReplyIds = Tickets.filter(x => x.reply === TicketSelected?.id).map(x => x.id);
+            const TicketSelectedReply: TicketResponse[] = [];
+
+            // Crear un array de promesas de las solicitudes
+            const promises = TicketsSelectedReplyIds.map(id =>
+                SendGetRequest("v1/tickets/" + id).then(response => {
+                    TicketSelectedReply.push({
+                        id: response.data.id,
+                        title: response.data.title,
+                        projectId: response.data.projectId,
+                        description: response.data.description,
+                        ticketPriorityId: response.data.ticketPriorityId,
+                        ticketStatusId: response.data.ticketStatusId,
+                        ticketTypeId: response.data.ticketTypeId,
+                        dateCreated: new Date(response.data.dateCreated),
+                        dateUpdated: new Date(response.data.dateUpdated),
+                        createBy: response.data.createBy,
+                        closedBy: response.data.closedBy,
+                        isClosed: response.data.isClosed,
+                        browser: response.data.browser,
+                        ip: response.data.ip,
+                        os: response.data.os,
+                        dateClosed: new Date(response.data.dateClosed),
+                        lastUpdatedBy: response.data.lastUpdatedBy,
+                        reply: response.data.reply
+                    });
+                })
+            );
+
+            await Promise.all(promises);
+
+            const sortedReplies = TicketSelectedReply.sort((a, b) => a.id - b.id);
+
+            // Actualizar el estado con la lista ordenada
+            setTicketReplySelected(sortedReplies);
+        };
+
+        fetchReplies();
+    }, [Tickets, TicketSelected]);
+
+
+
+    const GetTicketTypeIcon = (ticketTypeId: number | undefined) => {
+        const type = TicketType.find(x => x.id === ticketTypeId);
         if (type) {
             return <>
-                <i className={type?.icon + " ticketTooltip"} style={{ color: type?.iconColor }} data-pr-tooltip={type?.name} data-pr-position="right" />
+                <i className={type?.icon + " ticketTooltip"} style={{ color: type?.iconColor, fontSize: "1.25rem" }} data-pr-tooltip={type?.name} data-pr-position="right" />
             </>
         } else {
             return <>
@@ -177,9 +322,22 @@ export default function Tickets() {
         }
     };
 
-    const statusBodyTemplate = (rowData: { ticketStatusId: number, id: number }) => {
-        const status = TicketStatus.find(x => x.id === rowData.ticketStatusId);
-        const ticket = Tickets.find(x => x.id === rowData.id);
+    const GetTicketTypeBadge = (ticketTypeId: number | undefined) => {
+        const type = TicketType.find(x => x.id === ticketTypeId);
+        if (type) {
+            return <>
+                <Badge value={type?.name} style={{ backgroundColor: type.iconColor }}></Badge>
+            </>
+        } else {
+            return <>
+                <Badge style={{ backgroundColor: '#bbb' }}></Badge>
+            </>
+        }
+    };
+
+    const GetTicketStatusBadge = (ticketStatusId: number | undefined, ticketId: number | undefined) => {
+        const status = TicketStatus.find(x => x.id === ticketStatusId);
+        const ticket = Tickets.find(x => x.id === ticketId);
         if (ticket?.isClosed === true) {
             return <>
                 <Badge value={statusClosed} style={{ backgroundColor: '#808080' }}></Badge>
@@ -197,8 +355,8 @@ export default function Tickets() {
 
     };
 
-    const priorityBodyTemplate = (rowData: { ticketPriorityId: number }) => {
-        const priority = TicketPriorities.find(x => x.id === rowData.ticketPriorityId);
+    const GetTicketPriorityBadge = (ticketPriorityId: number | undefined) => {
+        const priority = TicketPriorities.find(x => x.id === ticketPriorityId);
         if (priority) {
             return <>
                 <Badge value={priority?.name} style={{ backgroundColor: priority?.color }}></Badge>
@@ -211,206 +369,650 @@ export default function Tickets() {
 
     }
 
-    const statusItemTemplate = (option: { name: string, color: string }) => {
-        return <Badge value={option.name} style={{ backgroundColor: option.color }}></Badge>;
-    };
+    const timeAgo = (date: string | Date) => {
+        if (date instanceof Date) {
+            const now = new Date();
+            const secondsPast = (now.getTime() - date.getTime()) / 1000;
 
-    const priorityItemTemplate = (option: { icon: string, iconColor: string, name: string }) => {
-        return <>
-            <i className={option.icon} style={{ color: option.iconColor }}></i><span className='ml-2'>{option.name}</span>
-        </>;
-    }
-
-    const projectRowFilterTemplate = (options: ColumnFilterElementTemplateOptions) => {
-        return (
-            <MultiSelect
-                value={options.value}
-                options={Projects}
-                itemTemplate={projectItemTemplate}
-                onChange={(e) => options.filterApplyCallback(e.value)}
-                optionLabel="name"
-                optionValue="id"
-                placeholder={project}
-                className="p-column-filter"
-                maxSelectedLabels={1}
-            />
-        );
-    };
-
-    const statusRowFilterTemplate = (options: ColumnFilterElementTemplateOptions) => {
-        return (
-            <MultiSelect
-                value={options.value}
-                options={TicketStatus}
-                itemTemplate={statusItemTemplate}
-                onChange={(e) => options.filterApplyCallback(e.value)}
-                optionLabel="name"
-                optionValue="id"
-                placeholder={status}
-                className="p-column-filter"
-            />
-        );
-    };
-
-    const priorityRowFilterTemplate = (options: ColumnFilterElementTemplateOptions) => {
-        return (
-            <MultiSelect
-                value={options.value}
-                options={TicketPriorities}
-                itemTemplate={statusItemTemplate}
-                onChange={(e) => options.filterApplyCallback(e.value)}
-                optionLabel="name"
-                optionValue="id"
-                placeholder={priority}
-                className="p-column-filter"
-            />
-        );
-    }
-
-    const TypeRowFilterTemplate = (options: ColumnFilterElementTemplateOptions) => {
-        return (
-            <MultiSelect
-                value={options.value}
-                options={TicketType}
-                itemTemplate={priorityItemTemplate}
-                onChange={(e) => options.filterApplyCallback(e.value)}
-                optionLabel="name"
-                optionValue="id"
-                placeholder={type}
-                className="p-column-filter"
-            />
-        );
-    }
-
-    const dateFilterTemplate = (options: ColumnFilterElementTemplateOptions) => {
-        return <Calendar value={options.value} onChange={(e) => options.filterApplyCallback(e.value)} dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" />;
-    };
-
-    const dateBodyTemplate = (options: { dateCreated: string }) => {
-        const date = new Date(options.dateCreated)
-
-        if (date && options.dateCreated) {
-            if (language.code === "en") {
-                return `${date.toLocaleDateString("en-US", { day: '2-digit', month: '2-digit', year: 'numeric' })} ${date.toLocaleTimeString("en-US")}`;
+            if (secondsPast < 60) {
+                return `${Math.floor(secondsPast)} s`;
+            } else if (secondsPast < 3600) {
+                return `${Math.floor(secondsPast / 60)} m`;
+            } else if (secondsPast < 86400) {
+                return `${Math.floor(secondsPast / 3600)} h`;
+            } else if (secondsPast < 2592000) { // 30 días aproximadamente
+                return `${Math.floor(secondsPast / 86400)} d`;
+            } else if (secondsPast < 31536000) { // 12 meses aproximadamente
+                return `${Math.floor(secondsPast / 2592000)} M`;
+            } else {
+                return `${Math.floor(secondsPast / 31536000)} y`;
             }
-            else if (language.code === "es") {
-                return `${date.toLocaleDateString("es-GT", { day: '2-digit', month: '2-digit', year: 'numeric' })} ${date.toLocaleTimeString("es-GT")}`;
+        } else
+            return "";
+
+    }
+
+    const handlerTicketClick = (event: React.MouseEvent<HTMLDivElement> | Element | null, ticket: TicketResponse) => {
+        const TicketInfoContainer: HTMLDivElement | null = document.querySelector("#ticketInfo");
+        const TicketDataContainer: HTMLDivElement | null = document.querySelector("#ticketData");
+        const TicketsCard: NodeListOf<HTMLDivElement> = document.querySelectorAll(".ticket-card");
+
+        if (TicketInfoContainer) {
+            TicketInfoContainer.style.setProperty("display", "flex", "important");
+            TicketInfoContainer.style.setProperty("opacity", "1", "important");
+        }
+
+        if (TicketDataContainer && window.innerWidth > 1400) {
+            TicketDataContainer.style.setProperty("display", "flex", "important");
+            TicketDataContainer.style.setProperty("opacity", "1", "important");
+        }
+
+        const requests = [
+            SendGetRequest("v1/tickets/" + ticket.id)
+        ]
+
+        requests.forEach((request) => {
+            Promise.resolve(request)
+                .then((response) => {
+                    switch (response.url) {
+                        case "v1/tickets/" + ticket.id:
+                            setTicketSelected({
+                                id: (response.data as TicketResponse).id,
+                                title: (response.data as TicketResponse).title,
+                                projectId: (response.data as TicketResponse).projectId,
+                                description: (response.data as TicketResponse).description,
+                                ticketPriorityId: (response.data as TicketResponse).ticketPriorityId,
+                                ticketStatusId: (response.data as TicketResponse).ticketStatusId,
+                                ticketTypeId: (response.data as TicketResponse).ticketTypeId,
+                                dateCreated: new Date((response.data as TicketResponse).dateCreated),
+                                dateUpdated: new Date((response.data as TicketResponse).dateUpdated),
+                                dateClosed: new Date((response.data as TicketResponse).dateClosed),
+                                createBy: (response.data as TicketResponse).createBy,
+                                closedBy: (response.data as TicketResponse).closedBy,
+                                lastUpdatedBy: (response.data as TicketResponse).lastUpdatedBy,
+                                isClosed: (response.data as TicketResponse).isClosed,
+                                ip: (response.data as TicketResponse).ip,
+                                os: (response.data as TicketResponse).os,
+                                browser: (response.data as TicketResponse).browser,
+                                reply: (response.data as TicketResponse).reply
+                            });
+
+                            setValue("Project", (response.data as TicketResponse).projectId);
+                            setValue("Type", (response.data as TicketResponse).ticketTypeId);
+                            setValue("Priority", (response.data as TicketResponse).ticketPriorityId);
+                            setValue("Status", (response.data as TicketResponse).ticketStatusId);
+                            setValue("Closed", (response.data as TicketResponse).isClosed);
+                            break;
+                    }
+                });
+        });
+        //Change background to white
+        TicketsCard.forEach((card) => {
+            card.style.setProperty("background-color", "#fff");
+        });
+
+        //Change background card clicked
+        if (event)
+            if (event instanceof Element) {
+                const element = event as HTMLDivElement;
+                element.style?.setProperty("background-color", "#e7fafd");
             }
+            else
+                event.currentTarget.style.setProperty("background-color", "#e7fafd");
+    }
+
+    const handlerReplyClick = () => {
+        const replyEditor: HTMLDivElement | null = document.querySelector("#ticketReply");
+
+        if (replyEditor)
+            replyEditor.style.setProperty("display", "flex", "important");
+    }
+
+    const handlerReplyCancelClick = () => {
+        const replyEditor: HTMLDivElement | null = document.querySelector("#ticketReply");
+
+        if (replyEditor)
+            replyEditor.style.setProperty("display", "none", "important");
+    }
+
+    const handlerReplySend = async () => {
+        const replyEditor: HTMLDivElement | null = document.querySelector("#ticketReply");
+
+        if (TicketSelected != null && TicketReplyDesc != null) {
+            const ticketPriorityId = getValues("Priority");
+            const ticketStatusId = getValues("Status");
+
+            const TicketRequest: TicketRequest = {
+                title: TicketSelected.title,
+                description: TicketReplyDesc,
+                projectId: TicketSelected.projectId,
+                ticketTypeId: TicketSelected.ticketTypeId,
+                ticketPriorityId: ticketPriorityId != null ? ticketPriorityId : undefined,
+                ticketStatusId: ticketStatusId != null ? ticketStatusId : undefined,
+                reply: TicketSelected?.id,
+                isClosed: false
+            };
+
+            const TicketReplyResponse = await SendPostRequest("v1/tickets/reply", TicketRequest);
+
+
+            if ((TicketReplyResponse.data as BasicResponse).success == true) {
+                //Hide editor
+                if (replyEditor)
+                    replyEditor.style.setProperty("display", "none", "important");
+
+                //Editor text clear
+                setTicketReplyDesc("");
+
+                //Refresh all tickets
+                const tickets = await SendGetRequest("v1/tickets");
+
+                setTickets((tickets.data as TicketResponse[]).map((value) => ({
+                    id: value.id,
+                    title: value.title,
+                    projectId: value.projectId,
+                    description: value.description,
+                    ticketPriorityId: value.ticketPriorityId,
+                    ticketStatusId: value.ticketStatusId,
+                    ticketTypeId: value.ticketTypeId,
+                    dateCreated: new Date(value.dateCreated),
+                    dateUpdated: new Date(value.dateUpdated),
+                    createBy: value.createBy,
+                    closedBy: value.closedBy,
+                    isClosed: value.isClosed,
+                    browser: value.browser,
+                    ip: value.ip,
+                    os: value.os,
+                    dateClosed: new Date(value.dateClosed),
+                    lastUpdatedBy: value.lastUpdatedBy,
+                    reply: value.reply
+                })))
+            }
+
         }
     }
 
-    const TableHeader = () => {
-        return (
-            <div className="flex flex-wrap justify-content-between align-items-center gap-2 p-2" >
-                {/* Table Title */}
-                <span className='text-2xl text-white'>{TableTitle}</span>
-                {/* Add new */}
-                {getTokenData?.PermissionLevel === "Administrator" || getTokenData?.PermissionLevel === "User" ?
-                    <Link to={NewItemUrl}>
-                        <Button icon="pi pi-plus" severity='success'>
-                            <span className='pl-2'>{TableHeaderNew}</span>
-                        </Button>
-                    </Link>
-                    : null}
-            </div>
-        )
+    const handlerUpdatedValuesClick = () => {
+
+        const ticketTypeId = getValues("Type");
+        const projectId = getValues("Project");
+        const ticketPriorityId = getValues("Priority");
+        const ticketStatusId = getValues("Status");
+
+        const TicketRequest: TicketRequest = {
+            title: getValues("Title"),
+            description: getValues("Description"),
+            projectId: projectId ? projectId : 0,
+            ticketTypeId: ticketTypeId ? ticketTypeId : 0,
+            ticketPriorityId: ticketPriorityId ? ticketPriorityId : undefined,
+            ticketStatusId: ticketStatusId ? ticketStatusId : undefined,
+            isClosed: getValues("Closed")
+        };
+
+        SendPutRequest("v1/tickets/" + TicketSelected?.id, TicketRequest)
     }
 
-    const handleSelectionChange = (e: { value: { id: number } }) => {
-        const url = EditItemUrl.slice(0, EditItemUrl.length - 3) + e.value.id;
-        navigate(url, { replace: true });
-    };
+    const handlerClosedTicketInfoMobile = () => {
+        const ticketInfo: HTMLDivElement | null = document.querySelector("#ticketInfo");
+
+        if (ticketInfo)
+            ticketInfo.style.setProperty("display", "none", "important")
+    }
+
+    const handlerClosedTicketDataMobile = () => {
+        const ticketData: HTMLDivElement | null = document.querySelector("#ticketData");
+
+        if (ticketData)
+            ticketData.style.setProperty("display", "none", "important")
+    }
+
+    const handlerShowTicketOptionsMobile = () => {
+        const ticketData: HTMLDivElement | null = document.querySelector("#ticketData");
+
+        if (ticketData)
+            ticketData.style.setProperty("display", "flex", "important")
+    }
 
     return (
         <>
-            {loadingGet
-                ?
-                <div className='flex h-full w-full justify-content-center align-items-center'>
-                    <ProgressSpinner />
-                </div>
-                :
-                <>
-                    <Toast ref={toast} />
-                    <Tooltip target=".ticketTooltip" />
-                    <div className="card" style={{ backgroundColor: "#17212f5D" }}>
-                        <DataTable value={Tickets}
-                            paginator
-                            rows={10}
-                            dataKey="id"
-                            filters={filters}
-                            filterDisplay="row"
-                            header={TableHeader}
-                            loading={loadingGet}
-                            emptyMessage={TableNoElements}
-                            selectionMode="single"
-                            onSelectionChange={(e) => handleSelectionChange(e)}>
-                            <Column
-                                field="title"
-                                header={title}
-                                filter
-                                filterPlaceholder={title}
-                                showFilterMenu={false}
-                                style={{ minWidth: '18rem', maxWidth: '350px', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }} />
-                            <Column
-                                field="projectId"
-                                header={project}
-                                showFilterMenu={false}
-                                filterMenuStyle={{ width: '11rem' }}
-                                style={{ maxWidth: '11rem' }}
-                                body={projectBodyTemplate}
-                                filter
-                                filterElement={projectRowFilterTemplate} />
-                            <Column
-                                field="ticketTypeId"
-                                header={type}
-                                showFilterMenu={false}
-                                filterMenuStyle={{ width: '5rem' }}
-                                style={{ maxWidth: '11rem' }}
-                                body={typeBodyTemplate}
-                                filter
-                                filterElement={TypeRowFilterTemplate} />
-                            <Column
-                                field="ticketPriorityId"
-                                header={priority}
-                                showFilterMenu={false}
-                                filterMenuStyle={{ width: '5rem' }}
-                                style={{ maxWidth: '11rem' }}
-                                body={priorityBodyTemplate}
-                                filter
-                                filterElement={priorityRowFilterTemplate} />
-                            <Column
-                                field="ticketStatusId"
-                                header={status}
-                                showFilterMenu={false}
-                                filterMenuStyle={{ width: '5rem' }}
-                                style={{ maxWidth: '11rem' }}
-                                body={statusBodyTemplate}
-                                filter
-                                filterElement={statusRowFilterTemplate} />
-                            <Column
-                                field="dateCreated"
-                                dataType="date"
-                                header={dateCreated}
-                                showFilterMenu={false}
-                                filterMenuStyle={{ width: '14rem' }}
-                                style={{ maxWidth: '11rem' }}
-                                body={dateBodyTemplate}
-                                filter
-                                filterElement={dateFilterTemplate} />
-                            <Column
-                                field="dateUpdated"
-                                dataType="date"
-                                header={dateUpdated}
-                                showFilterMenu={false}
-                                filterMenuStyle={{ width: '14rem' }}
-                                style={{ maxWidth: '11rem' }}
-                                body={dateBodyTemplate}
-                                filter
-                                filterElement={dateFilterTemplate} />
-                        </DataTable>
+            <>
+                <Toast ref={toast} />
+                <Tooltip target=".ticketTooltip" />
+                <div
+                    className="grid mt-2"
+                    style={{ height: "calc(100dvh - 80px)" }}>
+                    <div className="col-12 xl:col-3 h-full">
+                        <Card
+                            pt={{
+                                root: { className: "h-full" },
+                                body: { className: "h-full pt-0" },
+                                content: { className: "h-full" },
+                            }}>
+                            <div className="flex justify-content-between mb-4">
+                                <h2 className="my-0">{PageName}</h2>
+                                {getTokenData?.PermissionLevel === "Administrator" || getTokenData?.PermissionLevel === "User"
+                                    ? <Link to={NewItemUrl}>
+                                        <Button icon="pi pi-plus" severity='success' size={'small'}>
+                                            <span className='pl-2'>{TableHeaderNew}</span>
+                                        </Button>
+                                    </Link>
+                                    : null}
+                            </div>
+                            <div className="flex mb-3 w-full">
+                                <div className="w-10">
+                                    <IconField iconPosition="left">
+                                        <InputIcon className="pi pi-search"> </InputIcon>
+                                        <InputText className="w-full" />
+                                    </IconField>
+                                </div>
+                                <div className="w-2 flex justify-content-end">
+                                    <Button icon="pi pi-filter" outlined aria-label="Filter" />
+                                </div>
+                            </div>
+                            {/*Tickets Scroll*/}
+                            <ScrollPanel style={{ width: '100%', height: 'calc(100% - 100px)' }}>
+                                <div className="flex flex-column gap-2 pb-5">
+                                    {Tickets.filter(x => x.reply == null).map((ticket, index) => {
+                                        return <div
+                                            key={`${ticket.title}${index}`}>
+                                            <Card
+                                                className="ticket-card border-1 border-gray-300"
+                                                pt={{
+                                                    root: {
+                                                        className: "hover:shadow-4 hover:cursor-pointer transition-duration-200",
+                                                        style: { cursor: "pointer" }
+                                                    },
+                                                    body: { className: "py-1" },
+                                                    content: { className: "py-2" }
+                                                }}
+                                                onClick={(e) => handlerTicketClick(e, ticket)}>
+                                                <div className="grid">
+                                                    <div className="col-2 flex align-items-center  px-0">
+                                                        <Avatar image={Projects.find(x => x.id == ticket.projectId)?.photo} size={'large'}></Avatar>
+                                                    </div>
+                                                    <div className="col-7 flex flex-column justify-content-center px-0">
+                                                        <p className="text-lg font-semibold m-0">{Projects.find(x => x.id == ticket.projectId)?.name}</p>
+                                                        <p className="text-sm text-gray-400 font-semibold m-0">{`#${ticket.id}`}</p>
+                                                    </div>
+                                                    <div className="col-3 flex align-items-center justify-content-center">
+                                                        <p className="m-0">{timeAgo(ticket.dateCreated)}</p>
+                                                    </div>
+                                                    <div className="col-12 pb-2 pt-1 px-0">
+                                                        <p className="white-space-nowrap overflow-hidden text-overflow-ellipsis py-0 my-0">{ticket.title}</p>
+                                                    </div>
+                                                    <div className="col-12 flex align-items-center justify-content-center py-0 gap-4">
+                                                        {GetTicketTypeIcon(ticket.ticketTypeId)}
+                                                        {GetTicketStatusBadge(ticket.ticketStatusId, ticket.id)}
+                                                        {GetTicketPriorityBadge(ticket.ticketPriorityId)}
+                                                    </div>
+
+                                                </div>
+                                            </Card>
+                                        </div>
+                                    })}
+
+                                </div>
+                            </ScrollPanel>
+                        </Card>
                     </div>
-                </>
-            }
+                    {/*Ticket Info*/}
+                    <div
+                        id="ticketInfo"
+                        style={{ height: 'calc(100dvh - 80px)' }}
+                        className="col-12 absolute z-1 right-0 top-0 h-full hidden opacity-0 xl:relative  xl:col-6 transition-duration-300">
+                        <Card
+                            pt={{
+                                root: { className: "h-full w-full relative" },
+                                body: { className: "h-full py-0" },
+                                title: { className: "font-semibold" },
+                                content: { className: "h-full pt-2 pb-0 px-2" },
+                            }}>
+                            {/*Header*/}
+                            <div className="flex flex-column justify-content-center gap-2 relative">
+                                {/*Title*/}
+                                <p className="text-xl font-semibold my-0 pt-2">{TicketSelected?.title}</p>
+
+                                {/*Reply Btn*/}
+                                <div className="flex justify-content-between mt-2">
+                                    <Button icon="pi pi-reply" label={replyTxt} text raised severity="info" size={"small"} onClick={() => handlerReplyClick()} />
+                                    <div className="flex align-items-center gap-3">
+                                        {GetTicketTypeBadge(TicketSelected?.ticketTypeId)}
+                                        {GetTicketStatusBadge(TicketSelected?.ticketStatusId, TicketSelected?.id)}
+                                        {GetTicketPriorityBadge(TicketSelected?.ticketPriorityId)}
+                                    </div>
+                                </div>
+                                <Divider className="my-2" />
+                            </div>
+                            {/*Ticket*/}
+                            <ScrollPanel className="w-full" style={{ height: 'calc(100% - 135px)' }}>
+                                <div className="flex gap-2 my-2">
+                                    {/*Avatar */}
+                                    <div className="flex align-items-center">
+                                        <Avatar image={Users.find(x => x.id == TicketSelected?.createBy)?.photo} size="large"></Avatar>
+                                    </div>
+                                    {/*User and Date*/}
+                                    <div className="flex flex-column justify-content-center">
+                                        <p className="text-xl my-0">{`${Users.find(x => x.id == TicketSelected?.createBy)?.firstName} ${Users.find(x => x.id == TicketSelected?.createBy)?.lastName}`}</p>
+                                        <p className="text-xs my-0">{TicketSelected?.dateCreated.toLocaleString(language.code, {
+                                            day: 'numeric',
+                                            month: 'long',
+                                            hour: 'numeric',
+                                            minute: 'numeric',
+                                            hour12: true,
+                                        })
+                                        }</p>
+                                    </div>
+                                </div>
+                                {/*Description*/}
+                                <div className="grid mx-0 px-0">
+                                    <div className="col-12">
+                                        <Editor
+                                            value={TicketSelected?.description}
+                                            readOnly
+                                            className="w-full"
+                                            showHeader={false}
+                                            pt={{ content: { className: "border-0" } }} />
+                                    </div>
+                                </div>
+                                {TicketReplySelected?.map((ticket, index) => {
+                                    return <div key={`${ticket.id}${index}`}>
+                                        <Divider />
+                                        <div className="flex gap-2 my-2">
+                                            {/*Avatar */}
+                                            <div className="flex align-items-center">
+                                                <Avatar image={Users.find(x => x.id == ticket?.createBy)?.photo} size="large"></Avatar>
+                                            </div>
+                                            {/*User and Date*/}
+                                            <div className="flex flex-column justify-content-center">
+                                                <p className="text-xl my-0">{`${Users.find(x => x.id == ticket?.createBy)?.firstName} ${Users.find(x => x.id == ticket?.createBy)?.lastName}`}</p>
+                                                <p className="text-xs my-0">{ticket?.dateCreated.toLocaleString(language.code, {
+                                                    day: 'numeric',
+                                                    month: 'long',
+                                                    hour: 'numeric',
+                                                    minute: 'numeric',
+                                                    hour12: true,
+                                                })
+                                                }</p>
+                                            </div>
+                                        </div>
+                                        {/*Description*/}
+                                        <div className="grid mx-0 px-0">
+                                            <div className="col-12">
+                                                <Editor
+                                                    value={ticket?.description}
+                                                    readOnly
+                                                    className="w-full"
+                                                    showHeader={false}
+                                                    pt={{ content: { className: "border-0" } }} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                })}
+                            </ScrollPanel>
+                            {/*Ticket Reply*/}
+                            <div
+                                id="ticketReply"
+                                className="hidden fixed lg:absolute z-5 bottom-0 left-0 bg-white flex-column align-items-center w-full" style={{ height: "45%" }}>
+                                <Card
+                                    className="h-full w-full"
+                                    style={{ boxShadow: "0px -5px 13px -7px rgba(0,0,0,0.48)" }}
+                                    pt={{
+                                        body: { className: "h-full pt-0" },
+                                        content: { className: "h-full pt-1 pb-8 lg:pb-6 relative" }
+                                    }}>
+                                    {/*To*/}
+                                    <div className="flex align-items-center my-2 gap-3 relative">
+                                        <Avatar image={Users.find(x => x.id == parseInt(getTokenData?.id ?? '0'))?.photo} size={'large'}></Avatar>
+                                        <p>Reply to:</p>
+                                        <Chip label={`${Users.find(x => x.id == TicketSelected?.createBy)?.firstName} ${Users.find(x => x.id == TicketSelected?.createBy)?.lastName} (${Users.find(x => x.id == TicketSelected?.createBy)?.email})`} />
+                                        <Button
+                                            className="absolute right-0"
+                                            rounded
+                                            text
+                                            severity="danger"
+                                            size={'small'}
+                                            icon="pi pi-times"
+                                            onClick={() => handlerReplyCancelClick()}
+                                        />
+                                    </div>
+                                    {/*Editor*/}
+                                    <div className="flex w-full" style={{ height: "calc(100% - 55px)" }}>
+                                        <Editor
+                                            value={TicketReplyDesc}
+                                            id="replyEditor"
+                                            className=" p-0 m-0 h-full w-full"
+                                            onTextChange={(e) => setTicketReplyDesc(e.htmlValue != null ? e.htmlValue : "")} />
+                                        <Button
+                                            icon="pi pi-send"
+                                            label="Send"
+                                            severity={"success"}
+                                            className="absolute bottom-0 right-0 mb-2 mr-4"
+                                            onClick={() => handlerReplySend()} />
+                                    </div>
+
+                                </Card>
+                            </div>
+                        </Card>
+                        {/*Buton mobile close ticket info*/}
+                        <Button
+                            icon="pi pi-angle-double-left"
+                            className="fixed z-1 left-0 bg-white lg:hidden"
+                            size={"small"}
+                            text
+                            raised
+                            style={{ top: "50%", transform: "translateY(-50%)" }}
+                            onClick={() => handlerClosedTicketInfoMobile()} />
+                        {/*Buton mobile show ticket options*/}
+                        <Button
+                            icon="pi pi-spin pi-cog"
+                            className="fixed z-1 right-0 bg-white lg:hidden"
+                            size={"small"}
+                            text
+                            raised
+                            style={{ top: "50%", transform: "translateY(-50%)" }}
+                            onClick={() => handlerShowTicketOptionsMobile()} />
+                    </div>
+                    {/*Ticket Details and Change*/}
+                    <div
+                        id="ticketData"
+                        className="col-12  hidden absolute z-1 left-0 bg-white top-0 lg:col-3 lg:relative lg:surface-ground lg:flex flex-column opacity-0 transition-duration-300 justify-content-between">
+                        <Card
+                            pt={{
+                                body: { className: "py-1" },
+                                content: { className: "py-0" },
+                            }}>
+                            {/*Ticket Details*/}
+                            <p className="text-xl font-bold">{detailsTxt}</p>
+                            <div className="grid">
+                                <div className="col-3">{createByTxt}</div>
+                                <div className="col-9 text-right">{`${Users.find(x => x.id === TicketSelected?.createBy)?.firstName} ${Users.find(x => x.id === TicketSelected?.createBy)?.lastName}`}</div>
+                                <div className="col-3">{emailTxt}</div>
+                                <div className="col-9 text-right">{Users.find(x => x.id === TicketSelected?.createBy)?.email}</div>
+                                <div className="col-3">{phoneTxt}</div>
+                                <div className="col-9 text-right">{Users.find(x => x.id === TicketSelected?.createBy)?.phone}</div>
+                                <div className="col-5">{dateCreated}</div>
+                                <div className="col-7 text-right flex align-items-center justify-content-end">{TicketSelected?.dateCreated.toLocaleString(language.code)}</div>
+                                <div className="col-5">{dateUpdated}</div>
+                                <div className="col-7 text-right flex align-items-center justify-content-end">{(TicketSelected?.dateUpdated as Date)?.getTime() !== 0 ? TicketSelected?.dateUpdated.toLocaleString(language.code) : ''}</div>
+                            </div>
+                            <p className="text-xl font-bold mt-2">{deviceInfoTxt}</p>
+                            <div className="grid">
+                                <div className="col-3">IP</div>
+                                <div className="col-9 text-right">{TicketSelected?.ip}</div>
+                                <div className="col-3">OS</div>
+                                <div className="col-9 text-right">{TicketSelected?.os}</div>
+                                <div className="col-3">{browserTxt}</div>
+                                <div className="col-9 text-right">{TicketSelected?.browser}</div>
+                            </div>
+                        </Card>
+                        <Card
+                            pt={{
+                                root: { className: "mt-4" },
+                                body: { className: "py-1" },
+                                content: { className: "py-0" },
+                            }}>
+                            {/*Ticket Change Values*/}
+                            <p className="text-xl font-bold my-3">{optionsTxt}</p>
+                            <div className="grid">
+                                <div className='col-12'>
+                                    {/*Projectt*/}
+                                    <Controller
+                                        name="Project"
+                                        control={control}
+                                        rules={
+                                            {
+                                                required: ErrorRequired
+                                            }}
+                                        render={({ field, fieldState }) => (
+                                            <>
+                                                <label className="align-self-start block mb-1">{CardFormProject}</label>
+                                                <Dropdown
+                                                    id={field.name}
+                                                    value={field.value}
+                                                    onChange={(e) => field.onChange(e.value)}
+                                                    options={Projects}
+                                                    optionLabel="name"
+                                                    optionValue='id'
+                                                    showClear
+                                                    disabled
+                                                    className={classNames({ 'p-invalid': fieldState.error } + " w-full")} />
+                                                {ErrorMessageHtml(field.name)}
+                                            </>
+                                        )}
+                                    />
+                                </div>
+
+                                {/* Ticket Type */}
+                                <div className='col-12'>
+                                    <Controller
+                                        name="Type"
+                                        control={control}
+                                        rules={
+                                            {
+                                                required: ErrorRequired
+                                            }}
+                                        render={({ field, fieldState }) => (
+                                            <>
+                                                <label className="align-self-start block mb-1">{CardFormType}</label>
+                                                <Dropdown
+                                                    id={field.name}
+                                                    value={field.value}
+                                                    onChange={(e) => field.onChange(e.value)}
+                                                    options={TicketType}
+                                                    optionLabel="name"
+                                                    optionValue='id'
+                                                    showClear
+                                                    className={classNames({ 'p-invalid': fieldState.error } + " w-full")} />
+                                                {ErrorMessageHtml(field.name)}
+                                            </>
+                                        )}
+                                    />
+                                </div>
+
+                                {/* Ticket Priority */}
+                                {getTokenData?.PermissionLevel === "Administrator" ?
+                                    <div className='col-12'>
+                                        <Controller
+                                            name="Priority"
+                                            control={control}
+                                            render={({ field, fieldState }) => (
+                                                <>
+                                                    <label className="align-self-start block mb-1">{CardFormPriority}</label>
+                                                    <Dropdown
+                                                        id={field.name}
+                                                        value={field.value}
+                                                        onChange={(e) => field.onChange(e.value)}
+                                                        options={TicketPriorities}
+                                                        optionLabel="name"
+                                                        optionValue='id'
+                                                        showClear
+                                                        className={classNames({ 'p-invalid': fieldState.error } + " w-full")} />
+                                                    {ErrorMessageHtml(field.name)}
+                                                </>
+                                            )}
+                                        />
+                                    </div>
+                                    :
+                                    null
+                                }
+
+                                {/* Ticket Status */}
+                                {getTokenData?.PermissionLevel === "Administrator" || getTokenData?.PermissionLevel === "Developer" ?
+                                    <div className='col-12'>
+                                        <Controller
+                                            name="Status"
+                                            control={control}
+                                            render={({ field, fieldState }) => (
+                                                <>
+                                                    <label className="align-self-start block mb-1">{CardFormStatus}</label>
+                                                    <Dropdown
+                                                        id={field.name}
+                                                        value={field.value}
+                                                        onChange={(e) => field.onChange(e.value)}
+                                                        options={TicketStatus}
+                                                        optionLabel="name"
+                                                        optionValue='id'
+                                                        showClear
+                                                        className={classNames({ 'p-invalid': fieldState.error } + " w-full")} />
+                                                    {ErrorMessageHtml(field.name)}
+                                                </>
+                                            )}
+                                        />
+                                    </div>
+                                    :
+                                    null
+                                }
+
+                                {/* Ticket Closed */}
+                                {getTokenData?.PermissionLevel === "Administrator" || getTokenData?.PermissionLevel === "Developer" ?
+                                    <div className='col-12'>
+                                        <Controller
+                                            name="Closed"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <>
+                                                    <div className='flex align-items-center'>
+                                                        <label htmlFor={field.name} className={classNames({ 'p-error': errors.Closed })}></label>
+                                                        <label className='mr-2' htmlFor={field.name}>{CardFormClosed}</label>
+                                                        <InputSwitch checked={field.value} onChange={(e) => field.onChange(e.value)} />
+
+                                                        {ErrorMessageHtml(field.name)}
+                                                    </div>
+                                                </>
+                                            )}
+                                        />
+                                    </div>
+                                    :
+                                    null
+                                }
+
+                                <div className='col-12'>
+                                    <div className='flex justify-content-center align-items-center'>
+                                        <Button
+                                            icon="pi pi-sync"
+                                            label={CardButtonUpdated}
+                                            className='mr-3'
+                                            type='submit'
+                                            loading={loadingPut}
+                                            onClick={() => handlerUpdatedValuesClick()} />
+                                    </div>
+                                </div>
+
+                            </div>
+                        </Card>
+                        {/*Buton mobile close ticket info*/}
+                        <Button
+                            icon="pi pi-angle-double-left"
+                            className="fixed z-1 left-0 bg-white lg:hidden"
+                            size={"small"}
+                            text
+                            raised
+                            style={{ top: "50%", transform: "translateY(-50%)" }}
+                            onClick={() => handlerClosedTicketDataMobile()} />
+                    </div>
+                </div >
+
+            </>
 
         </>
     )

@@ -8,6 +8,13 @@ export interface TicketResponse {
     ticketStatusId: number,
     dateCreated: Date | string,
     dateUpdated: Date | string,
+    dateClosed: Date | string,
     createBy: number,
-    isClosed: boolean
+    lastUpdatedBy: number,
+    closedBy: number,
+    isClosed: boolean,
+    ip: string,
+    os: string,
+    browser: string,
+    reply: number,
 }

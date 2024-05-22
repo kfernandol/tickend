@@ -33,8 +33,7 @@ export const paths = {
     editProject: "/Projects/Edit",
     editProjectWithId: "/Projects/Edit/:id",
     Tickets: "/Tickets",
+    TicketsWithId: "/Tickets/:id",
     newTicket: "/Ticket/New",
-    editTicket: "/Ticket/Edit",
-    editTicketWithId: "/Ticket/Edit/:id",
     Audit: "/Audit",
 };

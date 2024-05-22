@@ -258,7 +258,14 @@
       "dateCreated": "Date Created",
       "dateUpdated": "Last Updated",
       "closed": "Closed",
-      "properties": "Properties"
+      "properties": "Properties",
+      "reply": "Reply",
+      "replyTitle": "Reply ticket",
+      "details": "Details",
+      "options": "Options",
+      "phone": "Phone",
+      "deviceInfo": "Device Info",
+      "browser": "Browser"
     },
     "status": {
       "open": "Open",

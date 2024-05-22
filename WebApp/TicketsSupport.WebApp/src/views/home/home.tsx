@@ -55,7 +55,7 @@ export default function Home() {
     const project = t('tickets.labels.project');
     const ticketsByProjectTxt = t('home.ticketsByProject');
     //links
-    const EditTicketItemUrl = paths.editTicketWithId;
+    const EditTicketItemUrl = paths.TicketsWithId;
     //variables
     const [totalTickets, setTotalTickets] = useState<number | null>(null);
     const [ticketsPending, setTicketsPending] = useState<number | null>(null);

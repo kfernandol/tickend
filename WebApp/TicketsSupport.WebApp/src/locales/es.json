@@ -146,7 +146,7 @@
     "accept": "Aceptar",
     "save": "Guardar",
     "delete": "Eliminar",
-    "updated": "Actualizado"
+    "updated": "Actualizar"
   },
   "boolean": {
     "true": "Verdadero",
@@ -258,7 +258,14 @@
       "dateCreated": "Fecha de Creación",
       "dateUpdated": "Última Actualización",
       "closed": "Cerrado",
-      "properties": "Propiedades"
+      "properties": "Propiedades",
+      "reply": "Responder",
+      "replyTitle": "Responder ticket",
+      "details": "Detalles",
+      "options": "Opciones",
+      "phone": "Telefono",
+      "deviceInfo": "Informacion del dispositivo",
+      "browser": "Navegador"
     },
     "status": {
       "open": "Abierto",

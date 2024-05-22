@@ -6,5 +6,6 @@ export interface TicketRequest {
     ticketTypeId: number,
     ticketPriorityId?: number,
     ticketStatusId?: number,
+    reply?: number,
     isClosed?: boolean
 }

@@ -25,7 +25,7 @@ export default function TicketsNew() {
     const toast = useRef<Toast>(null);
     const navigate = useNavigate();
     //Form
-    const { control, ErrorMessageHtml, errors, handleSubmit, reset, getValues, watch } = useCustomForm<TicketForm>({ Title: '', Description: '', Priority: 0, Project: null, Status: 0, Type: null });
+    const { control, ErrorMessageHtml, handleSubmit, reset, getValues, watch } = useCustomForm<TicketForm>({ Title: '', Description: '', Priority: 0, Project: null, Status: 0, Type: null });
     //Request API
     const { SendPostRequest, postResponse, loadingPost, errorPost, httpCodePost } = usePost<BasicResponse>();
     const { SendGetRequest } = useGet<ProjectResponse>();
@@ -33,8 +33,8 @@ export default function TicketsNew() {
     const [TicketType, setTicketType] = useState<TicketTypeResponse[]>();
     //Translation
     const { t } = useTranslation();
-    const CardTitle = t("common.cardTitles.new", { 0: t("navigation.Ticket") });
-    const CardSubTitle = t("common.cardSubTitles.new", { 0: t("navigation.Ticket") });
+    const CardTitle = t("common.cardTitles.new", { 0: t("element.ticket") });
+    const CardSubTitle = t("common.cardSubTitles.new", { 0: t("element.ticket").toLowerCase() });
     const ErrorRequired = t('errors.required');
     const ErrorMaxCaracter = t('errors.maxLength');
     const ErrorMinCaracter = t('errors.minLength');
@@ -80,7 +80,7 @@ export default function TicketsNew() {
                 responses.forEach((response) => {
                     switch (response.url) {
                         case "v1/ticket/types/byproject/" + ProjectId:
-                                setTicketType(response.data as TicketTypeResponse[]);
+                            setTicketType(response.data as TicketTypeResponse[]);
                             break;
                         default:
                             break;
@@ -133,7 +133,16 @@ export default function TicketsNew() {
     return (
         <>
             <Toast ref={toast} />
-            <Card title={CardTitle} subTitle={CardSubTitle}>
+            <Card
+                title={CardTitle}
+                subTitle={CardSubTitle}
+                pt={{
+                    root: { className: "my-5 px-4 pt-3" },
+                    title: { className: "mt-3" },
+                    subTitle: { className: "mb-1" },
+                    body: { className: "pb-0 pt-1" },
+                    content: { className: "pt-0" }
+                }}>
                 <form className='mt-5 grid gap-2"' onSubmit={handleSubmit(onSubmit)}>
 
                     {/* Title Input */}
@@ -156,11 +165,13 @@ export default function TicketsNew() {
                                 }}
                             render={({ field, fieldState }) => (
                                 <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.Title })}></label>
-                                    <span className="p-float-label">
-                                        <InputText id={field.name} value={field.value} type='text' className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"} onChange={(e) => field.onChange(e.target.value)} />
-                                        <label htmlFor={field.name}>{CardFormTitle}</label>
-                                    </span>
+                                    <label className="align-self-start block mb-1">{CardFormTitle}</label>
+                                    <InputText
+                                        id={field.name}
+                                        value={field.value}
+                                        type='text'
+                                        className={classNames({ 'p-invalid': fieldState.error }) + " w-full p-inputtext-lg"}
+                                        onChange={(e) => field.onChange(e.target.value)} />
                                     {ErrorMessageHtml(field.name)}
                                 </>
                             )}
@@ -183,8 +194,11 @@ export default function TicketsNew() {
                                 }}
                             render={({ field }) => (
                                 <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.Description })}></label>
-                                    <Editor value={field.value} onTextChange={(e) => field.onChange(e.htmlValue)} style={{ height: '700px' }} placeholder={CardFormDescription} />
+                                    <label className="align-self-start block mb-1">{CardFormDescription}</label>
+                                    <Editor
+                                        value={field.value}
+                                        onTextChange={(e) => field.onChange(e.htmlValue)}
+                                        style={{ height: '700px' }} />
                                     {ErrorMessageHtml(field.name)}
                                 </>
                             )}
@@ -202,20 +216,16 @@ export default function TicketsNew() {
                                 }}
                             render={({ field, fieldState }) => (
                                 <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.Project })}></label>
-                                    <span className="p-float-label w-full">
-                                        <Dropdown
-                                            id={field.name}
-                                            value={field.value}
-                                            onChange={(e) => field.onChange(e.value)}
-                                            options={Projects}
-                                            optionLabel="name"
-                                            optionValue='id'
-                                            showClear
-                                            className={classNames({ 'p-invalid': fieldState.error } + " w-full py-1")} />
-                                        <label htmlFor={field.name}>{CardFormProject}</label>
-                                    </span>
-
+                                    <label className="align-self-start block mb-1">{CardFormProject}</label>
+                                    <Dropdown
+                                        id={field.name}
+                                        value={field.value}
+                                        onChange={(e) => field.onChange(e.value)}
+                                        options={Projects}
+                                        optionLabel="name"
+                                        optionValue='id'
+                                        showClear
+                                        className={classNames({ 'p-invalid': fieldState.error } + " w-full py-1")} />
                                     {ErrorMessageHtml(field.name)}
                                 </>
                             )}
@@ -233,32 +243,27 @@ export default function TicketsNew() {
                                 }}
                             render={({ field, fieldState }) => (
                                 <>
-                                    <label htmlFor={field.name} className={classNames({ 'p-error': errors.Project })}></label>
-                                    <span className="p-float-label w-full">
-                                        <Dropdown
-                                            id={field.name}
-                                            value={field.value}
-                                            onChange={(e) => field.onChange(e.value)}
-                                            options={TicketType}
-                                            optionLabel="name"
-                                            optionValue='id'
-                                            showClear
-                                            className={classNames({ 'p-invalid': fieldState.error } + " w-full py-1")} />
-                                        <label htmlFor={field.name}>{CardFormType}</label>
-                                    </span>
-
+                                    <label className="align-self-start block mb-1">{CardFormType}</label>
+                                    <Dropdown
+                                        id={field.name}
+                                        value={field.value}
+                                        onChange={(e) => field.onChange(e.value)}
+                                        options={TicketType}
+                                        optionLabel="name"
+                                        optionValue='id'
+                                        showClear
+                                        className={classNames({ 'p-invalid': fieldState.error } + " w-full py-1")} />
                                     {ErrorMessageHtml(field.name)}
                                 </>
                             )}
                         />
                     </div>
 
-
                     <div className='col-12'>
                         <div className='flex justify-content-center align-items-center'>
                             <Button label={CardButtonSave} severity="success" className='mr-3' type='submit' loading={loadingPost} />
                             <Link to={returnToTable}>
-                                <Button label={CardButtonCancel} severity="secondary" type='button' />
+                                <Button label={CardButtonCancel} severity="secondary" type='button' outlined />
                             </Link>
                         </div>
                     </div>
