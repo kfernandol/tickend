@@ -173,7 +173,7 @@ export default function AuditLog() {
         if (user?.photo)
             return <>
                 <div className="flex align-items-center ">
-                    <Avatar image={`data:image/*;base64,${user.photo}`} size="large" shape="circle" />
+                    <Avatar image={`${user.photo}`} size="large" shape="circle" />
                     <p className="ml-4">{user?.firstName} {user?.lastName}</p>
                 </div>
             </>;
