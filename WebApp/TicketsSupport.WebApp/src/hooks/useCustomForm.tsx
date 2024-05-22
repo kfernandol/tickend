@@ -17,7 +17,7 @@ export default function useCustomForm<T extends FieldValues>(defaultValues: Defa
         return error ? (
             <small className="p-error">{`${error.message}`}</small>
         ) : (
-            <small className="p-error">&nbsp;</small>
+            <small className="p-error"></small>
         );
     };
 
