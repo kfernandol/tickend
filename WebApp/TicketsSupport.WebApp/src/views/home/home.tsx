@@ -88,19 +88,12 @@ export default function Home() {
             SendGetRequest("v1/stadistics/tickets/byproject"),
         ];
 
-        Promise.allSettled(requests)
-            .then((results) => {
-                results.forEach((result) => {
-                    if (result.status === "fulfilled") {
-                        handleResponse(result.value);
-                    } else {
-                        console.error("Error en la solicitud:", result.reason);
-                    }
-                });
-            })
-            .catch((error) => {
-                console.error("Error en Promise.allSettled:", error);
-            });
+        requests.forEach((request) => {
+            Promise.resolve(request)
+                .then((response) => {
+                    handleResponse(response);
+                })
+        })
 
         function handleResponse(response: { data: unknown, url: string }) {
             let ticketStatusChartData, ticketStatusChartOptions;
@@ -136,6 +129,7 @@ export default function Home() {
                             }
                         }
                     };
+
                     setChartTicketsStatusData(ticketStatusChartData);
                     setChartTicketsStatusOptions(ticketStatusChartOptions);
                     break;
@@ -157,6 +151,17 @@ export default function Home() {
                         maintainAspectRatio: false,
                         aspectRatio: 0.6,
                     };
+
+                    if (!ticketMonthChartData.labels && ticketMonthChartData.datasets.length <= 0) {
+                        ticketMonthChartData.labels = [''];
+                        ticketMonthChartData.datasets = [{
+                            label: '',
+                            data: [0, 0, 0, 0, 0, 0, 0],
+                            fill: false,
+                            tension: 0.4
+                        }]
+                    }
+
                     setChartTicketsByMonthData(ticketMonthChartData);
                     setChartTicketsByMonthOptions(ticketMonthChartOptions);
                     break;
@@ -264,7 +269,7 @@ export default function Home() {
 
     return (
         <>
-            <div className="grid">
+            <div className="grid mt-3">
                 <div className="col-12 sm:col-3 lg:col-2">
                     <Card
                         title={TotalTxt}
