@@ -40,67 +40,81 @@ namespace TicketsSupport.Infrastructure.Services.Email
             }
         }
 
-        public async Task<(string subject, string to)> SendEmail(string to, string subject, EmailTemplate template, Dictionary<string, string> templateData)
+        public async Task<(string subject, string to)> SendEmail(string? to, string? subject, EmailTemplate template, Dictionary<string, string> templateData)
         {
-            string From = _emailConfig.From;
-            string templateHtml;
-            EmailTemplateStrategy emailTemplate;
-
-            //Templates paths
-            var currentDirectory = Directory.GetCurrentDirectory();
-            string templatePath = Path.Combine(currentDirectory, "..", "TicketsSupport.ApplicationCore", "EmailTemplates", "html");
-
-            //Get Html with default values
-            _emailTemplate.SetEmailTemplateStrategy(template);
-            var templateContent = _emailTemplate.GetContentTemplate(From, templatePath, templateData);
-            templateHtml = templateContent.templateHtml;
-            subject = string.IsNullOrEmpty(subject) ? templateContent.subject : subject;
-
-            //Set values in templateData
-            foreach (var data in templateData)
+            return await Task.Run(() =>
             {
-                templateHtml = templateHtml.Replace("{{" + data.Key + "}}", data.Value);
-            }
+                if (!string.IsNullOrWhiteSpace(to))
+                {
+                    string From = _emailConfig.From;
+                    string templateHtml;
 
-            MailMessage message = new MailMessage
-            {
-                From = new MailAddress(From),
-                Subject = subject,
-                IsBodyHtml = true
-            };
+                    //Templates paths
+                    var currentDirectory = Directory.GetCurrentDirectory();
+                    string templatePath = Path.Combine(currentDirectory, "..", "TicketsSupport.ApplicationCore", "EmailTemplates", "html");
 
-            templateHtml = ReplaceBase64ImagesWithCIDs(ref message, templateHtml);
+                    //Get Html with default values
+                    _emailTemplate.SetEmailTemplateStrategy(template);
+                    var templateContent = _emailTemplate.GetContentTemplate(From, templatePath, templateData);
+                    templateHtml = templateContent.templateHtml;
+                    subject = string.IsNullOrEmpty(subject) ? templateContent.subject : subject;
 
-            message.Body = templateHtml;
-            message.To.Add(new MailAddress(to));
+                    //Set values in templateData
+                    foreach (var data in templateData)
+                    {
+                        templateHtml = templateHtml.Replace("{{" + data.Key + "}}", data.Value);
+                    }
 
-            _smtpClient.Send(message);
+                    MailMessage message = new MailMessage
+                    {
+                        From = new MailAddress(From),
+                        Subject = subject,
+                        IsBodyHtml = true
+                    };
 
-            return (subject, to);
+                    templateHtml = ReplaceBase64ImagesWithCIDs(ref message, templateHtml);
+
+                    message.Body = templateHtml;
+                    message.To.Add(new MailAddress(to));
+
+                    _smtpClient.Send(message);
+                    return (subject, to);
+                }
+
+                return (string.Empty, string.Empty);
+            });
         }
 
         public async Task<(string subject, string to)> ReplyEmailTicket(string to, string originalSubjet, string HtmlEmail)
         {
-            string From = _emailConfig.From;
-            string subject = $"RE: {originalSubjet}";
-
-
-            MailMessage replyMessage = new MailMessage
+            return await Task.Run(() =>
             {
-                From = new MailAddress(From),
-                Subject = subject,
-                IsBodyHtml = true
-            };
+                if (!string.IsNullOrWhiteSpace(to))
+                {
+                    string From = _emailConfig.From;
+                    string subject = $"RE: {originalSubjet}";
 
-            HtmlEmail = ReplaceBase64ImagesWithCIDs(ref replyMessage, HtmlEmail);
 
-            replyMessage.Body = HtmlEmail;
-            replyMessage.To.Add(new MailAddress(to));
-            replyMessage.ReplyToList.Add(new MailAddress(to));
+                    MailMessage replyMessage = new MailMessage
+                    {
+                        From = new MailAddress(From),
+                        Subject = subject,
+                        IsBodyHtml = true
+                    };
 
-            _smtpClient.Send(replyMessage);
+                    HtmlEmail = ReplaceBase64ImagesWithCIDs(ref replyMessage, HtmlEmail);
 
-            return (subject, to);
+                    replyMessage.Body = HtmlEmail;
+                    replyMessage.To.Add(new MailAddress(to));
+                    replyMessage.ReplyToList.Add(new MailAddress(to));
+
+                    _smtpClient.Send(replyMessage);
+
+                    return (subject, to);
+                }
+
+                return (string.Empty, string.Empty);
+            });
         }
 
         private string ReplaceBase64ImagesWithCIDs(ref MailMessage message, string htmlTemplate)

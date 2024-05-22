@@ -206,23 +206,44 @@ public partial class TS_DatabaseContext : DbContext
         {
             entity.ToTable("Ticket");
 
+            entity.Property(e => e.Browser)
+                .IsRequired()
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.DateClosed).HasColumnType("datetime");
             entity.Property(e => e.DateCreated).HasColumnType("datetime");
             entity.Property(e => e.DateUpdated).HasColumnType("datetime");
             entity.Property(e => e.Description)
                 .IsRequired()
                 .IsUnicode(false);
+            entity.Property(e => e.Ip)
+                .IsRequired()
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .HasColumnName("IP");
+            entity.Property(e => e.Os)
+                .IsRequired()
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("OS");
             entity.Property(e => e.Title)
                 .IsRequired()
                 .HasMaxLength(150)
                 .IsUnicode(false);
 
-            entity.HasOne(d => d.CreateByNavigation).WithMany(p => p.Tickets)
+            entity.HasOne(d => d.ClosedByNavigation).WithMany(p => p.TicketClosedByNavigations).HasForeignKey(d => d.ClosedBy);
+
+            entity.HasOne(d => d.CreateByNavigation).WithMany(p => p.TicketCreateByNavigations)
                 .HasForeignKey(d => d.CreateBy)
                 .OnDelete(DeleteBehavior.ClientSetNull);
+
+            entity.HasOne(d => d.LastUpdatedByNavigation).WithMany(p => p.TicketLastUpdatedByNavigations).HasForeignKey(d => d.LastUpdatedBy);
 
             entity.HasOne(d => d.Project).WithMany(p => p.Tickets)
                 .HasForeignKey(d => d.ProjectId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
+
+            entity.HasOne(d => d.ReplyNavigation).WithMany(p => p.InverseReplyNavigation).HasForeignKey(d => d.Reply);
 
             entity.HasOne(d => d.TicketPriority).WithMany(p => p.Tickets).HasForeignKey(d => d.TicketPriorityId);
 

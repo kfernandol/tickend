@@ -48,7 +48,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Interceptors
 
                 if (entry.State == EntityState.Added || entry.State == EntityState.Modified || entry.State == EntityState.Deleted)
                 {
-                    var PrimaryId = entry.Entity.GetType().GetProperty("Id")?.GetValue(entry.Entity, null)?.ToString() ?? string.Empty;
+                    var PrimaryId = entry.Entity.GetType().GetProperty("Id")?.GetValue(entry.Entity, null);
 
                     var auditLog = new AuditLog
                     {
@@ -56,7 +56,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Interceptors
                         Action = action,
                         Date = DateTime.Now,
                         Table = entry.Entity.GetType().Name,
-                        PrimaryId = isNumberValid(PrimaryId) ? PrimaryId : string.Empty,
+                        PrimaryId = (PrimaryId is int id && id > 0) ? id.ToString() : string.Empty,
                     };
 
 
@@ -65,21 +65,20 @@ namespace TicketsSupport.Infrastructure.Persistence.Interceptors
                     foreach (var property in entry.Properties)
                     {
                         var columnName = property.Metadata.Name;
-                        var oldValue = entry.State == EntityState.Modified ? originalValues?.GetValue<object>(columnName) ?? string.Empty : null;
+                        var oldValueObj = entry.State == EntityState.Modified ? originalValues?.GetValue<object>(columnName) ?? string.Empty : null;
                         var newValue = entry.State == EntityState.Added || entry.State == EntityState.Modified ? property.CurrentValue?.ToString() : null;
                         var typeValue = GetTypeValue(property.Metadata);
 
                         var AuditLogDetail = new AuditLogDetail
                         {
                             ColumnName = columnName,
-                            OldValue = isNumberValid(oldValue?.ToString() ?? string.Empty) ? oldValue?.ToString() ?? string.Empty : string.Empty,
-                            NewValue = isNumberValid(newValue ?? string.Empty) ? newValue ?? string.Empty : string.Empty,
+                            OldValue = oldValueObj?.ToString(),
+                            NewValue = newValue ?? string.Empty,
                             TypeValue = typeValue
                         };
 
 
-                        if ((AuditLogDetail.OldValue != AuditLogDetail.NewValue) &&
-                            (entry.State == EntityState.Added && !string.IsNullOrWhiteSpace(AuditLogDetail.NewValue)))
+                        if (AuditLogDetail.OldValue != AuditLogDetail.NewValue)
                         {
                             auditLog.AuditLogDetails.Add(AuditLogDetail);
                             changesCount++;
@@ -128,19 +127,6 @@ namespace TicketsSupport.Infrastructure.Persistence.Interceptors
                 default:
                     throw new InvalidOperationException($"Tipo de propiedad no compatible: {propertyMetadata?.PropertyInfo?.PropertyType.Name}");
             }
-        }
-
-        private bool isNumberValid(string number)
-        {
-            string pattern = @"^0$|-\d+";
-
-            Regex regex = new Regex(pattern);
-            Match match = regex.Match(number);
-
-            if (match.Success)
-                return false;
-            else
-                return true;
         }
     }
 }

@@ -42,7 +42,11 @@ public partial class User
 
     public virtual Rol? RolNavigation { get; set; }
 
-    public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
+    public virtual ICollection<Ticket> TicketClosedByNavigations { get; set; } = new List<Ticket>();
+
+    public virtual ICollection<Ticket> TicketCreateByNavigations { get; set; } = new List<Ticket>();
+
+    public virtual ICollection<Ticket> TicketLastUpdatedByNavigations { get; set; } = new List<Ticket>();
 
     public virtual ICollection<UserRestorePassword> UserRestorePasswords { get; set; } = new List<UserRestorePassword>();
 }

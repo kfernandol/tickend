@@ -177,6 +177,9 @@
   <data name="Project" xml:space="preserve">
     <value>Project</value>
   </data>
+  <data name="Reply" xml:space="preserve">
+    <value>Reply</value>
+  </data>
   <data name="Rol" xml:space="preserve">
     <value>Rol</value>
   </data>

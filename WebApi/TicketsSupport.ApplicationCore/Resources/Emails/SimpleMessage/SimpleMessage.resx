@@ -120,11 +120,23 @@
   <data name="MessagePasswordChanged" xml:space="preserve">
     <value>Password was successfully changed</value>
   </data>
+  <data name="MessageTicketPriorityChange" xml:space="preserve">
+    <value>Your Ticket No. {0} has been assigned a priority: {1}.</value>
+  </data>
+  <data name="MessageTicketStatusChange" xml:space="preserve">
+    <value>Your Ticket No. {0} has changed status: {1} -&gt; {2}.</value>
+  </data>
   <data name="Saludation" xml:space="preserve">
     <value>Hi</value>
   </data>
   <data name="SubjectPasswordChanged" xml:space="preserve">
     <value>The password was changed</value>
+  </data>
+  <data name="SubjectTicketPriorityChange" xml:space="preserve">
+    <value>Update priority of Ticket No. {0}</value>
+  </data>
+  <data name="SubjectTicketStatusChange" xml:space="preserve">
+    <value>Status update of ticket No. {0}</value>
   </data>
   <data name="WarningMessage" xml:space="preserve">
     <value>If you did not initiate this request, please contact us immediately at</value>

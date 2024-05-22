@@ -120,11 +120,23 @@
   <data name="MessagePasswordChanged" xml:space="preserve">
     <value>La contraseña fue cambiada exitosamente</value>
   </data>
+  <data name="MessageTicketPriorityChange" xml:space="preserve">
+    <value>Tu Ticket No. {0} se le asigno una prioridad: {1}</value>
+  </data>
+  <data name="MessageTicketStatusChange" xml:space="preserve">
+    <value>Tu Ticket No. {0} ha cambiado de estado: {1} -&gt; {2}.</value>
+  </data>
   <data name="Saludation" xml:space="preserve">
     <value>Hola</value>
   </data>
   <data name="SubjectPasswordChanged" xml:space="preserve">
     <value>La contraseña fue cambiada</value>
+  </data>
+  <data name="SubjectTicketPriorityChange" xml:space="preserve">
+    <value>Actualizacion de prioridad de ticket No. {0}</value>
+  </data>
+  <data name="SubjectTicketStatusChange" xml:space="preserve">
+    <value>Actualización de estado del ticket No. {0}</value>
   </data>
   <data name="WarningMessage" xml:space="preserve">
     <value>Si usted no ha iniciado esta solicitud, póngase en contacto con nosotros inmediatamente en</value>

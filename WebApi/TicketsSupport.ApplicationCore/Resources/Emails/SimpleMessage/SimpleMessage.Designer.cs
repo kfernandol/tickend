@@ -70,6 +70,24 @@ namespace TicketsSupport.ApplicationCore.Resources.Emails.SimpleMessage {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Your Ticket No. {0} has been assigned a priority: {1}..
+        /// </summary>
+        internal static string MessageTicketPriorityChange {
+            get {
+                return ResourceManager.GetString("MessageTicketPriorityChange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your Ticket No. {0} has changed status: {1} -&gt; {2}..
+        /// </summary>
+        internal static string MessageTicketStatusChange {
+            get {
+                return ResourceManager.GetString("MessageTicketStatusChange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hi.
         /// </summary>
         internal static string Saludation {
@@ -84,6 +102,24 @@ namespace TicketsSupport.ApplicationCore.Resources.Emails.SimpleMessage {
         internal static string SubjectPasswordChanged {
             get {
                 return ResourceManager.GetString("SubjectPasswordChanged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update priority of Ticket No. {0}.
+        /// </summary>
+        internal static string SubjectTicketPriorityChange {
+            get {
+                return ResourceManager.GetString("SubjectTicketPriorityChange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status update of ticket No. {0}.
+        /// </summary>
+        internal static string SubjectTicketStatusChange {
+            get {
+                return ResourceManager.GetString("SubjectTicketStatusChange", resourceCulture);
             }
         }
         

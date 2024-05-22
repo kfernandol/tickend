@@ -10,6 +10,13 @@
 	[IsClosed] BIT NOT NULL,
 	[DateCreated] datetime NOT NULL,
 	[DateUpdated] datetime NULL,
+	[DateClosed] datetime NULL,
 	[CreateBy] INT NOT NULL FOREIGN KEY REFERENCES [User](Id),
-	[Active] bit NOT NULL
+	[LastUpdatedBy] INT NULL FOREIGN KEY REFERENCES [User](Id),
+	[ClosedBy] INT NULL FOREIGN KEY REFERENCES [User](Id),
+	[IP] varchar(20) NOT NULL,
+	[OS] varchar(50) NOT NULL,
+	[Browser] varchar(100) NOT NULL,
+	[Reply] INT NULL FOREIGN KEY REFERENCES [Ticket](Id),
+	[Active] bit NOT NULL,
 )

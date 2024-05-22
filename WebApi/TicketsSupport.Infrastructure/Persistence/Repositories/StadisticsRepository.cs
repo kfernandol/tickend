@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Sockets;
 using TicketsSupport.ApplicationCore.DTOs;
 using TicketsSupport.ApplicationCore.Entities;
 using TicketsSupport.ApplicationCore.Interfaces;
@@ -32,10 +33,10 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                            .FirstOrDefaultAsync(x => x.Username == username);
 
             if (user?.RolNavigation?.PermissionLevel == PermissionLevel.Administrator)
-                return _context.Tickets.AsNoTracking().Where(x => x.IsClosed == true).Count();
+                return _context.Tickets.AsNoTracking().Where(x => x.IsClosed == true && x.Reply == null).Count();
             else
             {
-                var tickets = await _context.Tickets
+                var tickets = await _context.Tickets.Where(x => x.Reply == null)
                                                     .Include(x => x.Project)
                                                     .ThenInclude(x => x.ProjectXclients)
                                                     .ThenInclude(x => x.Client)
@@ -64,7 +65,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             {
                 lastTickets = await _context.Tickets.OrderByDescending(x => x.DateCreated)
                                                     .Take(10)
-                                                    .Where(x => x.Active == true)
+                                                    .Where(x => x.Reply == null && x.Active == true)
                                                     .Select(x => new Ticket
                                                     {
                                                         Id = x.Id,
@@ -86,7 +87,8 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             }
             else
             {
-                lastTickets = await _context.Tickets.Include(x => x.Project)
+                lastTickets = await _context.Tickets.Where(x => x.Reply == null)
+                                                    .Include(x => x.Project)
                                                         .ThenInclude(x => x.ProjectXclients)
                                                         .ThenInclude(x => x.Client)
                                                     .Include(x => x.Project)
@@ -128,10 +130,10 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                             .FirstOrDefaultAsync(x => x.Username == username);
 
             if (user?.RolNavigation?.PermissionLevel == PermissionLevel.Administrator)
-                return _context.Tickets.AsNoTracking().Where(x => x.IsClosed == false).Count();
+                return _context.Tickets.AsNoTracking().Where(x => x.Reply == null && x.IsClosed == false).Count();
             else
             {
-                var tickets = await _context.Tickets
+                var tickets = await _context.Tickets.Where(x => x.Reply == null)
                                                     .Include(x => x.Project)
                                                     .ThenInclude(x => x.ProjectXclients)
                                                     .ThenInclude(x => x.Client)
@@ -156,10 +158,10 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                             .FirstOrDefaultAsync(x => x.Username == username);
 
             if (user?.RolNavigation?.PermissionLevel == PermissionLevel.Administrator)
-                return _context.Tickets.AsNoTracking().Where(x => x.IsClosed == false && x.TicketPriorityId == null).Count();
+                return _context.Tickets.AsNoTracking().Where(x => x.Reply == null && x.IsClosed == false && x.TicketPriorityId == null).Count();
             else
             {
-                var tickets = await _context.Tickets
+                var tickets = await _context.Tickets.Where(x => x.Reply == null)
                                                     .Include(x => x.Project)
                                                     .ThenInclude(x => x.ProjectXclients)
                                                     .ThenInclude(x => x.Client)
@@ -188,12 +190,12 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 ChartData ticketsStatusChart = new ChartData
                 {
                     Labels = _context.Tickets
-                        .Where(x => x.IsClosed == false)
+                        .Where(x => x.Reply == null && x.IsClosed == false)
                         .Select(t => t.TicketStatus != null ? t.TicketStatus.Name : null)
                         .Distinct()
                         .ToList(),
                     Data = _context.Tickets
-                        .Where(x => x.IsClosed == false)
+                        .Where(x => x.Reply == null && x.IsClosed == false)
                         .GroupBy(t => t.TicketStatus.Name)
                         .Select(g => g.Count())
                         .ToList()
@@ -203,7 +205,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             }
             else
             {
-                var tickets = await _context.Tickets
+                var tickets = await _context.Tickets.Where(x => x.Reply == null)
                                                     .Include(x => x.Project)
                                                     .ThenInclude(x => x.ProjectXclients)
                                                     .ThenInclude(x => x.Client)
@@ -220,12 +222,12 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 ChartData ticketsStatusChart = new ChartData
                 {
                     Labels = tickets
-                      .Where(x => x.IsClosed == false)
+                      .Where(x => x.Reply == null && x.IsClosed == false)
                       .Select(t => t.TicketStatus != null ? t.TicketStatus.Name : null)
                       .Distinct()
                       .ToList(),
                     Data = tickets
-                      .Where(x => x.IsClosed == false)
+                      .Where(x => x.Reply == null && x.IsClosed == false)
                       .GroupBy(t => t.TicketStatus?.Name)
                       .Select(g => g.Count())
                       .ToList()
@@ -264,6 +266,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                     Labels = Enumerable.Range(1, currentMonth).Select(month => month.ToString()).ToList(),
                     Data = Enumerable.Range(1, currentMonth)
                         .Select(month => _context.Tickets
+                            .Where(x => x.Reply == null)
                             .Count(t => t.ProjectId == project.Id && t.DateCreated.Month == month && t.DateCreated.Year == currentYear))
                         .ToList()
                 })
@@ -294,6 +297,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                     Labels = Enumerable.Range(1, currentMonth).Select(month => month.ToString()).ToList(),
                     Data = Enumerable.Range(1, currentMonth)
                         .Select(month => _context.Tickets
+                            .Where(x => x.Reply == null)
                             .Count(t => t.ProjectId == project.Id && t.DateCreated.Month == month && t.DateCreated.Year == currentYear))
                         .ToList()
                 })
@@ -316,10 +320,10 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                                     .Select(x => new TicketsByProjectResponse
                                                                     {
                                                                         Project = _mapper.Map<ProjectResponse>(x),
-                                                                        Total = x.Tickets.Count(),
-                                                                        Open = x.Tickets.Where(x => x.IsClosed == false).Count(),
-                                                                        Closed = x.Tickets.Where(x => x.IsClosed == true).Count(),
-                                                                        Pending = x.Tickets.Where(x => x.IsClosed == false && x.TicketPriorityId == null).Count()
+                                                                        Total = x.Tickets.Where(x => x.Reply == null).Count(),
+                                                                        Open = x.Tickets.Where(x => x.Reply == null && x.IsClosed == false).Count(),
+                                                                        Closed = x.Tickets.Where(x => x.Reply == null && x.IsClosed == true).Count(),
+                                                                        Pending = x.Tickets.Where(x => x.Reply == null && x.IsClosed == false && x.TicketPriorityId == null).Count()
                                                                     })
                                                                     .AsNoTracking()
                                                                     .ToListAsync();
@@ -338,14 +342,14 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                                        .Where(x => x.Active == true &&
                                                                                 x.ProjectXclients.Any(c => c.Client.Username == username ||
                                                                                 x.ProjectXdevelopers.Any(d => d.Developer.Username == username) &&
-                                                                                x.Tickets.Any(x => x.Active == true)))
+                                                                                x.Tickets.Any(x => x.Reply == null && x.Active == true)))
                                                                        .Select(x => new TicketsByProjectResponse
                                                                        {
                                                                            Project = _mapper.Map<ProjectResponse>(x),
-                                                                           Total = x.Tickets.Count(),
-                                                                           Open = x.Tickets.Where(x => x.IsClosed == false).Count(),
-                                                                           Closed = x.Tickets.Where(x => x.IsClosed == true).Count(),
-                                                                           Pending = x.Tickets.Where(x => x.IsClosed == false && x.TicketPriorityId == null).Count()
+                                                                           Total = x.Tickets.Where(x => x.Reply == null).Count(),
+                                                                           Open = x.Tickets.Where(x => x.Reply == null && x.IsClosed == false).Count(),
+                                                                           Closed = x.Tickets.Where(x => x.Reply == null && x.IsClosed == true).Count(),
+                                                                           Pending = x.Tickets.Where(x => x.Reply == null && x.IsClosed == false && x.TicketPriorityId == null).Count()
                                                                        })
                                                                        .AsNoTracking()
                                                                        .AsSplitQuery()
@@ -362,10 +366,10 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                             .FirstOrDefaultAsync(x => x.Username == username);
 
             if (user?.RolNavigation?.PermissionLevel == PermissionLevel.Administrator)
-                return _context.Tickets.AsNoTracking().Count();
+                return _context.Tickets.AsNoTracking().Where(x => x.Reply == null).Count();
             else
             {
-                var tickets = await _context.Tickets
+                var tickets = await _context.Tickets.Where(x => x.Reply == null)
                                                     .Include(x => x.Project)
                                                     .ThenInclude(x => x.ProjectXclients)
                                                     .ThenInclude(x => x.Client)

@@ -144,6 +144,9 @@
   <data name="TicketPriority" xml:space="preserve">
     <value>Ticket priority</value>
   </data>
+  <data name="TicketReply" xml:space="preserve">
+    <value>The ticket was successfully answered</value>
+  </data>
   <data name="TicketStatus" xml:space="preserve">
     <value>Ticket status</value>
   </data>

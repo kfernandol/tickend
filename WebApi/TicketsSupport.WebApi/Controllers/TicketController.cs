@@ -38,7 +38,7 @@ namespace TicketsSupport.WebApi.Controllers
         public async Task<IActionResult> GetTickets()
         {
             string? username = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-            var tickets = await _ticketRepository.GetTickets(username);
+            var tickets = await _ticketRepository.GetTickets();
             return Ok(tickets);
         }
 
@@ -69,9 +69,25 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> CreateTicket(CreateTicketRequest request)
         {
-            string? username = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-            await _ticketRepository.CreateTicket(username, request);
+            await _ticketRepository.CreateTicket(request);
             return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementAdded"), ResourcesUtils.GetResponseMessage("Ticket")) });
+        }
+
+
+        /// <summary>
+        /// Reply a ticket
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [AuthorizeMenu("Tickets")]
+        [HttpPost("reply"), MapToApiVersion(1.0)]
+        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
+        [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
+        public async Task<IActionResult> ReplyTicket(CreateTicketRequest request)
+        {
+            await _ticketRepository.ReplyTicket(request);
+            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("TicketReply"), ResourcesUtils.GetResponseMessage("Ticket")) });
         }
 
         /// <summary>
