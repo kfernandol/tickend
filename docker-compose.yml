@@ -4,12 +4,19 @@ services:
     image: tickend-api
     ports:
       - "8090:8080"
+      - "8081:8081"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=https://+:8081;http://+:8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+      - ASPNETCORE_HTTP_PORT=8080
+      - ASPNETCORE_Kesstrel_Certificates_Default_Password=
+      - ASPNETCORE_Kesstrel_Certificates_Default_Path=/ssl/tickend.pfx
     restart: unless-stopped
     volumes:
       - c:/temp/Tickend/WebApi/appsettings.json:/app/appsettings.json
       - c:/temp/Tickend/WebApi/Logs:/app/Temp/Logs
+      - c:/temp/Tickend/WebApi/ssl/tickend.pfx:/ssl/tickend.pfx
     networks:
       - networktickend
   webapp:
