@@ -1,11 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Azure.Core;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 using System.Web;
 using TicketsSupport.ApplicationCore.Configuration;
 using TicketsSupport.ApplicationCore.DTOs;
@@ -20,16 +24,18 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 {
     public class AuthRepository : IAuthRepository
     {
+        private readonly HttpClient _httpClient;
         private readonly TS_DatabaseContext _context;
         private readonly ConfigJWT _configJWT;
         private readonly WebApp _webAppConfig;
         private readonly IEmailSender _emailSender;
-        public AuthRepository(TS_DatabaseContext context, IOptions<ConfigJWT> configJWT, IOptions<WebApp> webAppConfig, IEmailSender emailSender)
+        public AuthRepository(HttpClient httpClient, TS_DatabaseContext context, IOptions<ConfigJWT> configJWT, IOptions<WebApp> webAppConfig, IEmailSender emailSender)
         {
             _context = context;
             _configJWT = configJWT.Value;
             _emailSender = emailSender;
             _webAppConfig = webAppConfig.Value;
+            _httpClient = httpClient;
         }
 
         public async Task<AuthResponse> AuthUserAsync(AuthRequest request)
@@ -218,6 +224,94 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 Log.Error(ex, "Error change password");
                 return false;
             }
+        }
+
+        public async Task<AuthResponse> AuthUserGoogleAsync(AuthGoogleRequest request)
+        {
+            GoogleOAuthResponse? GoogleOAuthResponse = null;
+            User? user = null;
+            try
+            {
+                var requestUserData = new HttpRequestMessage(HttpMethod.Get, "https://www.googleapis.com/oauth2/v3/userinfo");
+                requestUserData.Headers.Authorization = new AuthenticationHeaderValue(request.token_type, request.access_token);
+
+                var response = await _httpClient.SendAsync(requestUserData);
+                response.EnsureSuccessStatusCode();
+
+                var content = await response.Content.ReadAsStringAsync();
+                GoogleOAuthResponse = JsonSerializer.Deserialize<GoogleOAuthResponse>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidException("GoogleOAuth Error");
+            }
+
+            if (GoogleOAuthResponse == null)
+                throw new InvalidException("GoogleOAuth Error");
+
+
+            user = await _context.Users.Include(x => x.RolNavigation)
+                                           .FirstOrDefaultAsync(x => x.Email == GoogleOAuthResponse.Email && x.Active == true);
+
+            if (user == null) //Register user
+            {
+                var imageBytes = await _httpClient.GetByteArrayAsync(GoogleOAuthResponse.Picture);
+                var base64Image = Convert.ToBase64String(imageBytes);
+                var imageFormat = DetectUtils.DetectImageFormat(imageBytes);
+
+                user = new User
+                {
+                    Username = GeneratorsRandom.Username(GoogleOAuthResponse.Given_name, GoogleOAuthResponse.Family_name, GoogleOAuthResponse.Email),
+                    FirstName = GoogleOAuthResponse.Given_name,
+                    LastName = GoogleOAuthResponse.Family_name,
+                    Email = GoogleOAuthResponse.Email,
+                    Password = string.Empty,
+                    Salt = string.Empty,
+                    Photo = $"data:image/{imageFormat};base64,{base64Image}",
+                    Active = true
+                };
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+            }
+
+            //Validate user and return token
+            if (user != null)
+            {
+                var token = TokenUtils.GenerateToken(user, _configJWT);
+                var RefreshToken = TokenUtils.GenerateRefreshToken();
+
+                var AuthResponse = new AuthResponse
+                {
+                    Token = token,
+                    ExpirationMin = _configJWT.ExpirationMin,
+                    TokenType = _configJWT.TokenType,
+                    RefreshToken = RefreshToken.RefreshToken,
+                };
+
+                //Save refreshToken in DB
+                user.RefreshToken = RefreshToken.RefreshTokenHash;
+                user.RefreshTokenExpirationTime = DateTime.Now.AddMinutes(_configJWT.ExpirationRefreshTokenMin);
+                _context.Update(user);
+                await _context.SaveChangesAsync(user.Id, InterceptorActions.Modified);
+
+                return AuthResponse;
+            }
+            else
+            {
+                throw new NotFoundException(ExceptionMessage.NotFound("User"));
+            }
+        }
+
+        private class GoogleOAuthResponse
+        {
+            public string Sub { get; set; }
+            public string Name { get; set; }
+            public string Given_name { get; set; }
+            public string Family_name { get; set; }
+            public string Picture { get; set; }
+            public string Email { get; set; }
+            public bool Email_verified { get; set; }
+            public string Locale { get; set; }
         }
     }
 }
