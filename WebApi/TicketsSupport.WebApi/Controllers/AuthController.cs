@@ -39,6 +39,22 @@ namespace TicketsSupport.Server.Controllers
         }
 
         /// <summary>
+        /// Generate Token Authentication with GoogleOAuth
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [Route("token/google")]
+        [HttpPost, MapToApiVersion(1.0)]
+        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(AuthResponse))]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
+        [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
+        public async Task<IActionResult> AuthUserAsync(AuthGoogleRequest request)
+        {
+            var authResponse = await _authRepository.AuthUserGoogleAsync(request);
+            return Ok(authResponse);
+        }
+
+        /// <summary>
         /// Generate new token with refresh token
         /// </summary>
         /// <param name="request"></param>
