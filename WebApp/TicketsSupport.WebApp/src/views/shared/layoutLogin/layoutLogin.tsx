@@ -25,6 +25,11 @@ import useCustomForm from "../../../hooks/useCustomForm";
 import { LoginFormModel } from "../../../models/forms/login.form";
 import { Link } from "react-router-dom";
 import { paths } from "../../../routes/paths";
+import { useTranslation } from "../../../i18n";
+//models
+import { AuthRequest } from "../../../models/requests/auth.request";
+import { Divider } from "primereact/divider";
+import GoogleLoginButton from "../../../components/googleLoginButton/GoogleLoginButton";
 
 function LayoutLogin() {
     //Form
@@ -45,6 +50,10 @@ function LayoutLogin() {
     const LoginSubmit = t("auth.login.submit");
     const RestorePassword = t("auth.login.restorePassword");
     const DataInvalid = t("auth.login.loginInvalid")
+    const areNewTxt = t("auth.login.labels.areNew");
+    const createAccountTxt = t("auth.login.labels.createAccount");
+    const TitleMessageTxt = t("auth.login.labels.TitleMessage");
+    const SubTitleMessageTxt = t("auth.login.labels.SubTitleMessage");
 
     //Submit Form
     const onSubmitLogin = (data: LoginFormModel) => {
@@ -80,103 +89,103 @@ function LayoutLogin() {
 
     return (
         <>
-            <BackgroundAnimated />
-            <LaguageSelect />
-            <div className="grid h-screen w-screen m-0 p-0">
-                <div className="col-12 sm:col-6 sm:col-offset-3 md:col-5 md:col-offset-4 lg:col-10 lg:col-offset-1 lg:px-5 xl:col-8 xl:col-offset-2 xl:px-8">
-                    {/*Login Form*/}
-                    <div className="grid h-full justify-content-center align-items-center">
-                        <div className="col-10 sm:col-10 lg:col-4 bg-red h-23rem login-container">
-                            {/* Header Login */}
-                            <h6 className="text-white text-3xl font-normal p-0 m-2">{LoginTitle}</h6>
-                            <h6 className="text-gray-300 text-sm font-light p-0 my-2 mx-2">{LoginSubTitle}</h6>
-                            {/* Form login */}
-                            <div className="flex justify-content-center">
-                                <form onSubmit={handleSubmit(onSubmitLogin)} className="w-11 flex flex-column gap-1 align-items-center mt-3">
-                                    <Controller
-                                        name="username"
-                                        control={control}
-                                        rules={{
-                                            required: UsernameRequired,
-                                            maxLength: { value: 50, message: "El maximo de caracteres es de 50" },
-                                            minLength: { value: 5, message: "El minimo de caracteres es 5" }
-                                        }}
-                                        render={({ field, fieldState }) => (
-                                            <>
-                                                <label htmlFor={field.name} className={classNames({ "p-error": errors.username })}></label>
-                                                <IconField iconPosition="left" className="w-full">
-                                                    <InputIcon className="pi pi-user"> </InputIcon>
-                                                    <InputText
-                                                        id={field.name}
-                                                        value={field.value}
-                                                        className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
-                                                        onChange={(e) => field.onChange(e.target.value)}
-                                                        placeholder={Username}
-                                                    />
-                                                </IconField>
-                                                {ErrorMessageHtml(field.name)}
-                                            </>
-                                        )}
-                                    />
-                                    <Controller
-                                        name="password"
-                                        control={control}
-                                        rules={{
-                                            required: PasswordRequired,
-                                            maxLength: { value: 25, message: "El maximo de caracteres es 25" },
-                                            minLength: { value: 5, message: "El minimo de caracteres es 5" }
-                                        }}
-                                        render={({ field, fieldState }) => (
-                                            <>
-                                                <label htmlFor={field.name} className={classNames({ "p-error": errors.password })}></label>
-                                                <IconField iconPosition="left" className="w-full">
-                                                    <InputIcon className="pi pi-lock"> </InputIcon>
-                                                    <InputText
-                                                        id={field.name}
-                                                        value={field.value}
-                                                        type="password"
-                                                        className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
-                                                        onChange={(e) => field.onChange(e.target.value)}
-                                                        placeholder={Password}
-                                                    />
-                                                </IconField>
-                                                {ErrorMessageHtml(field.name)}
-                                            </>
-                                        )}
-                                    />
-                                    <Controller
-                                        name="keepLogin"
-                                        control={control}
-                                        render={({ field, fieldState }) => (
-                                            <>
-                                                <div className="flex align-items-center justify-content-between w-12">
-                                                    <div>
-                                                        <Checkbox
-                                                            inputId={field.name}
-                                                            checked={field.value}
-                                                            inputRef={field.ref}
-                                                            className={classNames({ "p-invalid": fieldState.error })}
-                                                            onChange={(e) => field.onChange(e.checked)}
-                                                        />
-                                                        <label htmlFor={field.name} className="ml-2 text-sm text-white">
-                                                            {KeepMeLogin}
-                                                        </label>
-                                                    </div>
-                                                    <Link to={paths.resetPassword}>
-                                                        <Button type="button" className="text-sm" label={RestorePassword} style={{ color: "#45B9FF" }} link />
-                                                    </Link>
-                                                </div>
-                                                {ErrorMessageHtml(field.name)}
-                                            </>
-                                        )}
-                                    />
-                                    <ButtonSubmitLogin label={LoginSubmit} loading={loadingAuth} />
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+            <LaguageSelect className="absolute top-0 right-0" />
+            <div className="grid h-screen w-screen m-0">
+                <div className="hidden md:flex flex-column justify-content-center align-items-center md:col-7 lg:col-8 bg-yellow-100">
+                    <Player
+                        autoplay
+                        loop
+                        src="/src/assets/Animation-Support.json" />
+                    <h1 className="mb-0 text-lg">{TitleMessageTxt}</h1>
+                    <p className="text-sm my-2">{SubTitleMessageTxt}</p>
                 </div>
-            </div >
+                <div className="col-12 md:col-5 lg:col-4 flex flex-column justify-content-center align-items-center">
+                    <img alt="logo.png" src={logoBlack} width="40%" className="mb-7" />
+                    <h2 className="my-0">{LoginTitle}</h2>
+                    <p className="mt-0 mb-4">{LoginSubTitle}</p>
+                    <form onSubmit={handleSubmit(onSubmitLogin)} className="flex flex-column gap-1 align-items-center w-7">
+                        <Controller
+                            name="username"
+                            control={control}
+                            rules={{
+                                required: UsernameRequired,
+                                maxLength: { value: 50, message: "El maximo de caracteres es de 50" },
+                                minLength: { value: 5, message: "El minimo de caracteres es 5" }
+                            }}
+                            render={({ field, fieldState }) => (
+                                <>
+                                    <label htmlFor={field.name} className={classNames({ "p-error": errors.username })}></label>
+                                    <label className="align-self-start">{Username}</label>
+                                    <IconField iconPosition="left" className="w-full">
+                                        <InputIcon className="pi pi-user"> </InputIcon>
+                                        <InputText
+                                            id={field.name}
+                                            value={field.value}
+                                            className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
+                                            onChange={(e) => field.onChange(e.target.value)}
+                                            placeholder={UsernamePlaceholderTxt}
+                                        />
+                                    </IconField>
+                                    {ErrorMessageHtml(field.name)}
+                                </>
+                            )}
+                        />
+                        <Controller
+                            name="password"
+                            control={control}
+                            rules={{
+                                required: PasswordRequired,
+                                maxLength: { value: 25, message: "El maximo de caracteres es 25" },
+                                minLength: { value: 5, message: "El minimo de caracteres es 5" }
+                            }}
+                            render={({ field, fieldState }) => (
+                                <>
+                                    <label htmlFor={field.name} className={classNames({ "p-error": errors.password })}></label>
+                                    <label className="align-self-start">{Password}</label>
+                                    <IconField iconPosition="left" className="w-full">
+                                        <InputIcon className="pi pi-lock"> </InputIcon>
+                                        <InputText
+                                            id={field.name}
+                                            value={field.value}
+                                            type="password"
+                                            className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
+                                            onChange={(e) => field.onChange(e.target.value)}
+                                            placeholder={PasswordPlaceholderTxt}
+                                        />
+                                    </IconField>
+                                    {ErrorMessageHtml(field.name)}
+                                </>
+                            )}
+                        />
+
+                        {/*Reset Password Button*/}
+                        <Link to={paths.resetPassword} className="align-self-end mb-4">
+                            <Button type="button" className="text-sm p-0" label={RestorePassword} style={{ color: "#45B9FF" }} link />
+                        </Link>
+                        {/*Login Button*/}
+                        <ButtonSubmitLogin label={LoginSubmit} loading={loadingAuth} />
+                    </form>
+                    {/*OR Divider*/}
+                    <div className="flex align-items-center mt-4 mb-3 w-7">
+                        <Divider layout="horizontal" className="border-gray-900" />
+                        <p className="mx-3">{OrTxt}</p>
+                        <Divider layout="horizontal" />
+                    </div>
+                    {/* Enter with Google */}
+                    <div className="flex w-7">
+                        <GoogleLoginButton />
+                    </div>
+                    {/* Register Button */}
+                    <div className="flex align-items-center justify-content-center mt-4">
+                        <p className="my-0 mr-2">{areNewTxt}</p>
+                        <Link to={paths.register} className="align-self-end my-0">
+                            <Button type="button" className="text-sm p-0" label={createAccountTxt} style={{ color: "#45B9FF" }} link />
+                        </Link>
+                    </div>
+                    {/*Logo upana*/}
+                    <img className="absolute bottom-0 right-0 w-6rem mb-3 mr-3" alt="logo-upana.png" src="/src/assets/imgs/logo-upana.png"></img>
+                </div>
+            </div>
         </>
     );
 }

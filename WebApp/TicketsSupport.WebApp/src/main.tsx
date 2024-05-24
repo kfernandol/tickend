@@ -11,21 +11,22 @@ import "primeicons/primeicons.css";
 import "./assets/scss/customPrimeFlex.scss"
 import "primereact/resources/primereact.css";
 //Themes
-//primereact/resources/themes/vela-blue/theme.css
-//primereact/resources/themes/lara-dark-blue/theme.css
-//primereact/resources/themes/luna-blue/theme.css
-import "primereact/resources/themes/vela-blue/theme.css";
+import "./assets/themes/tickend-light/theme.css"
 //i18n
 import { LanguageComponent } from "./i18n.tsx";
+//google
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <PrimeReactProvider>
-        <Provider store={store}>
-            <PersistGate loading={null} persistor={persistor}>
-                <LanguageComponent>
-                    <RoutesGuard />
-                </LanguageComponent>
-            </PersistGate>
-        </Provider>
+        <GoogleOAuthProvider clientId="534920013394-ltiprmdh3a9g11bfnb9t02ne9tcvasf8.apps.googleusercontent.com">
+            <Provider store={store}>
+                <PersistGate loading={null} persistor={persistor}>
+                    <LanguageComponent>
+                        <RoutesGuard />
+                    </LanguageComponent>
+                </PersistGate>
+            </Provider>
+        </GoogleOAuthProvider>
     </PrimeReactProvider>
 );
