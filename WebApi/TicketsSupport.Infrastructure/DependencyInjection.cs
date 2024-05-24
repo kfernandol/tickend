@@ -27,6 +27,7 @@ namespace TicketsSupport.Infrastructure
             services.AddScoped<IStadisticsRepository, StadisticsRepository>();
             services.AddScoped<IAuditLogRepository, AuditLogRepository>();
             services.AddScoped<IEmailSender, EmailSender>();
+            services.AddHttpClient();
 
             //Add DatabaseContext
             var defaultConnectionString = configuration.GetConnectionString("DefaultConnection");
