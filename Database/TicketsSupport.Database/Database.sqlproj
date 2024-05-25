@@ -78,6 +78,7 @@
     <Build Include="Tables\Ticket.sql" />
     <Build Include="Tables\AuditLog.sql" />
     <Build Include="Tables\AuditLogDetails.sql" />
+    <Build Include="Tables\UserRegisterHistory.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TS_Database.dev.publish.xml" />
