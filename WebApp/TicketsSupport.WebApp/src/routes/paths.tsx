@@ -1,5 +1,6 @@
 export const paths = {
     home: "/",
+    unauthorized: "/unauthorized",
     register: "/Register",
     profile: "/Profile",
     resetPassword: "/ResetPassword",

@@ -32,6 +32,8 @@ import ProjecEdit from "../views/projects/Project.edit.tsx";
 import Tickets from "../views/tickets/Tickets.tsx";
 import TicketsNew from "../views/tickets/Tickets.new.tsx";
 import AuditLog from "../views/audit/AuditLog.tsx";
+import Page404 from "../views/error-pages/Page404.tsx";
+import Page401 from "../views/error-pages/Page401.tsx";
 import LayoutRegister from "../views/shared/layoutLogin/LayoutRegister.tsx";
 import ConfirmRegister from "../views/confirm-register/ConfirmRegister.tsx";
 
@@ -263,12 +265,20 @@ export const routesAuthorized = () => {
                 {
                     path: paths.Audit,
                     element:
-                        <ProtectedRoute name="Audit">
+                        <ProtectedRoute name="AuditLogs">
                             <AuditLog />
                         </ProtectedRoute>
                 }
             ],
         },
+        {
+            path: paths.unauthorized,
+            element: <Page401 />
+        },
+        {
+            path: "*",
+            element: <Page404 />
+        }
     ]);
 };
 
@@ -297,8 +307,12 @@ export const routesUnauthorized = () => {
             element: <ConfirmRegister />
         },
         {
+            path: paths.unauthorized,
+            element: <Page401 />
+        },
+        {
             path: "*",
-            element: <LayoutLogin />
+            element: <Page404 />
         }
     ]);
 };

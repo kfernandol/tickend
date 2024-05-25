@@ -26,6 +26,8 @@ import { paths } from "../../../routes/paths";
 import { useTranslation } from "../../../i18n";
 //models
 import { AuthRequest } from "../../../models/requests/auth.request";
+import { Divider } from "primereact/divider";
+import GoogleLoginButton from "../../../components/googleLoginButton/GoogleLoginButton";
 import { ErrorResponse, ErrorsResponse } from "../../../models/responses/basic.response";
 
 function LayoutLogin() {
