@@ -39,7 +39,7 @@ namespace TicketsSupport.Server.Controllers
         }
 
         /// <summary>
-        /// Generate Token Authentication with GoogleOAuth
+        /// Login or Register with GoogleOAuth and return Token
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
@@ -48,11 +48,12 @@ namespace TicketsSupport.Server.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(AuthResponse))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> AuthUserAsync(AuthGoogleRequest request)
+        public async Task<IActionResult> AuthUserGoogleAsync(AuthGoogleRequest request)
         {
             var authResponse = await _authRepository.AuthUserGoogleAsync(request);
             return Ok(authResponse);
         }
+
 
         /// <summary>
         /// Generate new token with refresh token
@@ -67,6 +68,38 @@ namespace TicketsSupport.Server.Controllers
         public async Task<IActionResult> AuthRefreshToken(RefreshTokenRequest request)
         {
             var authResponse = await _authRepository.AuthRefreshToken(request.RefreshToken, request.Username);
+            return Ok(authResponse);
+        }
+
+        /// <summary>
+        /// Register new User
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [Route("register")]
+        [HttpPost, MapToApiVersion(1.0)]
+        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(AuthResponse))]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
+        [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
+        public async Task<IActionResult> AuthRegisterUserAsync(AuthRegisterUserRequest request)
+        {
+            var authResponse = await _authRepository.AuthRegisterUserAsync(request);
+            return Ok(authResponse);
+        }
+
+        /// <summary>
+        /// Confirm new User and return token
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [Route("confirm")]
+        [HttpPost, MapToApiVersion(1.0)]
+        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(AuthResponse))]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
+        [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
+        public async Task<IActionResult> AuthRegisterConfirmationAsync([FromBody] string HashConfirmation)
+        {
+            var authResponse = await _authRepository.AuthRegisterConfirmationAsync(HashConfirmation);
             return Ok(authResponse);
         }
 
