@@ -263,7 +263,7 @@ export const routesAuthorized = () => {
                 {
                     path: paths.Audit,
                     element:
-                        <ProtectedRoute name="Audit">
+                        <ProtectedRoute name="AuditLogs">
                             <AuditLog />
                         </ProtectedRoute>
                 }
