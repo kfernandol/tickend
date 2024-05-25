@@ -32,6 +32,8 @@ import ProjecEdit from "../views/projects/Project.edit.tsx";
 import Tickets from "../views/tickets/Tickets.tsx";
 import TicketsNew from "../views/tickets/Tickets.new.tsx";
 import AuditLog from "../views/audit/AuditLog.tsx";
+import Page404 from "../views/error-pages/Page404.tsx";
+import Page401 from "../views/error-pages/Page401.tsx";
 
 //Routes with login
 export const routesAuthorized = () => {
@@ -267,6 +269,14 @@ export const routesAuthorized = () => {
                 }
             ],
         },
+        {
+            path: paths.unauthorized,
+            element: <Page401 />
+        },
+        {
+            path: "*",
+            element: <Page404 />
+        }
     ]);
 };
 
@@ -287,8 +297,12 @@ export const routesUnauthorized = () => {
             element: <ChangePassword />
         },
         {
+            path: paths.unauthorized,
+            element: <Page401 />
+        },
+        {
             path: "*",
-            element: <LayoutLogin />
+            element: <Page404 />
         }
     ]);
 };

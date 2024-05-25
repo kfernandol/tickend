@@ -6,6 +6,7 @@ import { useGet } from '../../services/api_services';
 import { AuthToken } from '../../models/tokens/token.model';
 import { MenusResponse } from '../../models/responses/menus.response';
 import { RootState } from '../../redux/store';
+import { paths } from '../../routes/paths';
 
 interface props {
     name: string;
@@ -35,9 +36,11 @@ export default function ProtectedRoute(props: props) {
     }, []);
 
     if (Menus) {
-        if (!Menus.find(x => x.name === props.name) && ((props.name === "Home" || props.name === "Prifle") && authenticated.token === "")) {
-            return <Navigate to="/unauthorized" replace />;
+
+        if (!Menus.find(x => x.name === props.name) && (props.name !== "Home" && props.name !== "Profile") || authenticated.token === "") {
+            return <Navigate to={paths.unauthorized} replace />;
         }
+
         return props.children;
     }
 
