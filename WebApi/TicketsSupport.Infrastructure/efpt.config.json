@@ -79,6 +79,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[UserRegisterHistory]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[UserRestorePassword]",
          "ObjectType": 0
       }

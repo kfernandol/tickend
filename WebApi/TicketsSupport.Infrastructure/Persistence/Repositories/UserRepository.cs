@@ -34,7 +34,20 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
         public async Task<UserResponse> CreateUser(CreateUserRequest request)
         {
-            var user = _mapper.Map<User>(request);
+            User? user = null;
+
+            //Check username exist
+            user = await _context.Users.FirstOrDefaultAsync(x => x.Username == request.Username);
+            if (user != null)
+                throw new ExistException(ExceptionMessage.Exist("Username"));
+
+            //Check email exist
+            user = await _context.Users.FirstOrDefaultAsync(x => x.Email == request.Email);
+            if (user != null)
+                throw new ExistException(ExceptionMessage.Exist("Email"));
+
+            //Add new user
+            user = _mapper.Map<User>(request);
             user.Rol = request.RolId;
             user.Active = true;
 

@@ -45,6 +45,8 @@ public partial class TS_DatabaseContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
+    public virtual DbSet<UserRegisterHistory> UserRegisterHistories { get; set; }
+
     public virtual DbSet<UserRestorePassword> UserRestorePasswords { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -338,6 +340,26 @@ public partial class TS_DatabaseContext : DbContext
                 .IsUnicode(false);
 
             entity.HasOne(d => d.RolNavigation).WithMany(p => p.Users).HasForeignKey(d => d.Rol);
+        });
+
+        modelBuilder.Entity<UserRegisterHistory>(entity =>
+        {
+            entity.ToTable("UserRegisterHistory");
+
+            entity.Property(e => e.ConfirmationDate).HasColumnType("datetime");
+            entity.Property(e => e.HashConfirmation)
+                .HasMaxLength(150)
+                .IsUnicode(false);
+            entity.Property(e => e.Ip)
+                .IsRequired()
+                .HasMaxLength(16)
+                .IsUnicode(false)
+                .HasColumnName("IP");
+            entity.Property(e => e.RegisterDate).HasColumnType("datetime");
+
+            entity.HasOne(d => d.User).WithMany(p => p.UserRegisterHistories)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
         });
 
         modelBuilder.Entity<UserRestorePassword>(entity =>
