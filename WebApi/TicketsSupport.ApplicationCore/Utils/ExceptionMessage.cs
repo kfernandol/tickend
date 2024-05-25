@@ -77,6 +77,20 @@ namespace TicketsSupport.ApplicationCore.Utils
 
             return string.Format(messsage);
         }
+
+        public static string Exist(string ElementName)
+        {
+            string message = ResourcesUtils.GetExceptionDetails("ErrorExistDetail");
+
+            return string.Format(message, ElementName);
+        }
+
+        public static string Unconfirmed(string ElementName)
+        {
+            string messsage = ResourcesUtils.GetExceptionDetails("UnConfirmedDetailsWithValue");
+
+            return string.Format(messsage, ElementName);
+        }
         #endregion
     }
 }

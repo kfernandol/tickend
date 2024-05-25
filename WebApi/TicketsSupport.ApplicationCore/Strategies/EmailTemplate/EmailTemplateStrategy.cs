@@ -12,9 +12,9 @@ namespace TicketsSupport.ApplicationCore.Strategies.EmailTemplate
         public abstract (string templateHtml, string subject) GetEmailContent(string from, string templatePath, Dictionary<string, string> templateData);
     }
 
-    public class ResetPasswordTemplateStrategy : EmailTemplateStrategy
+    public class EmailBtnLinkTemplateStrategy : EmailTemplateStrategy
     {
-        private string templateFileName = "ResetPassword.html";
+        private string templateFileName = "EmailLink.html";
         public override (string templateHtml, string subject) GetEmailContent(string from, string templatePath, Dictionary<string, string> templateData)
         {
             string path = Path.Combine(templatePath, templateFileName);
@@ -22,10 +22,8 @@ namespace TicketsSupport.ApplicationCore.Strategies.EmailTemplate
 
             Dictionary<string, string> templateDefaultValues = new Dictionary<string, string>
             {
-                {"Saludation", ResourcesUtils.GetEmailResetPassword("Saludation")},
-                {"Message", ResourcesUtils.GetEmailResetPassword("Message")},
-                {"ResetPasswordBtn", ResourcesUtils.GetEmailResetPassword("ResetPasswordBtn")},
-                {"WarningMessage", ResourcesUtils.GetEmailResetPassword("WarningMessage")},
+                {"Saludation", ResourcesUtils.GetEmailBtnLink("Saludation")},
+                {"WarningMessage", ResourcesUtils.GetEmailBtnLink("WarningMessage")},
                 {"From", from }
             };
 
@@ -34,7 +32,7 @@ namespace TicketsSupport.ApplicationCore.Strategies.EmailTemplate
                 templateHtml = templateHtml.Replace("{{" + data.Key + "}}", data.Value);
             }
 
-            var subject = ResourcesUtils.GetEmailResetPassword("Subject");
+            var subject = templateData["Subject"];
 
             return (templateHtml, subject);
         }

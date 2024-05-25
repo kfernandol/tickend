@@ -117,17 +117,26 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Message" xml:space="preserve">
-    <value>Need to reset your password? No problem. Just click the button below and you will be on your way</value>
+  <data name="RegisterBtn" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
+  <data name="RegisterMessage" xml:space="preserve">
+    <value>We have detected a registration with this email address. Please confirm the registration by clicking the button below.</value>
+  </data>
+  <data name="RegisterSubject" xml:space="preserve">
+    <value>Registration confirmation</value>
   </data>
   <data name="ResetPasswordBtn" xml:space="preserve">
     <value>Reset Password</value>
   </data>
+  <data name="ResetPasswordMessage" xml:space="preserve">
+    <value>Need to reset your password? No problem. Just click the button below and you will be on your way</value>
+  </data>
+  <data name="ResetPasswordSubject" xml:space="preserve">
+    <value>Reset Password</value>
+  </data>
   <data name="Saludation" xml:space="preserve">
     <value>Hi</value>
-  </data>
-  <data name="Subject" xml:space="preserve">
-    <value>Reset Password</value>
   </data>
   <data name="WarningMessage" xml:space="preserve">
     <value>If you did not initiate this request, please contact us immediately at</value>

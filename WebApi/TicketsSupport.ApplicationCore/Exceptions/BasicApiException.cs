@@ -21,6 +21,7 @@ namespace TicketsSupport.ApplicationCore.Exceptions
 
         public BasicApiException(string detailsException) : base(detailsException)
         {
+            Details = detailsException;
         }
     }
 }

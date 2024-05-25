@@ -14,8 +14,8 @@ namespace TicketsSupport.ApplicationCore.Strategies.EmailTemplate
         {
             switch (template)
             {
-                case TicketsSupport.EmailTemplate.ResetPassword:
-                    emailTemplateStrategy = new ResetPasswordTemplateStrategy();
+                case TicketsSupport.EmailTemplate.EmailBtnLink:
+                    emailTemplateStrategy = new EmailBtnLinkTemplateStrategy();
                     break;
                 case TicketsSupport.EmailTemplate.TicketCreate:
                     emailTemplateStrategy = new TicketCreatedTemplateStrategy();
@@ -28,7 +28,7 @@ namespace TicketsSupport.ApplicationCore.Strategies.EmailTemplate
 
         public (string templateHtml, string subject) GetContentTemplate(string from, string templatePath, Dictionary<string, string> templateData)
         {
-           return emailTemplateStrategy.GetEmailContent(from, templatePath, templateData);
+            return emailTemplateStrategy.GetEmailContent(from, templatePath, templateData);
         }
     }
 }

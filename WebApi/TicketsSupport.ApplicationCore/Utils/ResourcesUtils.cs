@@ -25,9 +25,9 @@ namespace TicketsSupport.ApplicationCore.Utils
             return GetResourceManager("TicketsSupport.ApplicationCore.Resources.Responses.Messages.ResponseMessages").GetString(nameInResource);
         }
 
-        public static string? GetEmailResetPassword(string nameInResource)
+        public static string? GetEmailBtnLink(string nameInResource)
         {
-            return GetResourceManager("TicketsSupport.ApplicationCore.Resources.Emails.ResetPassword.ResetPassword").GetString(nameInResource);
+            return GetResourceManager("TicketsSupport.ApplicationCore.Resources.Emails.EmailBtnLink.EmailBtnLink").GetString(nameInResource);
         }
 
         public static string? GetEmailTicketCreate(string nameInResource)

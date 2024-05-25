@@ -6,6 +6,8 @@ namespace TicketsSupport.ApplicationCore.Interfaces
     {
         Task<AuthResponse> AuthUserAsync(AuthRequest request);
         Task<AuthResponse> AuthUserGoogleAsync(AuthGoogleRequest request);
+        Task<bool> AuthRegisterUserAsync(AuthRegisterUserRequest request);
+        Task<AuthResponse> AuthRegisterConfirmationAsync(string HashConfirmation);
         Task<AuthResponse> AuthRefreshToken(string RefreshToken, string Username);
         Task<bool> ResetPassword(ResetPasswordRequest request);
         Task<bool> ChangePassword(ChangePasswordRequest request);

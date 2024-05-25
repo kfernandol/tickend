@@ -19,8 +19,8 @@
 
         </mj-text>
         <mj-button font-family="Helvetica" background-color="#000" color="white" height=25px padding=10px>
-          <a style="color: #fff;text-decoration:none;" href="{{ResetLink}}">
-            {{ResetPasswordBtn}}
+          <a style="color: #fff;text-decoration:none;" href="{{BtnLink}}">
+            {{BtnText}}
           </a>
         </mj-button>
         <mj-text font-family="Helvetica" color="#898788" font-weight="500" font-size=14px>

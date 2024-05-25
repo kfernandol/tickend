@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace TicketsSupport.ApplicationCore.Resources.Emails.ResetPassword {
+namespace TicketsSupport.ApplicationCore.Resources.Emails.EmailBtnLink {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace TicketsSupport.ApplicationCore.Resources.Emails.ResetPassword {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class ResetPassword {
+    internal class EmailBtnLink {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal ResetPassword() {
+        internal EmailBtnLink() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace TicketsSupport.ApplicationCore.Resources.Emails.ResetPassword {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("TicketsSupport.ApplicationCore.Resources.Emails.ResetPassword.ResetPassword", typeof(ResetPassword).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("TicketsSupport.ApplicationCore.Resources.Emails.EmailBtnLink.EmailBtnLink", typeof(EmailBtnLink).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,11 +61,29 @@ namespace TicketsSupport.ApplicationCore.Resources.Emails.ResetPassword {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Need to reset your password? No problem. Just click the button below and you will be on your way.
+        ///   Looks up a localized string similar to Confirm.
         /// </summary>
-        internal static string Message {
+        internal static string RegisterBtn {
             get {
-                return ResourceManager.GetString("Message", resourceCulture);
+                return ResourceManager.GetString("RegisterBtn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to We have detected a registration with this email address. Please confirm the registration by clicking the button below..
+        /// </summary>
+        internal static string RegisterMessage {
+            get {
+                return ResourceManager.GetString("RegisterMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Registration confirmation.
+        /// </summary>
+        internal static string RegisterSubject {
+            get {
+                return ResourceManager.GetString("RegisterSubject", resourceCulture);
             }
         }
         
@@ -79,20 +97,29 @@ namespace TicketsSupport.ApplicationCore.Resources.Emails.ResetPassword {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Hi.
+        ///   Looks up a localized string similar to Need to reset your password? No problem. Just click the button below and you will be on your way.
         /// </summary>
-        internal static string Saludation {
+        internal static string ResetPasswordMessage {
             get {
-                return ResourceManager.GetString("Saludation", resourceCulture);
+                return ResourceManager.GetString("ResetPasswordMessage", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Reset Password.
         /// </summary>
-        internal static string Subject {
+        internal static string ResetPasswordSubject {
             get {
-                return ResourceManager.GetString("Subject", resourceCulture);
+                return ResourceManager.GetString("ResetPasswordSubject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hi.
+        /// </summary>
+        internal static string Saludation {
+            get {
+                return ResourceManager.GetString("Saludation", resourceCulture);
             }
         }
         

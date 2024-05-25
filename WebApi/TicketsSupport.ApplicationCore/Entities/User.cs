@@ -48,5 +48,7 @@ public partial class User
 
     public virtual ICollection<Ticket> TicketLastUpdatedByNavigations { get; set; } = new List<Ticket>();
 
+    public virtual ICollection<UserRegisterHistory> UserRegisterHistories { get; set; } = new List<UserRegisterHistory>();
+
     public virtual ICollection<UserRestorePassword> UserRestorePasswords { get; set; } = new List<UserRestorePassword>();
 }

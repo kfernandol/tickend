@@ -30,7 +30,7 @@ namespace TicketsSupport.ApplicationCore.Utils
                     new Claim(JwtRegisteredClaimNames.Sub, user.Username),
                     new Claim(JwtRegisteredClaimNames.Name, $"{user.FirstName} {user.LastName}"),
                     new Claim(JwtRegisteredClaimNames.Email, user?.Email ?? ""),
-                    new Claim("PermissionLevel", user?.RolNavigation?.PermissionLevel.ToString() ?? ""),
+                    new Claim("PermissionLevel", user?.RolNavigation?.PermissionLevel.ToString() ?? "NewUser"),
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(configJWT.ExpirationMin),
                 Issuer = configJWT.Issuer,

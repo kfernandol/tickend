@@ -11,8 +11,9 @@ namespace TicketsSupport.ApplicationCore
         {
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
-            services.AddTransient<ResetPasswordTemplateStrategy>();
+            services.AddTransient<EmailBtnLinkTemplateStrategy>();
             services.AddTransient<TicketCreatedTemplateStrategy>();
+            services.AddTransient<SimpleMessageTemplateStrategy>();
             services.AddScoped<EmailTemplateContext>();
 
             return services;

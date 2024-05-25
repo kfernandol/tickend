@@ -23,9 +23,9 @@
       <LastGenOutput>SimpleMessage.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Emails\ResetPassword\ResetPassword.resx">
+    <EmbeddedResource Update="Resources\Emails\EmailBtnLink\EmailBtnLink.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ResetPassword.Designer.cs</LastGenOutput>
+      <LastGenOutput>EmailBtnLink.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\Emails\TicketCreated\TicketCreated.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -75,10 +75,10 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Resources\Emails\ResetPassword\ResetPassword.Designer.cs">
+    <Compile Update="Resources\Emails\EmailBtnLink\EmailBtnLink.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>ResetPassword.resx</DependentUpon>
+      <DependentUpon>EmailBtnLink.resx</DependentUpon>
     </Compile>
     <Compile Update="Resources\Emails\TicketCreated\TicketCreated.Designer.cs">
       <DesignTime>True</DesignTime>

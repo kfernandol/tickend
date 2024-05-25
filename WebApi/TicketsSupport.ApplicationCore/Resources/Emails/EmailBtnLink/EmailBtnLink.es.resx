@@ -117,17 +117,26 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Message" xml:space="preserve">
-    <value>¿Necesita restablecer su contraseña? No se preocupe. Sólo tiene que hacer clic en el botón de abajo y estará en camino</value>
+  <data name="RegisterBtn" xml:space="preserve">
+    <value>Confirmar</value>
+  </data>
+  <data name="RegisterMessage" xml:space="preserve">
+    <value>Hemos detectado un registro con este correo electronico por favor confirma el registro precionando el boton de abajo.</value>
+  </data>
+  <data name="RegisterSubject" xml:space="preserve">
+    <value>Confirmacion de registro</value>
   </data>
   <data name="ResetPasswordBtn" xml:space="preserve">
     <value>Reiniciar contraseña</value>
   </data>
+  <data name="ResetPasswordMessage" xml:space="preserve">
+    <value>¿Necesita restablecer su contraseña? No se preocupe. Sólo tiene que hacer clic en el botón de abajo y estará en camino</value>
+  </data>
+  <data name="ResetPasswordSubject" xml:space="preserve">
+    <value>Reiniciar Contraseña</value>
+  </data>
   <data name="Saludation" xml:space="preserve">
     <value>Hola</value>
-  </data>
-  <data name="Subject" xml:space="preserve">
-    <value>Reiniciar Contraseña</value>
   </data>
   <data name="WarningMessage" xml:space="preserve">
     <value>Si usted no ha iniciado esta solicitud, póngase en contacto con nosotros inmediatamente en</value>
