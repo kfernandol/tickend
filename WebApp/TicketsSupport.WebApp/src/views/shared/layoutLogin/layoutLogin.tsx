@@ -1,6 +1,5 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 //Css
-import "./layoutLogin.css"
 import logoBlack from "../../../../src/assets/logo-black.svg";
 //Components
 import { classNames } from "primereact/utils";
@@ -11,6 +10,9 @@ import { InputIcon } from "primereact/inputicon";
 import LaguageSelect from "../../../components/lenguajeSelect/languageSelect"
 import ButtonSubmitLogin from "../../../components/buttonSubmitLogin/buttonSubmitLogin";
 import { Player } from '@lottiefiles/react-lottie-player';
+import { Divider } from "primereact/divider";
+import { Toast } from "primereact/toast";
+import GoogleLoginButton from "../../../components/googleLoginButton/GoogleLoginButton";
 //redux
 import { useDispatch } from "react-redux";
 import { login } from "../../../redux/Slices/AuthSlice";
@@ -24,14 +26,14 @@ import { paths } from "../../../routes/paths";
 import { useTranslation } from "../../../i18n";
 //models
 import { AuthRequest } from "../../../models/requests/auth.request";
-import { Divider } from "primereact/divider";
-import GoogleLoginButton from "../../../components/googleLoginButton/GoogleLoginButton";
+import { ErrorResponse, ErrorsResponse } from "../../../models/responses/basic.response";
 
 function LayoutLogin() {
     //Form
     const { control, handleSubmit, setError, errors, ErrorMessageHtml } = useCustomForm<LoginFormModel>({ username: "", password: "" });
     //hooks
     const dispatch = useDispatch();
+    const toast = useRef<Toast>(null);
     //Api Request
     const { SendAuthRequest, loadingAuth, authResponse, errorAuth } = useAuthAPI();
     //Translation
@@ -84,8 +86,33 @@ function LayoutLogin() {
 
     }, [errorAuth])
 
+
+    useEffect(() => {
+        let errorResponse = errorAuth;
+        if (errorResponse) {
+            if (typeof (errorResponse as ErrorResponse | ErrorsResponse).details === "string") // String Details
+            {
+                errorResponse = errorResponse as ErrorResponse;
+                toast?.current?.show({
+                    severity: 'error', summary: LoginTitle, detail: errorResponse.details, life: 3000
+                });
+            }
+            else // Json Details
+            {
+                errorResponse = errorResponse as ErrorsResponse;
+                const errorsHtml = Object.entries(errorResponse.details).map(([_field, errors], index) => (
+                    errors.map((error, errorIndex) => (
+                        <li key={`${index}-${errorIndex}`}>{error}</li>
+                    ))
+                )).flat();
+                toast?.current?.show({ severity: 'error', summary: LoginTitle, detail: <ul id='errors-toast' className='pl-0'>{errorsHtml}</ul>, life: 50000 });
+            }
+        }
+    }, [errorAuth, authResponse])
+
     return (
         <>
+            <Toast ref={toast} />
             <LaguageSelect className="absolute top-0 right-0" />
             <div className="grid h-screen w-screen m-0">
                 <div className="hidden md:flex flex-column justify-content-center align-items-center md:col-7 lg:col-8 bg-yellow-100">

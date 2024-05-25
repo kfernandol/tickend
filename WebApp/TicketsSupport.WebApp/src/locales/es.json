@@ -23,6 +23,34 @@
       "loginInvalid": "Nombre de usuario o contraseña inválidos",
       "keepMeLogin": "Mantenerme conectado",
       "restorePassword": "¿Olvidó su contraseña?"
+    },
+    "register": {
+      "title": "Registrarse",
+      "subtitle": "Registra un nuevo usuario",
+      "submit": "Registrarme",
+      "labels": {
+        "username": "Nombre de usuario",
+        "password": "Contraseña",
+        "or": "o",
+        "continueGoogle": "Continuar con Google",
+        "areOld": "Tienes una cuenta?",
+        "loginAccount": "Ingresa",
+        "TitleMessage": "Optimiza tu Soporte al Cliente",
+        "SubTitleMessage": "Brindamos soluciones efectivas para mantener a tus clientes satisfechos y seguros.",
+        "returnHome": "Regresar al inicio",
+        "registerConfirmMessage": "¡Bienvenido a Tickend! Gracias por registrarte. Para activar tu cuenta, por favor confirma tu dirección de correo electrónico siguiendo las instrucciones que te hemos enviado. Una vez verificado, podrás disfrutar de todas las funcionalidades de nuestra plataforma de gestión de tickets."
+      },
+      "placeholder": {
+        "username": "Ingrese su nombre de usuario",
+        "password": "Ingrese su contraseña",
+        "confirmPassword": "Confime su contraseña",
+        "firstname": "Ingrese su nombre",
+        "lastname": "Ingrese su apellido",
+        "email": "Ingrese su email"
+      },
+      "usernameRequired": "Se requiere un nombre de usuario",
+      "passwordRequired": "Se requiere una contraseña",
+      "loginInvalid": "Nombre de usuario o contraseña inválidos"
     }
   },
   "navigation": {

@@ -122,7 +122,7 @@ export default function ChangePassword() {
                                     </div>
 
                                     {/* Password Input */}
-                                    <div className='col-12 p-0 mb-2'>
+                                    <div className='col-12 p-0 mb-5 mt-2'>
                                         <Controller
                                             name="confirmPassword"
                                             control={control}

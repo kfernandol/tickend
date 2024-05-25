@@ -12,7 +12,7 @@ export interface ErrorResponse {
 export interface ErrorsResponse {
     code: number,
     message: string,
-    errors: ErrorsDetail
+    details: ErrorsDetail
 }
 
 export interface ErrorsDetail {

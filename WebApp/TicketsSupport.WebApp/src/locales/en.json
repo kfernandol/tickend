@@ -23,6 +23,34 @@
       "loginInvalid": "Username or password invalid",
       "keepMeLogin": "Keep me logged in",
       "restorePassword": "Forgot your password?"
+    },
+    "register": {
+      "title": "Register",
+      "subtitle": "Register a new user",
+      "submit": "Register me",
+      "labels": {
+        "username": "Username",
+        "password": "Password",
+        "or": "or",
+        "continueGoogle": "Continue with Google",
+        "areOld": "Are you account?",
+        "loginAccount": "Login",
+        "TitleMessage": "Optimize Your Customer Support",
+        "SubTitleMessage": "We provide effective solutions to keep your customers satisfied and secure.",
+        "returnHome": "Return home",
+        "registerConfirmMessage": "Welcome to Tickend! Thank you for registering. To activate your account, please confirm your email address by following the instructions we have sent you. Once verified, you will be able to enjoy all the features of our ticketing platform."
+      },
+      "placeholder": {
+        "username": "Enter your username",
+        "password": "Enter your password",
+        "confirmPassword": "Confirm your password",
+        "firstname": "Enter your name",
+        "lastname": "Enter your last name",
+        "email": "Enter your email"
+      },
+      "usernameRequired": "Username is required",
+      "passwordRequired": "Password is required",
+      "loginInvalid": "Username or password invalid"
     }
   },
   "navigation": {

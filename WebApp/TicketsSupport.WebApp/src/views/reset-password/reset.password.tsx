@@ -77,7 +77,7 @@ export default function ResetPassword() {
                                 <h6 className="text-gray-500 text-sm text-center font-light p-0 my-2 mx-2">{SubTitle}</h6>
                                 {/* Form Restore password */}
                                 <div className="flex justify-content-center">
-                                    <form onSubmit={handleSubmit(onSubmitResetPassword)} className="w-11 flex flex-column gap-1 align-items-center mt-3">
+                                    <form onSubmit={handleSubmit(onSubmitResetPassword)} className="w-11 flex flex-column gap-1 align-items-center mt-5">
                                         <Controller
                                             name="email"
                                             control={control}
@@ -106,7 +106,7 @@ export default function ResetPassword() {
                                             )}
                                         />
 
-                                        <ButtonSubmitLogin label={Submit} loading={loadingPut} />
+                                        <ButtonSubmitLogin label={Submit} loading={loadingPut} className="mt-5" />
                                     </form>
 
                                 </div>

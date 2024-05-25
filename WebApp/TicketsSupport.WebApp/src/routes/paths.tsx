@@ -4,6 +4,7 @@ export const paths = {
     profile: "/Profile",
     resetPassword: "/ResetPassword",
     changePassword: "/ChangePassword/:hash",
+    confirmRegister: "/ConfirmRegister/:hash",
     users: "/Users",
     newUser: "/Users/New",
     editUser: "/Users/Edit/",

@@ -18,7 +18,7 @@ import { useTranslation } from 'react-i18next'
 import { useGet, usePut } from '../../services/api_services';
 import useCustomForm from '../../hooks/useCustomForm';
 //Models
-import { BasicResponse } from '../../models/responses/basic.response';
+import { BasicResponse, ErrorResponse, ErrorsResponse } from '../../models/responses/basic.response';
 import { PermissionLevelResponse } from '../../models/responses/permissionLevel.response';
 import { MenusResponse } from '../../models/responses/menus.response';
 import { MenusRequestPost } from '../../models/requests/menus.request';
@@ -105,28 +105,34 @@ export default function MenuEdit() {
         })
     }, []);
 
-    //Save New Rol
+    //Save Edit menu
     useEffect(() => {
-        if (httpCodePut === 200) {
+        let errorResponse = errorPut;
+        if (httpCodePut !== 200) {
+            if (errorResponse) {
+                if (typeof (errorResponse as ErrorResponse | ErrorsResponse).details === "string") // String Details
+                {
+                    errorResponse = errorResponse as ErrorResponse;
+                    toast?.current?.show({
+                        severity: 'error', summary: CardTitle, detail: errorResponse.details, life: 3000
+                    });
+                }
+                else // Json Details
+                {
+                    errorResponse = errorResponse as ErrorsResponse;
+                    const errorsHtml = Object.entries(errorResponse.details).map(([_field, errors], index) => (
+                        errors.map((error, errorIndex) => (
+                            <li key={`${index}-${errorIndex}`}>{error}</li>
+                        ))
+                    )).flat();
+                    toast?.current?.show({ severity: 'error', summary: CardTitle, detail: <ul id='errors-toast' className='pl-0'>{errorsHtml}</ul>, life: 50000 });
+                }
+            }
+        } else {
             const { message } = putResponse as BasicResponse;
             toast?.current?.show({ severity: 'success', summary: CardTitle, detail: message, life: 3000 });
             reset();
             setTimeout(() => navigate(returnToTable), 3000);
-        }
-        if (errorPut && httpCodePut !== 0) {
-            if ('errors' in errorPut) {
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const errorsHtml = Object.entries(errorPut.errors).map(([_field, errors], index) => (
-                    errors.map((error, errorIndex) => (
-                        <li key={`${index}-${errorIndex}`}>{error}</li>
-                    ))
-                )).flat();
-                toast?.current?.show({ severity: 'error', summary: CardTitle, detail: <ul id='errors-toast' className='pl-0'>{errorsHtml}</ul>, life: 50000 });
-            } else if ('details' in errorPut) {
-                toast?.current?.show({
-                    severity: 'error', summary: CardTitle, detail: errorPut.details, life: 3000
-                });
-            }
         }
 
     }, [errorPut, httpCodePut, putResponse])

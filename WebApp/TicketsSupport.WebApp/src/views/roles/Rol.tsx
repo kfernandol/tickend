@@ -98,28 +98,32 @@ export default function Roles() {
 
     //Notification delete
     useEffect(() => {
-        if (httpCodeDelete === 200) {
+        let errorResponse = errorDelete;
+        if (httpCodeDelete !== 200) {
+            if (errorResponse) {
+                if (typeof (errorResponse as ErrorResponse | ErrorsResponse).details === "string") // String Details
+                {
+                    errorResponse = errorResponse as ErrorResponse;
+                    toast?.current?.show({
+                        severity: 'error', summary: TableDeleteTitle, detail: errorResponse.details, life: 3000
+                    });
+                }
+                else // Json Details
+                {
+                    errorResponse = errorResponse as ErrorsResponse;
+                    const errorsHtml = Object.entries(errorResponse.details).map(([_field, errors], index) => (
+                        errors.map((error, errorIndex) => (
+                            <li key={`${index}-${errorIndex}`}>{error}</li>
+                        ))
+                    )).flat();
+                    toast?.current?.show({ severity: 'error', summary: TableDeleteTitle, detail: <ul id='errors-toast' className='pl-0'>{errorsHtml}</ul>, life: 50000 });
+                }
+            }
+        } else {
             toast?.current?.show({ severity: 'success', summary: TableDeleteTitle, detail: deleteResponse?.message, life: 3000 });
             setTimeout(() => SendGetRequest("v1/roles").then((value) => {
                 setRoles((value.data as RolesResponse[]));
             }), 3000);
-        }
-        if (errorDelete && httpCodeDelete !== 0) {
-            if ('errors' in errorDelete) {//Is Errors Response
-                const errors = errorDelete as ErrorsResponse;
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const errorsHtml = Object.entries(errors.errors).map(([_field, errors], index) => (
-                    errors.map((error, errorIndex) => (
-                        <li key={`${index}-${errorIndex}`}>{error}</li>
-                    ))
-                )).flat();
-                toast?.current?.show({ severity: 'error', summary: TableDeleteTitle, detail: <ul id='errors-toast' className='pl-0'>{errorsHtml}</ul>, life: 50000 });
-            } else if ('details' in errorDelete) {//Is Error Response
-                const error = errorDelete as ErrorResponse;
-                toast?.current?.show({
-                    severity: 'error', summary: TableDeleteTitle, detail: error.details, life: 3000
-                });
-            }
         }
 
     }, [errorDelete, httpCodeDelete, deleteResponse])

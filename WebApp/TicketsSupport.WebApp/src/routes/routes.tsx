@@ -32,6 +32,8 @@ import ProjecEdit from "../views/projects/Project.edit.tsx";
 import Tickets from "../views/tickets/Tickets.tsx";
 import TicketsNew from "../views/tickets/Tickets.new.tsx";
 import AuditLog from "../views/audit/AuditLog.tsx";
+import LayoutRegister from "../views/shared/layoutLogin/LayoutRegister.tsx";
+import ConfirmRegister from "../views/confirm-register/ConfirmRegister.tsx";
 
 //Routes with login
 export const routesAuthorized = () => {
@@ -279,12 +281,20 @@ export const routesUnauthorized = () => {
             element: <LayoutLogin />,
         },
         {
+            path: paths.register,
+            element: <LayoutRegister />
+        },
+        {
             path: paths.resetPassword,
             element: <ResetPassword />
         },
         {
             path: paths.changePassword,
             element: <ChangePassword />
+        },
+        {
+            path: paths.confirmRegister,
+            element: <ConfirmRegister />
         },
         {
             path: "*",

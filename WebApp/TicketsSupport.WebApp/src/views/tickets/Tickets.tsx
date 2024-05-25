@@ -36,7 +36,7 @@ import { RootState } from '../../redux/store';
 import { AuthToken } from '../../models/tokens/token.model';
 import { UserResponse } from '../../models/responses/users.response';
 import { TicketForm } from '../../models/forms/ticket.form';
-import { BasicResponse } from '../../models/responses/basic.response';
+import { BasicResponse, ErrorResponse, ErrorsResponse } from '../../models/responses/basic.response';
 import { TicketRequest } from '../../models/requests/ticket.request';
 
 export default function Tickets() {
@@ -223,44 +223,60 @@ export default function Tickets() {
                 });
 
             }), 3000);
-        }
-        if (errorPut && httpCodePut !== 0) {
-            if ('errors' in errorPut) {
-                const errorsHtml = Object.entries(errorPut.errors).map(([_field, errors], index) => (
-                    errors.map((error, errorIndex) => (
-                        <li key={`${index}-${errorIndex}`}>{error}</li>
-                    ))
-                )).flat();
-                toast?.current?.show({ severity: 'error', summary: CardTitle, detail: <ul id='errors-toast' className='pl-0'>{errorsHtml}</ul>, life: 50000 });
-            } else if ('details' in errorPut) {
-                toast?.current?.show({
-                    severity: 'error', summary: CardTitle, detail: errorPut.details, life: 3000
-                });
+        } else {
+            let errorResponse = errorPut;
+            if (errorResponse) {
+                if (typeof (errorResponse as ErrorResponse | ErrorsResponse).details === "string") // String Details
+                {
+                    errorResponse = errorResponse as ErrorResponse;
+                    toast?.current?.show({
+                        severity: 'error', summary: CardTitle, detail: errorResponse.details, life: 3000
+                    });
+                }
+                else // Json Details
+                {
+                    errorResponse = errorResponse as ErrorsResponse;
+                    const errorsHtml = Object.entries(errorResponse.details).map(([_field, errors], index) => (
+                        errors.map((error, errorIndex) => (
+                            <li key={`${index}-${errorIndex}`}>{error}</li>
+                        ))
+                    )).flat();
+                    toast?.current?.show({ severity: 'error', summary: CardTitle, detail: <ul id='errors-toast' className='pl-0'>{errorsHtml}</ul>, life: 50000 });
+                }
             }
         }
+
+
 
     }, [errorPut, httpCodePut, putResponse])
 
     //Reply Ticket Toast
     useEffect(() => {
-        if (httpCodePost === 200) {
+        let errorResponse = errorPost;
+        if (httpCodePost !== 200) {
+            if (errorResponse) {
+                if (typeof (errorResponse as ErrorResponse | ErrorsResponse).details === "string") // String Details
+                {
+                    errorResponse = errorResponse as ErrorResponse;
+                    toast?.current?.show({
+                        severity: 'error', summary: CardTitle, detail: errorResponse.details, life: 3000
+                    });
+                }
+                else // Json Details
+                {
+                    errorResponse = errorResponse as ErrorsResponse;
+                    const errorsHtml = Object.entries(errorResponse.details).map(([_field, errors], index) => (
+                        errors.map((error, errorIndex) => (
+                            <li key={`${index}-${errorIndex}`}>{error}</li>
+                        ))
+                    )).flat();
+                    toast?.current?.show({ severity: 'error', summary: CardTitle, detail: <ul id='errors-toast' className='pl-0'>{errorsHtml}</ul>, life: 50000 });
+                }
+            }
+        } else {
             const { message } = postResponse as BasicResponse;
             toast?.current?.show({ severity: 'success', summary: replyTitleTxt, detail: message, life: 3000 });
             reset();
-        }
-        if (errorPost && httpCodePost !== 0) {
-            if ('errors' in errorPost) {
-                const errorsHtml = Object.entries(errorPost.errors).map(([_field, errors], index) => (
-                    errors.map((error, errorIndex) => (
-                        <li key={`${index}-${errorIndex}`}>{error}</li>
-                    ))
-                )).flat();
-                toast?.current?.show({ severity: 'error', summary: CardTitle, detail: <ul id='errors-toast' className='pl-0'>{errorsHtml}</ul>, life: 50000 });
-            } else if ('details' in errorPost) {
-                toast?.current?.show({
-                    severity: 'error', summary: CardTitle, detail: errorPost.details, life: 3000
-                });
-            }
         }
 
     }, [errorPost, httpCodePost, postResponse])

@@ -1,9 +1,12 @@
 import React, { LegacyRef, useEffect, useRef, useState } from 'react'
 import { FilterMatchMode } from 'primereact/api';
 import { paths } from '../../routes/paths';
+//redux
+import { RootState } from '../../redux/store';
+import { useSelector } from 'react-redux';
+//components
 import { ConfirmDialog } from 'primereact/confirmdialog';
 import { Toast } from 'primereact/toast';
-//components
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
@@ -14,17 +17,15 @@ import { Badge } from 'primereact/badge';
 import Swal from 'sweetalert2';
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
+import { Card } from 'primereact/card';
 //hooks
 import { useDelete, useGet } from "../../services/api_services";
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
 import useTokenData from '../../hooks/useTokenData';
 //models
 import { BasicResponse, ErrorResponse, ErrorsResponse } from '../../models/responses/basic.response';
 import { MenusResponse } from '../../models/responses/menus.response';
-import { RootState } from '../../redux/store';
 import { AuthToken } from '../../models/tokens/token.model';
-import { Card } from 'primereact/card';
 
 export default function Menus() {
     const toast = useRef<Toast>(null);
@@ -51,7 +52,7 @@ export default function Menus() {
 
     //Translations
     const { t } = useTranslation();
-    const GlobalConfirmationDeleteText = t("deleteConfirmation.description", { 0: t("element.Menu").toLowerCase() + "?" });
+    const GlobalConfirmationDeleteText = t("deleteConfirmation.description", { 0: t("element.menu").toLowerCase() + "?" });
     const GlobalConfirmation = t("deleteConfirmation.title");
     const GlobalButtonDelete = t("buttons.delete");
     const GlobalButtonCancel = t("common.cardFormButtons.cancel");
@@ -107,9 +108,29 @@ export default function Menus() {
             });
     }, [])
 
-    //Notification Api Response
     useEffect(() => {
-        if (httpCodeDelete === 200) {
+        let errorResponse = errorDelete;
+        if (httpCodeDelete !== 200) {
+            if (errorResponse) {
+                if (typeof (errorResponse as ErrorResponse | ErrorsResponse).details === "string") // String Details
+                {
+                    errorResponse = errorResponse as ErrorResponse;
+                    toast?.current?.show({
+                        severity: 'error', summary: TableDeleteTitle, detail: errorResponse.details, life: 3000
+                    });
+                }
+                else // Json Details
+                {
+                    errorResponse = errorResponse as ErrorsResponse;
+                    const errorsHtml = Object.entries(errorResponse.details).map(([_field, errors], index) => (
+                        errors.map((error, errorIndex) => (
+                            <li key={`${index}-${errorIndex}`}>{error}</li>
+                        ))
+                    )).flat();
+                    toast?.current?.show({ severity: 'error', summary: TableDeleteTitle, detail: <ul id='errors-toast' className='pl-0'>{errorsHtml}</ul>, life: 50000 });
+                }
+            }
+        } else {
             toast?.current?.show({ severity: 'success', summary: TableDeleteTitle, detail: deleteResponse?.message, life: 3000 });
             setTimeout(() => SendGetRequest("v1/menus").then((value) => {
                 setMenus((value.data as MenusResponse[]).map(x => ({
@@ -122,23 +143,6 @@ export default function Menus() {
                     show: x.show === true ? <Badge value={GlobalTextTrue} severity="success"></Badge> : <Badge value={GlobalTextFalse} severity="danger"></Badge>
                 })));
             }), 3000);
-        }
-        if (errorDelete && httpCodeDelete !== 0) {
-            if ('errors' in errorDelete) {//Is Errors Response
-                const errors = errorDelete as ErrorsResponse;
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const errorsHtml = Object.entries(errors.errors).map(([_field, errors], index) => (
-                    errors.map((error, errorIndex) => (
-                        <li key={`${index}-${errorIndex}`}>{error}</li>
-                    ))
-                )).flat();
-                toast?.current?.show({ severity: 'error', summary: TableDeleteTitle, detail: <ul id='errors-toast' className='pl-0'>{errorsHtml}</ul>, life: 50000 });
-            } else if ('details' in errorDelete) {//Is Error Response
-                const error = errorDelete as ErrorResponse;
-                toast?.current?.show({
-                    severity: 'error', summary: TableDeleteTitle, detail: error.details, life: 3000
-                });
-            }
         }
 
     }, [errorDelete, httpCodeDelete, deleteResponse])

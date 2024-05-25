@@ -18,7 +18,7 @@ import { useTranslation } from 'react-i18next'
 import { useGet, usePost } from '../../services/api_services';
 import useCustomForm from '../../hooks/useCustomForm';
 //Models
-import { BasicResponse } from '../../models/responses/basic.response';
+import { BasicResponse, ErrorResponse, ErrorsResponse } from '../../models/responses/basic.response';
 import { PermissionLevelResponse } from '../../models/responses/permissionLevel.response';
 import { MenusResponse } from '../../models/responses/menus.response';
 import { MenusRequestPost } from '../../models/requests/menus.request';
@@ -75,6 +75,8 @@ export default function MenuNew() {
     const CardFormPosition = t('menus.labels.position');
     const CardFormParentId = t('menus.labels.parentId');
     const CardFormShow = t('menus.labels.show');
+    //Links
+    const returnToTable = paths.menus;
 
 
     //request initial data
@@ -97,25 +99,32 @@ export default function MenuNew() {
 
     //Save New Rol
     useEffect(() => {
-        if (httpCodePost === 200) {
+        let errorResponse = errorPost;
+        if (httpCodePost !== 200) {
+            if (errorResponse) {
+                if (typeof (errorResponse as ErrorResponse | ErrorsResponse).details === "string") // String Details
+                {
+                    errorResponse = errorResponse as ErrorResponse;
+                    toast?.current?.show({
+                        severity: 'error', summary: CardTitle, detail: errorResponse.details, life: 3000
+                    });
+                }
+                else // Json Details
+                {
+                    errorResponse = errorResponse as ErrorsResponse;
+                    const errorsHtml = Object.entries(errorResponse.details).map(([_field, errors], index) => (
+                        errors.map((error, errorIndex) => (
+                            <li key={`${index}-${errorIndex}`}>{error}</li>
+                        ))
+                    )).flat();
+                    toast?.current?.show({ severity: 'error', summary: CardTitle, detail: <ul id='errors-toast' className='pl-0'>{errorsHtml}</ul>, life: 50000 });
+                }
+            }
+        } else {
             const { message } = postResponse as BasicResponse;
             toast?.current?.show({ severity: 'success', summary: CardTitle, detail: message, life: 3000 });
             reset();
-            setTimeout(() => navigate(paths.menus), 3000);
-        }
-        if (errorPost && httpCodePost !== 0) {
-            if ('errors' in errorPost) {
-                const errorsHtml = Object.entries(errorPost.errors).map(([_field, errors], index) => (
-                    errors.map((error, errorIndex) => (
-                        <li key={`${index}-${errorIndex}`}>{error}</li>
-                    ))
-                )).flat();
-                toast?.current?.show({ severity: 'error', summary: CardTitle, detail: <ul id='errors-toast' className='pl-0'>{errorsHtml}</ul>, life: 50000 });
-            } else if ('details' in errorPost) {
-                toast?.current?.show({
-                    severity: 'error', summary: CardTitle, detail: errorPost.details, life: 3000
-                });
-            }
+            setTimeout(() => navigate(returnToTable), 3000);
         }
 
     }, [errorPost, httpCodePost, postResponse])
