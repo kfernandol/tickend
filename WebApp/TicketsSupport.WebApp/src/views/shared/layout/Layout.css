@@ -10,7 +10,7 @@ body {
 
 .container {
     display: grid;
-    grid-template-columns: 300px calc(100% - 300px);
+    grid-template-columns: 270px calc(100% - 270px);
     grid-template-rows: 65px 1fr;
     gap: 0px 0px;
     grid-auto-flow: row;
@@ -23,7 +23,7 @@ body {
 }
 
 .Sidebar {
-    width: 300px;
+    width: 270px;
     grid-area: Sidebar;
     transition: .25s ease-in-out;
 }

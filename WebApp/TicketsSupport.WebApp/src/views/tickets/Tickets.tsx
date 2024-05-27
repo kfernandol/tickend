@@ -58,9 +58,10 @@ export default function Tickets() {
     const getTokenData = useTokenData<AuthToken>(authenticated?.token);
     //Hooks
     const toast = useRef<Toast>(null);
+    const tooltipRef = useRef<Tooltip | null>(null);
     const { SendGetRequest } = useGet<MenusResponse[] | TicketResponse[]>();
     const { SendPutRequest, putResponse, loadingPut, errorPut, httpCodePut } = usePut<BasicResponse>();
-    const { SendPostRequest, postResponse, loadingPost, errorPost, httpCodePost } = usePost<BasicResponse>();
+    const { SendPostRequest, postResponse, errorPost, loadingPost, httpCodePost } = usePost<BasicResponse>();
     //Translate
     const { t } = useTranslation();
     const TableHeaderNew = t('tickets.labels.new');
@@ -102,9 +103,9 @@ export default function Tickets() {
             SendGetRequest("v1/users"),
         ];
 
-        Promise.all(requests)
-            .then((responses) => {
-                responses.forEach((response) => {
+        requests.forEach((request) => {
+            Promise.resolve(request)
+                .then((response) => {
                     switch (response.url) {
                         case "v1/tickets":
                             setTickets((response.data as TicketResponse[]).map((value) => (
@@ -148,11 +149,8 @@ export default function Tickets() {
                         default:
                             break;
                     }
-                });
-            })
-            .catch((error) => {
-                console.error("Error en las solicitudes:", error);
-            });
+                })
+        })
     }, [])
 
     //Load ticket with id
@@ -312,7 +310,7 @@ export default function Tickets() {
                 })
             );
 
-            await Promise.all(promises);
+            await Promise.resolve(promises);
 
             const sortedReplies = TicketSelectedReply.sort((a, b) => a.id - b.id);
 
@@ -329,7 +327,7 @@ export default function Tickets() {
         const type = TicketType.find(x => x.id === ticketTypeId);
         if (type) {
             return <>
-                <i className={type?.icon + " ticketTooltip"} style={{ color: type?.iconColor, fontSize: "1.25rem" }} data-pr-tooltip={type?.name} data-pr-position="right" />
+                <i className={type?.icon + " tooltip"} style={{ color: type?.iconColor, fontSize: "1.25rem" }} data-pr-tooltip={type?.name} data-pr-position="right" />
             </>
         } else {
             return <>
@@ -338,34 +336,21 @@ export default function Tickets() {
         }
     };
 
-    const GetTicketTypeBadge = (ticketTypeId: number | undefined) => {
-        const type = TicketType.find(x => x.id === ticketTypeId);
-        if (type) {
-            return <>
-                <Badge value={type?.name} style={{ backgroundColor: type.iconColor }}></Badge>
-            </>
-        } else {
-            return <>
-                <Badge style={{ backgroundColor: '#bbb' }}></Badge>
-            </>
-        }
-    };
-
-    const GetTicketStatusBadge = (ticketStatusId: number | undefined, ticketId: number | undefined) => {
+    const GetTicketStatusBadge = (ticketStatusId: number | undefined, ticketId: number | undefined, size: "large" | "xlarge" | "normal" | null | undefined = "normal") => {
         const status = TicketStatus.find(x => x.id === ticketStatusId);
         const ticket = Tickets.find(x => x.id === ticketId);
         if (ticket?.isClosed === true) {
             return <>
-                <Badge value={statusClosed} style={{ backgroundColor: '#808080' }}></Badge>
+                <Badge value={statusClosed} style={{ backgroundColor: '#808080' }} size={size}></Badge>
             </>
         }
         else if (status) {
             return <>
-                <Badge value={status?.name} style={{ backgroundColor: status?.color }}></Badge>
+                <Badge value={status?.name} style={{ backgroundColor: status?.color }} size={size}></Badge>
             </>
         } else {
             return <>
-                <Badge value={statusOpen} style={{ backgroundColor: '#008bff' }}></Badge>
+                <Badge value={statusOpen} style={{ backgroundColor: '#008bff' }} size={size}></Badge>
             </>
         }
 
@@ -593,7 +578,7 @@ export default function Tickets() {
         <>
             <>
                 <Toast ref={toast} />
-                <Tooltip target=".ticketTooltip" />
+                <Tooltip ref={tooltipRef} target=".tooltip" position={'bottom'} />
                 <div
                     className="grid mt-2"
                     style={{ height: "calc(100dvh - 80px)" }}>
@@ -601,10 +586,11 @@ export default function Tickets() {
                         <Card
                             pt={{
                                 root: { className: "h-full" },
-                                body: { className: "h-full pt-0" },
-                                content: { className: "h-full" },
+                                body: { className: "h-full px-0" },
+                                content: { className: "h-full p-0" },
                             }}>
-                            <div className="flex justify-content-between mb-4">
+                            {/*Title*/}
+                            <div className="flex justify-content-between mb-4 px-3">
                                 <h2 className="my-0">{PageName}</h2>
                                 {getTokenData?.PermissionLevel === "Administrator" || getTokenData?.PermissionLevel === "User"
                                     ? <Link to={NewItemUrl}>
@@ -614,60 +600,62 @@ export default function Tickets() {
                                     </Link>
                                     : null}
                             </div>
-                            <div className="flex mb-3 w-full">
-                                <div className="w-10">
+                            {/*Ticket Search*/}
+                            <div className="flex w-full px-3 border-bottom-1 border-gray-200 pb-3">
+                                <div className="w-full">
                                     <IconField iconPosition="left">
                                         <InputIcon className="pi pi-search"> </InputIcon>
-                                        <InputText className="w-full" />
+                                        <InputText className="w-full" placeholder={`No. or Title`} />
                                     </IconField>
                                 </div>
-                                <div className="w-2 flex justify-content-end">
-                                    <Button icon="pi pi-filter" outlined aria-label="Filter" />
-                                </div>
                             </div>
-                            {/*Tickets Scroll*/}
-                            <ScrollPanel style={{ width: '100%', height: 'calc(100% - 100px)' }}>
-                                <div className="flex flex-column gap-2 pb-5">
-                                    {Tickets.filter(x => x.reply == null).map((ticket, index) => {
-                                        return <div
-                                            key={`${ticket.title}${index}`}>
-                                            <Card
-                                                className="ticket-card border-1 border-gray-300"
-                                                pt={{
-                                                    root: {
-                                                        className: "hover:shadow-4 hover:cursor-pointer transition-duration-200",
-                                                        style: { cursor: "pointer" }
-                                                    },
-                                                    body: { className: "py-1" },
-                                                    content: { className: "py-2" }
-                                                }}
-                                                onClick={(e) => handlerTicketClick(e, ticket)}>
-                                                <div className="grid">
-                                                    <div className="col-2 flex align-items-center  px-0">
-                                                        <Avatar image={Projects.find(x => x.id == ticket.projectId)?.photo} size={'large'}></Avatar>
-                                                    </div>
-                                                    <div className="col-7 flex flex-column justify-content-center px-0">
-                                                        <p className="text-lg font-semibold m-0">{Projects.find(x => x.id == ticket.projectId)?.name}</p>
-                                                        <p className="text-sm text-gray-400 font-semibold m-0">{`#${ticket.id}`}</p>
-                                                    </div>
-                                                    <div className="col-3 flex align-items-center justify-content-center">
-                                                        <p className="m-0">{timeAgo(ticket.dateCreated)}</p>
-                                                    </div>
-                                                    <div className="col-12 pb-2 pt-1 px-0">
-                                                        <p className="white-space-nowrap overflow-hidden text-overflow-ellipsis py-0 my-0">{ticket.title}</p>
-                                                    </div>
-                                                    <div className="col-12 flex align-items-center justify-content-center py-0 gap-4">
-                                                        {GetTicketTypeIcon(ticket.ticketTypeId)}
-                                                        {GetTicketStatusBadge(ticket.ticketStatusId, ticket.id)}
-                                                        {GetTicketPriorityBadge(ticket.ticketPriorityId)}
-                                                    </div>
+                            {/*All Tickets Scroll*/}
+                            <ScrollPanel
+                                className="w-full"
+                                style={{ width: '100%', height: 'calc(100% - 100px)' }}>
+                                {Tickets.filter(x => x.reply == null).map((ticket, index) => {
+                                    if (tooltipRef.current) {
+                                        tooltipRef.current.updateTargetEvents();
+                                    }
+                                    return <div
+                                        key={`${ticket.title}${index}`}
+                                        className="ticket-card flex w-full px-3"
+                                        onClick={(e) => handlerTicketClick(e, ticket)}>
 
+                                        <div className="grid m-0 w-full border-bottom-1 border-gray-200 py-2">
+                                            <div className="col-12 flex align-items-center p-0 pb-2 mt-1">
+                                                <div className="w-11 flex align-items-center gap-3">
+                                                    <Avatar image={Projects.find(x => x.id == ticket.projectId)?.photo} size={'normal'}></Avatar>
+                                                    <p className="font-bold text-lg m-0">{(() => {
+                                                        const user = Users.find(x => x.id == ticket.createBy)
+                                                        return `${user?.firstName} ${user?.lastName}`
+                                                    })()}</p>
                                                 </div>
-                                            </Card>
-                                        </div>
-                                    })}
+                                                <div className="w-1 flex align-items-center justify-content-end gap-3">
+                                                    <p className="m-0">{timeAgo(ticket.dateCreated)}</p>
+                                                </div>
+                                            </div>
+                                            <div className="col-12 flex align-items-center p-0 pb-2 mt-1">
+                                                <div className="w-11 flex align-items-center">
+                                                    <p className="text-lg m-0 white-space-nowrap overflow-hidden text-overflow-ellipsis">{ticket.title}</p>
+                                                </div>
+                                                <div className="w-1 flex justify-content-end align-items-center">
+                                                    {GetTicketTypeIcon(ticket.ticketTypeId)}
+                                                </div>
+                                            </div>
+                                            <div className="col-12 flex align-items-center p-0 mb-1">
+                                                <div className="w-10 flex align-items-center gap-2">
+                                                    {GetTicketStatusBadge(ticket.ticketStatusId, ticket.id)}
+                                                    {GetTicketPriorityBadge(ticket.ticketPriorityId)}
+                                                </div>
+                                                <div className="w-2 flex justify-content-end align-items-center">
+                                                    <p className="text-sm text-gray-400 font-semibold m-0">{`#${ticket.id}`}</p>
+                                                </div>
+                                            </div>
 
-                                </div>
+                                        </div>
+                                    </div>
+                                })}
                             </ScrollPanel>
                         </Card>
                     </div>
@@ -684,20 +672,28 @@ export default function Tickets() {
                                 content: { className: "h-full pt-2 pb-0 px-2" },
                             }}>
                             {/*Header*/}
-                            <div className="flex flex-column justify-content-center gap-2 relative">
-                                {/*Title*/}
-                                <p className="text-xl font-semibold my-0 pt-2">{TicketSelected?.title}</p>
-
-                                {/*Reply Btn*/}
-                                <div className="flex justify-content-between mt-2">
-                                    <Button icon="pi pi-reply" label={replyTxt} text raised severity="info" size={"small"} onClick={() => handlerReplyClick()} />
-                                    <div className="flex align-items-center gap-3">
-                                        {GetTicketTypeBadge(TicketSelected?.ticketTypeId)}
-                                        {GetTicketStatusBadge(TicketSelected?.ticketStatusId, TicketSelected?.id)}
-                                        {GetTicketPriorityBadge(TicketSelected?.ticketPriorityId)}
-                                    </div>
+                            <div className="grid align-items-center border-bottom-1 border-gray-200 mt-2">
+                                <div className="col-10">
+                                    <p className="text-3xl font-bold m-0">{TicketSelected?.title}</p>
                                 </div>
-                                <Divider className="my-2" />
+                                <div className="col-2 py-0 flex justify-content-end">
+                                    {
+                                        (() => {
+                                            const badge = GetTicketStatusBadge(TicketSelected?.ticketStatusId, TicketSelected?.id, "large");
+                                            return badge;
+                                        })()
+                                    }
+                                </div>
+                                <div className="col-12 flex pt-0 pb-2">
+                                    <Button
+                                        icon="pi pi-reply"
+                                        className="text-xs"
+                                        label={replyTxt}
+                                        severity="info"
+                                        size={'small'}
+                                        outlined
+                                        onClick={() => handlerReplyClick()} />
+                                </div>
                             </div>
                             {/*Ticket*/}
                             <ScrollPanel className="w-full" style={{ height: 'calc(100% - 135px)' }}>
@@ -803,6 +799,7 @@ export default function Tickets() {
                                             label="Send"
                                             severity={"success"}
                                             className="absolute bottom-0 right-0 mb-2 mr-4"
+                                            loading={loadingPost}
                                             onClick={() => handlerReplySend()} />
                                     </div>
 
@@ -1010,6 +1007,7 @@ export default function Tickets() {
                                             className='mr-3'
                                             type='submit'
                                             loading={loadingPut}
+                                            outlined
                                             onClick={() => handlerUpdatedValuesClick()} />
                                     </div>
                                 </div>

@@ -20,6 +20,7 @@ export const authSlice = createSlice({
             state.refreshToken = refreshToken;
         },
         logout: (state) => {
+            window.location.replace("/");
             (state.token = ""), (state.refreshToken = ""), (state.expirationMin = 0), (state.tokenType = "");
         },
     },

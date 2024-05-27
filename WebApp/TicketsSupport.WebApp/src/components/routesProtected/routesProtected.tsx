@@ -23,19 +23,12 @@ export default function ProtectedRoute(props: props) {
     const [Menus, setMenus] = useState<MenusResponse[]>([]);
 
     useEffect(() => {
-        const fetchMenus = async () => {
-            try {
-                const response = await SendGetRequest("v1/menus/byuser/" + getTokenData?.id);
-                setMenus(response.data as MenusResponse[]);
-            } catch (error) {
-                //console.error("Error en las solicitudes:", error);
-            }
-        };
+        SendGetRequest("v1/menus/byuser/" + getTokenData?.id).then((response) => {
+            setMenus(response.data as MenusResponse[]);
+        })
+    }, [authenticated]);
 
-        fetchMenus();
-    }, []);
-
-    if (Menus) {
+    if (Menus && Menus.length > 0) {
 
         if (!Menus.find(x => x.name === props.name) && (props.name !== "Home" && props.name !== "Profile") || authenticated.token === "") {
             return <Navigate to={paths.unauthorized} replace />;

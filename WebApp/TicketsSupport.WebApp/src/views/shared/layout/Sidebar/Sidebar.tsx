@@ -196,8 +196,8 @@ function Sidebar() {
             }
             else //Sidebar Expand
             {
-                container.style.gridTemplateColumns = '300px calc(100% - 300px)';
-                sideBar.style.width = "300px";
+                container.style.gridTemplateColumns = '270px calc(100% - 270px)';
+                sideBar.style.width = "270px";
                 container.style.transition = "grid-template-columns 0.10s ease-in-out";
 
                 if (logoImg)
