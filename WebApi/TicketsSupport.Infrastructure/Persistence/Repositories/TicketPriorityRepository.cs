@@ -15,6 +15,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
         private readonly TS_DatabaseContext _context;
         private readonly IMapper _mapper;
         private int UserIdRequest;
+        private int OrganizationId;
 
         public TicketPriorityRepository(TS_DatabaseContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
@@ -24,27 +25,32 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             //Get UserId
             string? userIdTxt = httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
             int.TryParse(userIdTxt, out UserIdRequest);
+            //Get OrganizationId
+            string? organizationIdTxt = httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "organization")?.Value;
+            if (!string.IsNullOrWhiteSpace(organizationIdTxt))
+                OrganizationId = int.Parse(organizationIdTxt);
         }
         public async Task<TicketPriorityResponse> CreateTicketPriority(CreateTicketPriorityRequest request)
         {
             var ticketPriority = _mapper.Map<TicketPriority>(request);
+            ticketPriority.OrganizationId = OrganizationId;
             ticketPriority.Active = true;
 
             this._context.TicketPriorities.Add(ticketPriority);
-            await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
+            await this._context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Created);
 
             return this._mapper.Map<TicketPriorityResponse>(ticketPriority);
         }
 
         public async Task DeleteTicketPriorityById(int id)
         {
-            var ticketPriority = this._context.TicketPriorities.Find(id);
+            var ticketPriority = await _context.TicketPriorities.FirstOrDefaultAsync(x => x.Id == id && x.OrganizationId == OrganizationId);
             if (ticketPriority != null)
             {
                 ticketPriority.Active = false;
 
                 this._context.Update(ticketPriority);
-                await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Delete);
+                await this._context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Delete);
             }
             else
                 throw new NotFoundException(ExceptionMessage.NotFound("Ticket Priority", $"{id}"));
@@ -52,14 +58,16 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
         public async Task<List<TicketPriorityResponse>> GetTicketPriority(string? username)
         {
-            User? user = await _context.Users.Include(x => x.RolNavigation)
+            User? user = await _context.Users.Include(x => x.RolXusers)
+                                             .ThenInclude(x => x.Rol)
                                              .AsNoTracking()
-                                             .FirstOrDefaultAsync(x => x.Username == username);
+                                             .FirstOrDefaultAsync(x => x.Username == username && x.RolXusers.Any(x => x.Rol.OrganizationId == OrganizationId));
 
             List<TicketPriority>? result = new List<TicketPriority>();
-            if (user?.RolNavigation?.PermissionLevel == PermissionLevel.Administrator)
+            if (user?.RolXusers.FirstOrDefault(x => x.Rol.OrganizationId == OrganizationId)?.Rol?.PermissionLevel == PermissionLevel.Administrator)
             {
                 result = await _context.TicketPriorities.AsNoTracking()
+                                                        .Where(x => x.OrganizationId == OrganizationId)
                                                         .ToListAsync();
             }
             else
@@ -71,8 +79,9 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                                     .Include(x => x.Project)
                                                                         .ThenInclude(x => x.ProjectXdevelopers)
                                                                         .ThenInclude(x => x.Developer)
-                                                                    .Where(x => x.Project.ProjectXclients.Any(c => c.Client.Username == username) ||
-                                                                                x.Project.ProjectXdevelopers.Any(d => d.Developer.Username == username))
+                                                                    .Where(x => x.TicketPriority.OrganizationId == OrganizationId &&
+                                                                                (x.Project.ProjectXclients.Any(c => c.Client.Username == username) ||
+                                                                                x.Project.ProjectXdevelopers.Any(d => d.Developer.Username == username)))
                                                                     .Select(x => x.TicketPriority)
                                                                     .AsNoTracking()
                                                                     .AsSplitQuery()
@@ -89,9 +98,10 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
         public async Task<TicketPriorityResponse> GetTicketPriorityById(int id)
         {
-            var ticketPriority = this._context.TicketPriorities.Where(x => x.Active == true)
-                                                               .AsNoTracking()
-                                                               .FirstOrDefault(x => x.Id == id);
+            var ticketPriority = this._context.TicketPriorities.AsNoTracking()
+                                                               .FirstOrDefault(x => x.Id == id &&
+                                                                                    x.OrganizationId == OrganizationId &&
+                                                                                    x.Active == true);
 
             if (ticketPriority != null)
                 return this._mapper.Map<TicketPriorityResponse>(ticketPriority);
@@ -104,9 +114,8 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             var ticketPriorities = await _context.Projects.Include(x => x.ProjectXticketPriorities)
                                                              .ThenInclude(x => x.TicketPriority)
                                                          .Where(x => x.Id == projectId &&
-                                                                     x.ProjectXticketPriorities.Any(p => p.TicketPriority.Active))
+                                                                     x.ProjectXticketPriorities.Any(p => p.TicketPriority.Active == true && p.TicketPriority.OrganizationId == OrganizationId))
                                                          .SelectMany(x => x.ProjectXticketPriorities
-                                                             .Where(p => p.TicketPriority.Active)
                                                              .Select(p => p.TicketPriority))
                                                          .AsNoTracking()
                                                          .AsSplitQuery()
@@ -121,7 +130,9 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
         public async Task<TicketPriorityResponse> UpdateTicketPriority(int id, UpdateTicketPriorityRequest request)
         {
-            var ticketPriority = this._context.TicketPriorities.FirstOrDefault(x => x.Id == id && x.Active == true);
+            var ticketPriority = this._context.TicketPriorities.FirstOrDefault(x => x.Id == id &&
+                                                                                    x.OrganizationId == OrganizationId &&
+                                                                                    x.Active == true);
             if (ticketPriority != null)
             {
                 ticketPriority.Name = request.Name;
@@ -129,7 +140,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 ticketPriority.Active = true;
 
                 this._context.TicketPriorities.Update(ticketPriority);
-                await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Modified);
+                await this._context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Modified);
 
                 return this._mapper.Map<TicketPriorityResponse>(ticketPriority);
             }

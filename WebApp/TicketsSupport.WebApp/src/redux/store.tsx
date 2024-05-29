@@ -5,29 +5,37 @@ import { persistStore } from "redux-persist";
 //Slices
 import authReducer from "./Slices/AuthSlice";
 import languageReducer from "./Slices/LanguageSlice";
+import apiServiceSlice from "./Slices/ApiServiceSlice";
 
 const persistConfig = {
-  key: "auth",
-  storage,
+    key: "auth",
+    storage,
 };
 const authPersistedReducer = persistReducer(persistConfig, authReducer);
 
 const persistLanguageConfig = {
-  key: 'language',
-  storage
+    key: 'language',
+    storage
 }
 const languagePersistedReducer = persistReducer(persistLanguageConfig, languageReducer)
 
+const persistApiServiceConfig = {
+    key: 'apiService',
+    storage
+}
+const apiServicePersistedReducer = persistReducer(persistApiServiceConfig, apiServiceSlice)
+
 
 export const store = configureStore({
-  reducer: {
-    auth: authPersistedReducer,
-    language: languagePersistedReducer
-  },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: false,
-    }),
+    reducer: {
+        auth: authPersistedReducer,
+        language: languagePersistedReducer,
+        apiService: apiServicePersistedReducer
+    },
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: false,
+        }),
 });
 
 export const persistor = persistStore(store);

@@ -12,6 +12,5 @@
 	[Salt] varchar(100) NOT NULL,
 	[RefreshToken] varchar(100) NULL,
 	[RefreshTokenExpirationTime] datetime NULL,
-	[Rol] int FOREIGN KEY REFERENCES Rol(Id),
 	[Active] bit NOT NULL,
 )

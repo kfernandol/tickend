@@ -14,9 +14,13 @@ public partial class Rol
 
     public PermissionLevel PermissionLevel { get; set; }
 
+    public int OrganizationId { get; set; }
+
     public bool Active { get; set; }
 
     public virtual ICollection<MenuXrol> MenuXrols { get; set; } = new List<MenuXrol>();
 
-    public virtual ICollection<User> Users { get; set; } = new List<User>();
+    public virtual Organization Organization { get; set; } = null!;
+
+    public virtual ICollection<RolXuser> RolXusers { get; set; } = new List<RolXuser>();
 }

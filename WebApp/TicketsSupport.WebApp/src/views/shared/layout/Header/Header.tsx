@@ -7,6 +7,7 @@ import { Avatar } from "primereact/avatar";
 import { TieredMenu } from "primereact/tieredmenu";
 import { MenuItem } from "primereact/menuitem";
 import { BreadCrumb } from "primereact/breadcrumb";
+import { CascadeSelectChangeEvent } from "primereact/cascadeselect";
 //hooks
 import { useDispatch, useSelector } from "react-redux";
 import useTokenData from "../../../../hooks/useTokenData";
@@ -22,6 +23,9 @@ import { AuthToken } from "../../../../models/tokens/token.model";
 import { Languages } from "../../../../models/combobox/languages";
 import { UserResponse } from "../../../../models/responses/users.response";
 import { BreadCrumbModel } from "../../../../models/breadcrumb/breadcrumb.model";
+import OrganizationSelect from "../../../../components/organizationSelect/OrganizationSelect";
+
+
 
 function Header() {
     //Ref
@@ -40,6 +44,7 @@ function Header() {
     const [selectedLanguage, setSelectedLanguage] = useState<Languages>({ name: language.name, code: language.code, flag: language.flag });
     const [AvatarIMG, setAvatarIMG] = useState<string>("/src/assets/imgs/avatar-default.png");
     const [FullName, setFullName] = useState<string>("");
+
 
     //translations
     const { t } = useTranslation();
@@ -88,7 +93,7 @@ function Header() {
 
     useEffect(() => {
         const requests = [
-            SendGetRequest("v1/users/" + getTokenData?.id)
+            SendGetRequest("v1/users/" + getTokenData?.id),
         ]
 
         requests.forEach((request) => {
@@ -133,20 +138,30 @@ function Header() {
         );
     };
 
+
+
+    const handlerOrganizationChange = (e: CascadeSelectChangeEvent) => {
+        const currentTarget = e.value;
+        console.log(currentTarget)
+    }
+
     const MenubarStart = (
-        <div className="flex justify-content-center align-items-center">
-            <i id="MenuBtn" className="pi pi-bars mx-3 cursor-pointer" style={{ fontSize: "1.5rem" }} onClick={showSidebar} />
-            <BreadCrumb
-                home={home}
-                model={breadcrumbItems}
-                style={{ backgroundColor: "#FFFFFF00" }}
-                pt={{
-                    menuitem: { className: "text-gray-900" },
-                    label: { className: "text-gray-900 text-xl" },
-                    menu: { className: "text-gray-900" },
-                    icon: { className: "text-xl" },
-                    root: { className: "border-none py-0" }
-                }} />
+        <div className="w-full flex justify-content-between">
+            <div className="flex align-items-center">
+                <i id="MenuBtn" className="pi pi-bars mx-3 cursor-pointer" style={{ fontSize: "1.5rem" }} onClick={showSidebar} />
+                <BreadCrumb
+                    home={home}
+                    model={breadcrumbItems}
+                    style={{ backgroundColor: "#FFFFFF00" }}
+                    pt={{
+                        menuitem: { className: "text-gray-900" },
+                        label: { className: "text-gray-900 text-xl" },
+                        menu: { className: "text-gray-900" },
+                        icon: { className: "text-xl" },
+                        root: { className: "hidden md:block border-none py-0" }
+                    }} />
+            </div>
+            <OrganizationSelect onChange={(e) => handlerOrganizationChange(e)} />
         </div>
     );
 
@@ -206,7 +221,12 @@ function Header() {
     return (
         <>
             <div className="relative h-full">
-                <Menubar className="h-full" start={MenubarStart} end={MenubarEnd} style={{ backgroundColor: "#FFFFFF00" }} />
+                <Menubar
+                    className="h-full w-full"
+                    start={MenubarStart}
+                    end={MenubarEnd}
+                    style={{ backgroundColor: "#FFFFFF00" }}
+                    pt={{ start: { className: "w-6 flex justify-content-start" } }} />
                 <TieredMenu model={MenuAvatarItems as MenuItem[]} popup ref={AvatarMenu} />
             </div>
         </>

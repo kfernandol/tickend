@@ -77,6 +77,9 @@ function Sidebar() {
                 }))
             }));
 
+            console.log(Menus.filter(x => x.parentId === null && x.show === true))
+            console.log(Menus)
+
             const combinedMenuItems: MenuItem[] = [menuHome, ...menus];
             setMenusItems(combinedMenuItems);
         }

@@ -29,6 +29,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
         private readonly IEmailSender _emailSender;
         private int UserIdRequest;
         private string UserIPRequest;
+        private int? OrganizationId = null;
         public AuthRepository(
             HttpClient httpClient,
             TS_DatabaseContext context,
@@ -47,17 +48,25 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             int.TryParse(userIdTxt, out UserIdRequest);
             //Get UserIP
             UserIPRequest = httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString() ?? string.Empty;
+            //Get OrganizationId
+            string? organizationIdTxt = httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "organization")?.Value;
+            if (!string.IsNullOrWhiteSpace(organizationIdTxt))
+                OrganizationId = int.Parse(organizationIdTxt);
         }
 
         public async Task<AuthResponse> AuthUserAsync(AuthRequest request)
         {
+            //Validate user Confirmed
             var userRegisterConfirm = await _context.UserRegisterHistories.Include(x => x.User)
-                                                                    .FirstOrDefaultAsync(x => x.User.Username == request.Username);
+                                                                          .FirstOrDefaultAsync(x => x.User.Username == request.Username);
 
             if (userRegisterConfirm != null && userRegisterConfirm.Confirmed == false)
                 throw new UnConfirmedException(ExceptionMessage.Unconfirmed("User"));
 
-            var user = _context.Users.Include(x => x.RolNavigation)
+            //Get user data
+            var user = _context.Users.Include(x => x.RolXusers)
+                                     .ThenInclude(x => x.Rol)
+                                     .Include(x => x.OrganizationsXusers)
                                      .AsNoTracking()
                                      .FirstOrDefault(x => x.Username == request.Username && x.Active == true);
 
@@ -73,8 +82,26 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 if (!passwordValid)
                     throw new InvalidException(ExceptionMessage.Invalid("Password"));
 
+                int? organizationId = null;
+                //Validate User in Organization
+                if (request.Organization != null)
+                {
+                    var userInOrganization = user.OrganizationsXusers.FirstOrDefault(x => x.OrganizationId == request.Organization);
 
-                var token = TokenUtils.GenerateToken(user, _configJWT);
+                    if (userInOrganization == null)
+                        throw new NoAssignedException(ExceptionMessage.NoAssigned("organization", $"{organizationId}"));
+
+                    organizationId = request.Organization;
+                }
+                else
+                {
+                    var firstUserOrganization = user.OrganizationsXusers.FirstOrDefault();
+
+                    if (firstUserOrganization != null)
+                        organizationId = firstUserOrganization.Id;
+                }
+
+                var token = TokenUtils.GenerateToken(organizationId, user, _configJWT);
                 var RefreshToken = TokenUtils.GenerateRefreshToken();
 
                 var AuthResponse = new AuthResponse
@@ -89,7 +116,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 user.RefreshToken = RefreshToken.RefreshTokenHash;
                 user.RefreshTokenExpirationTime = DateTime.Now.AddMinutes(_configJWT.ExpirationRefreshTokenMin);
                 _context.Update(user);
-                await _context.SaveChangesAsync(user.Id, InterceptorActions.Modified);
+                await _context.SaveChangesAsync(user.Id, OrganizationId, InterceptorActions.Modified);
 
                 return AuthResponse;
             }
@@ -101,43 +128,65 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
         }
 
-        public async Task<AuthResponse> AuthRefreshToken(string RefreshToken, string Username)
+        public async Task<AuthResponse> AuthRefreshToken(RefreshTokenRequest request)
         {
-            var user = await _context.Users.Include(x => x.RolNavigation)
-                                            .FirstOrDefaultAsync(x => x.Username == Username);
+            var user = await _context.Users.Include(x => x.RolXusers)
+                                           .ThenInclude(x => x.Rol)
+                                           .Include(x => x.OrganizationsXusers)
+                                           .FirstOrDefaultAsync(x => x.Username == request.Username);
 
             if (user == null)
-                throw new NotFoundException(ExceptionMessage.NotFound("User", Username));
+                throw new NotFoundException(ExceptionMessage.NotFound("User", request.Username));
 
             bool refreshTokenIsExpired = user.RefreshTokenExpirationTime.HasValue && DateTime.Now >= user.RefreshTokenExpirationTime.Value;
 
             if (refreshTokenIsExpired)
             {
-                user.RefreshToken = "";
+                /*user.RefreshToken = "";
                 user.RefreshTokenExpirationTime = null;
-
                 _context.Update(user);
-                await _context.SaveChangesAsync(user.Id, InterceptorActions.Modified);
+                await _context.SaveChangesAsync(user.Id, OrganizationId, InterceptorActions.Modified);*/
 
-                throw new InvalidException(ExceptionMessage.Invalid("RefreshToken"));
+                throw new InvalidException(ExceptionMessage.Invalid("RefreshToken Expired"));
             }
 
 
-            var tokenHash = user.RefreshToken.Split(".");
-            var ValidateRefreshToken = HashUtils.VerifyPassword(RefreshToken, tokenHash[0], tokenHash[1]);
+            var tokenHash = user?.RefreshToken?.Split(".");
+            var ValidateRefreshToken = HashUtils.VerifyPassword(request.RefreshToken, tokenHash[0], tokenHash[1]);
 
             if (!ValidateRefreshToken)
             {
-                user.RefreshToken = "";
+                /*user.RefreshToken = "";
                 user.RefreshTokenExpirationTime = null;
                 _context.Update(user);
-                await _context.SaveChangesAsync(user.Id, InterceptorActions.Modified);
+                await _context.SaveChangesAsync(user.Id, OrganizationId, InterceptorActions.Modified);*/
 
-                throw new InvalidException(ExceptionMessage.Invalid("RefreshToken"));
+                throw new InvalidException(ExceptionMessage.Invalid("RefreshToken Invalid"));
             }
 
+
+            int organizationId = 0;
+            //Validate User in Organization
+            if (request.OrganizationId != null)
+            {
+                var userInOrganization = user.OrganizationsXusers.FirstOrDefault(x => x.OrganizationId == request.OrganizationId);
+                //User in organization?
+                if (userInOrganization == null)
+                    throw new NoAssignedException(ExceptionMessage.NoAssigned("organization", $"{request.OrganizationId}"));
+                else
+                    organizationId = (int)request.OrganizationId;
+            }
+            else
+            {
+                var firstUserOrganization = user.OrganizationsXusers.FirstOrDefault();
+
+                if (firstUserOrganization != null)
+                    organizationId = firstUserOrganization.Id;
+            }
+
+
             //Generate new token
-            var newToken = TokenUtils.GenerateToken(user, _configJWT);
+            var newToken = TokenUtils.GenerateToken(organizationId, user, _configJWT);
             var newRefreshToken = TokenUtils.GenerateRefreshToken();
 
             var AuthResponse = new AuthResponse
@@ -152,7 +201,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             user.RefreshToken = newRefreshToken.RefreshTokenHash;
             user.RefreshTokenExpirationTime = DateTime.Now.AddMinutes(_configJWT.ExpirationRefreshTokenMin);
             _context.Update(user);
-            await _context.SaveChangesAsync(user.Id, InterceptorActions.Modified);
+            await _context.SaveChangesAsync(user.Id, OrganizationId, InterceptorActions.Modified);
 
             return AuthResponse;
 
@@ -175,7 +224,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                     restorePassword.ExpirationDate = DateTime.Now.AddDays(1);
 
                     _context.Add(restorePassword);
-                    await _context.SaveChangesAsync(user.Id, InterceptorActions.Modified);
+                    await _context.SaveChangesAsync(user.Id, OrganizationId, InterceptorActions.Modified);
 
                     var resetPasswordLink = $"{_webAppConfig.Url}/ChangePassword/{HttpUtility.UrlEncode(HashReset)}";
 
@@ -232,7 +281,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                     };
 
                 await _emailSender.SendEmail(restorePassword.User.Email, string.Empty, EmailTemplate.SimpleMessage, EmailData);
-                await _context.SaveChangesAsync(restorePassword.User.Id, InterceptorActions.Modified);
+                await _context.SaveChangesAsync(restorePassword.User.Id, OrganizationId, InterceptorActions.Modified);
 
                 return true;
             }
@@ -267,8 +316,10 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 throw new InvalidException("GoogleOAuth Error");
 
 
-            user = await _context.Users.Include(x => x.RolNavigation)
-                                           .FirstOrDefaultAsync(x => x.Email == GoogleOAuthResponse.Email && x.Active == true);
+            user = await _context.Users.Include(x => x.RolXusers)
+                                       .ThenInclude(x => x.Rol)
+                                       .Include(x => x.OrganizationsXusers)
+                                       .FirstOrDefaultAsync(x => x.Email == GoogleOAuthResponse.Email && x.Active == true);
 
             if (user == null) //Register user
             {
@@ -287,6 +338,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                     Photo = $"data:image/{imageFormat};base64,{base64Image}",
                     Active = true
                 };
+
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
             }
@@ -294,7 +346,14 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             //Validate user and return token
             if (user != null)
             {
-                var token = TokenUtils.GenerateToken(user, _configJWT);
+                int? organizationId = null;
+                //Get First Organization
+                var firstUserOrganization = user.OrganizationsXusers.FirstOrDefault();
+
+                if (firstUserOrganization != null)
+                    organizationId = firstUserOrganization.Id;
+
+                var token = TokenUtils.GenerateToken(organizationId, user, _configJWT);
                 var RefreshToken = TokenUtils.GenerateRefreshToken();
 
                 var AuthResponse = new AuthResponse
@@ -309,7 +368,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 user.RefreshToken = RefreshToken.RefreshTokenHash;
                 user.RefreshTokenExpirationTime = DateTime.Now.AddMinutes(_configJWT.ExpirationRefreshTokenMin);
                 _context.Update(user);
-                await _context.SaveChangesAsync(user.Id, InterceptorActions.Modified);
+                await _context.SaveChangesAsync(user.Id, OrganizationId, InterceptorActions.Modified);
 
                 return AuthResponse;
             }
@@ -383,6 +442,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
         public async Task<AuthResponse> AuthRegisterConfirmationAsync(string HashConfirmation)
         {
             var registerHistory = await _context.UserRegisterHistories.Include(x => x.User)
+                                                                      .ThenInclude(x => x.OrganizationsXusers)
                                                                       .FirstOrDefaultAsync(x => x.HashConfirmation == HashConfirmation);
 
             if (registerHistory == null)
@@ -394,8 +454,15 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             _context.UserRegisterHistories.Update(registerHistory);
             await _context.SaveChangesAsync();
 
+            int? organizationId = null;
+            //Get First Organization
+            var firstUserOrganization = registerHistory.User.OrganizationsXusers.FirstOrDefault();
+
+            if (firstUserOrganization != null)
+                organizationId = firstUserOrganization.Id;
+
             //Generate token
-            var token = TokenUtils.GenerateToken(registerHistory.User, _configJWT);
+            var token = TokenUtils.GenerateToken(organizationId, registerHistory.User, _configJWT);
             var RefreshToken = TokenUtils.GenerateRefreshToken();
 
             var AuthResponse = new AuthResponse

@@ -20,7 +20,11 @@ public partial class Menu
 
     public bool Show { get; set; }
 
+    public int OrganizationId { get; set; }
+
     public bool Active { get; set; }
 
     public virtual ICollection<MenuXrol> MenuXrols { get; set; } = new List<MenuXrol>();
+
+    public virtual Organization Organization { get; set; } = null!;
 }

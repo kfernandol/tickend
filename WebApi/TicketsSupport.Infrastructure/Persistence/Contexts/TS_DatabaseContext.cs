@@ -21,6 +21,10 @@ public partial class TS_DatabaseContext : DbContext
 
     public virtual DbSet<MenuXrol> MenuXrols { get; set; }
 
+    public virtual DbSet<Organization> Organizations { get; set; }
+
+    public virtual DbSet<OrganizationsXuser> OrganizationsXusers { get; set; }
+
     public virtual DbSet<Project> Projects { get; set; }
 
     public virtual DbSet<ProjectXclient> ProjectXclients { get; set; }
@@ -34,6 +38,8 @@ public partial class TS_DatabaseContext : DbContext
     public virtual DbSet<ProjectXticketType> ProjectXticketTypes { get; set; }
 
     public virtual DbSet<Rol> Rols { get; set; }
+
+    public virtual DbSet<RolXuser> RolXusers { get; set; }
 
     public virtual DbSet<Ticket> Tickets { get; set; }
 
@@ -62,6 +68,8 @@ public partial class TS_DatabaseContext : DbContext
             entity.Property(e => e.Table)
                 .IsRequired()
                 .IsUnicode(false);
+
+            entity.HasOne(d => d.Organization).WithMany(p => p.AuditLogs).HasForeignKey(d => d.OrganizationId);
 
             entity.HasOne(d => d.User).WithMany(p => p.AuditLogs).HasForeignKey(d => d.UserId);
         });
@@ -96,6 +104,10 @@ public partial class TS_DatabaseContext : DbContext
                 .IsRequired()
                 .HasMaxLength(300)
                 .IsUnicode(false);
+
+            entity.HasOne(d => d.Organization).WithMany(p => p.Menus)
+                .HasForeignKey(d => d.OrganizationId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
         });
 
         modelBuilder.Entity<MenuXrol>(entity =>
@@ -108,6 +120,41 @@ public partial class TS_DatabaseContext : DbContext
 
             entity.HasOne(d => d.Role).WithMany(p => p.MenuXrols)
                 .HasForeignKey(d => d.RoleId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+        });
+
+        modelBuilder.Entity<Organization>(entity =>
+        {
+            entity.ToTable("Organization");
+
+            entity.Property(e => e.Address)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.CreateDate).HasColumnType("datetime");
+            entity.Property(e => e.Email)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(150)
+                .IsUnicode(false);
+            entity.Property(e => e.Phone)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Photo).IsUnicode(false);
+            entity.Property(e => e.Active);
+        });
+
+        modelBuilder.Entity<OrganizationsXuser>(entity =>
+        {
+            entity.ToTable("OrganizationsXUser");
+
+            entity.HasOne(d => d.Organization).WithMany(p => p.OrganizationsXusers)
+                .HasForeignKey(d => d.OrganizationId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            entity.HasOne(d => d.User).WithMany(p => p.OrganizationsXusers)
+                .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
         });
 
@@ -124,6 +171,10 @@ public partial class TS_DatabaseContext : DbContext
                 .HasMaxLength(100)
                 .IsUnicode(false);
             entity.Property(e => e.Photo).IsUnicode(false);
+
+            entity.HasOne(d => d.Organization).WithMany(p => p.Projects)
+                .HasForeignKey(d => d.OrganizationId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
         });
 
         modelBuilder.Entity<ProjectXclient>(entity =>
@@ -202,6 +253,19 @@ public partial class TS_DatabaseContext : DbContext
                 .IsRequired()
                 .HasMaxLength(150)
                 .IsUnicode(false);
+
+            entity.HasOne(d => d.Organization).WithMany(p => p.Rols)
+                .HasForeignKey(d => d.OrganizationId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+        });
+
+        modelBuilder.Entity<RolXuser>(entity =>
+        {
+            entity.ToTable("RolXUser");
+
+            entity.HasOne(d => d.Rol).WithMany(p => p.RolXusers).HasForeignKey(d => d.RolId);
+
+            entity.HasOne(d => d.User).WithMany(p => p.RolXusers).HasForeignKey(d => d.UserId);
         });
 
         modelBuilder.Entity<Ticket>(entity =>
@@ -241,6 +305,10 @@ public partial class TS_DatabaseContext : DbContext
 
             entity.HasOne(d => d.LastUpdatedByNavigation).WithMany(p => p.TicketLastUpdatedByNavigations).HasForeignKey(d => d.LastUpdatedBy);
 
+            entity.HasOne(d => d.Organization).WithMany(p => p.Tickets)
+                .HasForeignKey(d => d.OrganizationId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
             entity.HasOne(d => d.Project).WithMany(p => p.Tickets)
                 .HasForeignKey(d => d.ProjectId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
@@ -268,6 +336,10 @@ public partial class TS_DatabaseContext : DbContext
                 .IsRequired()
                 .HasMaxLength(100)
                 .IsUnicode(false);
+
+            entity.HasOne(d => d.Organization).WithMany(p => p.TicketPriorities)
+                .HasForeignKey(d => d.OrganizationId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
         });
 
         modelBuilder.Entity<TicketStatus>(entity =>
@@ -282,6 +354,10 @@ public partial class TS_DatabaseContext : DbContext
                 .IsRequired()
                 .HasMaxLength(100)
                 .IsUnicode(false);
+
+            entity.HasOne(d => d.Organization).WithMany(p => p.TicketStatuses)
+                .HasForeignKey(d => d.OrganizationId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
         });
 
         modelBuilder.Entity<TicketType>(entity =>
@@ -300,6 +376,10 @@ public partial class TS_DatabaseContext : DbContext
                 .IsRequired()
                 .HasMaxLength(100)
                 .IsUnicode(false);
+
+            entity.HasOne(d => d.Organization).WithMany(p => p.TicketTypes)
+                .HasForeignKey(d => d.OrganizationId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
         });
 
         modelBuilder.Entity<User>(entity =>
@@ -338,8 +418,6 @@ public partial class TS_DatabaseContext : DbContext
                 .IsRequired()
                 .HasMaxLength(50)
                 .IsUnicode(false);
-
-            entity.HasOne(d => d.RolNavigation).WithMany(p => p.Users).HasForeignKey(d => d.Rol);
         });
 
         modelBuilder.Entity<UserRegisterHistory>(entity =>
@@ -383,10 +461,10 @@ public partial class TS_DatabaseContext : DbContext
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
-    public async Task<int> SaveChangesAsync(int userId, InterceptorActions action, CancellationToken cancellationToken = default)
+    public async Task<int> SaveChangesAsync(int userId, int? organizationId, InterceptorActions action, CancellationToken cancellationToken = default)
     {
         var interceptor = new AuditLogInterceptor(this);
-        return await interceptor.SaveChangesAsync(userId, action, cancellationToken);
+        return await interceptor.SaveChangesAsync(userId, organizationId, action, cancellationToken);
     }
 
 }

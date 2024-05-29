@@ -592,7 +592,7 @@ export default function Tickets() {
                             {/*Title*/}
                             <div className="flex justify-content-between mb-4 px-3">
                                 <h2 className="my-0">{PageName}</h2>
-                                {getTokenData?.PermissionLevel === "Administrator" || getTokenData?.PermissionLevel === "User"
+                                {getTokenData?.permissionLevel === "Administrator" || getTokenData?.permissionLevel === "User"
                                     ? <Link to={NewItemUrl}>
                                         <Button icon="pi pi-plus" severity='success' size={'small'}>
                                             <span className='pl-2'>{TableHeaderNew}</span>
@@ -923,7 +923,7 @@ export default function Tickets() {
                                 </div>
 
                                 {/* Ticket Priority */}
-                                {getTokenData?.PermissionLevel === "Administrator" ?
+                                {getTokenData?.permissionLevel === "Administrator" ?
                                     <div className='col-12'>
                                         <Controller
                                             name="Priority"
@@ -950,7 +950,7 @@ export default function Tickets() {
                                 }
 
                                 {/* Ticket Status */}
-                                {getTokenData?.PermissionLevel === "Administrator" || getTokenData?.PermissionLevel === "Developer" ?
+                                {getTokenData?.permissionLevel === "Administrator" || getTokenData?.permissionLevel === "Developer" ?
                                     <div className='col-12'>
                                         <Controller
                                             name="Status"
@@ -977,7 +977,7 @@ export default function Tickets() {
                                 }
 
                                 {/* Ticket Closed */}
-                                {getTokenData?.PermissionLevel === "Administrator" || getTokenData?.PermissionLevel === "Developer" ?
+                                {getTokenData?.permissionLevel === "Administrator" || getTokenData?.permissionLevel === "Developer" ?
                                     <div className='col-12'>
                                         <Controller
                                             name="Closed"

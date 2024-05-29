@@ -26,6 +26,7 @@ namespace TicketsSupport.Infrastructure
             services.AddScoped<ITicketTypeRepository, TicketTypeRepository>();
             services.AddScoped<IStadisticsRepository, StadisticsRepository>();
             services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+            services.AddScoped<IOrganizationRepository, OrganizationRepository>();
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddHttpClient();
 

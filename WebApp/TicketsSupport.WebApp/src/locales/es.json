@@ -82,7 +82,8 @@
     "ticketTypes": "Tipo de Ticket",
     "ticketPriority": "Prioridad de Ticket",
     "project": "Proyecto",
-    "profile": "Perfil"
+    "profile": "Perfil",
+    "organization": "Organizacion"
   },
   "sidebar": {
     "logout": "Cerrar sesión"
@@ -346,5 +347,22 @@
     "oldValue": "Anterior",
     "newValue": "Nuevo",
     "registeredChanges": "Cambios registrados"
+  },
+  "organization": {
+    "labels": {
+      "addTitle": "Agregar organizacion",
+      "editTitle": "Editar organizacion",
+      "name": "Nombre",
+      "email": "Email",
+      "phone": "Telefono",
+      "address": "Direccion",
+      "addNew": "Agregar",
+      "select": "Seleccionar",
+      "edit": "Editar",
+      "delete": "Borrar"
+    },
+    "placeholder": {
+      "selectOrganization": "Selecciona una organizacion"
+    }
   }
 }

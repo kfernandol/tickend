@@ -17,6 +17,7 @@ export default function ProtectedRoute(props: props) {
     //Redux Data
     const authenticated = useSelector((state: RootState) => state.auth);
     const getTokenData = useTokenData<AuthToken>(authenticated?.token);
+    const apiService = useSelector((state: RootState) => state.apiService);
 
     //Api Request
     const { SendGetRequest } = useGet<MenusResponse[]>();
@@ -26,7 +27,7 @@ export default function ProtectedRoute(props: props) {
         SendGetRequest("v1/menus/byuser/" + getTokenData?.id).then((response) => {
             setMenus(response.data as MenusResponse[]);
         })
-    }, [authenticated]);
+    }, [authenticated, apiService.organization]);
 
     if (Menus && Menus.length > 0) {
 

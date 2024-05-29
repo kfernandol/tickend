@@ -20,14 +20,14 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <PrimeReactProvider>
-        <GoogleOAuthProvider clientId="534920013394-ltiprmdh3a9g11bfnb9t02ne9tcvasf8.apps.googleusercontent.com">
-            <Provider store={store}>
-                <PersistGate loading={null} persistor={persistor}>
+        <Provider store={store}>
+            <PersistGate loading={null} persistor={persistor}>
+                <GoogleOAuthProvider clientId="534920013394-ltiprmdh3a9g11bfnb9t02ne9tcvasf8.apps.googleusercontent.com">
                     <LanguageComponent>
                         <RoutesGuard />
                     </LanguageComponent>
-                </PersistGate>
-            </Provider>
-        </GoogleOAuthProvider>
+                </GoogleOAuthProvider>
+            </PersistGate>
+        </Provider>
     </PrimeReactProvider>
 );

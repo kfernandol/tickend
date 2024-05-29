@@ -29,6 +29,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
         private string UserAgentRequest;
         private string UserBrowserRequest;
         private string UserOsRequest;
+        private int OrganizationId;
 
         public TicketRepository(TS_DatabaseContext context, IMapper mapper, IEmailSender emailSender, IOptions<WebApp> webAppConfig, IHttpContextAccessor httpContextAccessor)
         {
@@ -52,13 +53,16 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 UserBrowserRequest = info.Name ?? string.Empty;
                 UserOsRequest = info.Platform != null ? info.Platform.Value.Name : string.Empty;
             }
+            //Get OrganizationId
+            string? organizationIdTxt = httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "organization")?.Value;
+            int.TryParse(organizationIdTxt, out OrganizationId);
         }
 
         public async Task<TicketResponse> CreateTicket(CreateTicketRequest request)
         {
-            User? user = await _context.Users.Include(x => x.RolNavigation)
-                                             .FirstOrDefaultAsync(x => x.Id == UserIdRequest);
-
+            User? user = await _context.Users.Include(x => x.RolXusers)
+                                             .ThenInclude(x => x.Rol)
+                                             .FirstOrDefaultAsync(x => x.Id == UserIdRequest && x.RolXusers.Any(x => x.Rol.OrganizationId == OrganizationId));
             if (user != null)
             {
                 var DateCreate = DateTime.Now;
@@ -69,9 +73,10 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 ticket.Os = UserOsRequest;
                 ticket.CreateBy = user.Id;
                 ticket.DateCreated = DateCreate;
+                ticket.OrganizationId = OrganizationId;
                 ticket.Active = true;
                 this._context.Tickets.Add(ticket);
-                await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
+                await this._context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Created);
 
                 var TicketType = _context.TicketTypes.Find(ticket.TicketTypeId);
                 var Project = await _context.Projects.Include(x => x.ProjectXclients)
@@ -105,8 +110,10 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 }
 
                 var administrators = _context.Users.AsNoTracking()
-                                                   .Include(x => x.RolNavigation)
-                                                   .Where(x => x.RolNavigation.PermissionLevel == PermissionLevel.Administrator && x.Active == true)
+                                                   .Include(x => x.RolXusers)
+                                                   .ThenInclude(x => x.Rol)
+                                                   .Where(x => x.RolXusers.FirstOrDefault(x => x.Rol.OrganizationId == OrganizationId).Rol.PermissionLevel == PermissionLevel.Administrator &&
+                                                               x.Active == true)
                                                    .ToList();
 
                 var devs = Project.ProjectXdevelopers.Where(x => x.Developer.Active == true).Select(x => x.Developer).ToList();
@@ -143,8 +150,9 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
         public async Task<TicketResponse> ReplyTicket(CreateTicketRequest request)
         {
-            User? user = await _context.Users.Include(x => x.RolNavigation)
-                                             .FirstOrDefaultAsync(x => x.Id == UserIdRequest);
+            User? user = await _context.Users.Include(x => x.RolXusers)
+                                             .ThenInclude(x => x.Rol)
+                                             .FirstOrDefaultAsync(x => x.Id == UserIdRequest && x.RolXusers.Any(x => x.Rol.OrganizationId == OrganizationId));
 
             if (user != null)
             {
@@ -157,9 +165,10 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 ticket.CreateBy = user.Id;
                 ticket.DateCreated = DateCreate;
                 ticket.Reply = request.Reply;
+                ticket.OrganizationId = OrganizationId;
                 ticket.Active = true;
                 this._context.Tickets.Add(ticket);
-                await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
+                await this._context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Created);
 
                 var TicketType = _context.TicketTypes.Find(ticket.TicketTypeId);
                 var Project = await _context.Projects.Include(x => x.ProjectXclients)
@@ -180,8 +189,10 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
                 //Search all Admins and devs
                 var administrators = _context.Users.AsNoTracking()
-                                                   .Include(x => x.RolNavigation)
-                                                   .Where(x => x.RolNavigation.PermissionLevel == PermissionLevel.Administrator && x.Active == true)
+                                                   .Include(x => x.RolXusers)
+                                                   .ThenInclude(x => x.Rol)
+                                                   .Where(x => x.RolXusers.FirstOrDefault(x => x.Rol.OrganizationId == OrganizationId).Rol.PermissionLevel == PermissionLevel.Administrator &&
+                                                               x.Active == true)
                                                    .ToList();
 
                 var devs = Project.ProjectXdevelopers.Where(x => x.Developer.Active == true).Select(x => x.Developer).ToList();
@@ -203,13 +214,13 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
         public async Task DeleteTicketById(int id)
         {
-            var ticket = this._context.TicketStatuses.Find(id);
+            var ticket = await _context.TicketStatuses.FirstOrDefaultAsync(x => x.Id == id && x.OrganizationId == OrganizationId);
             if (ticket != null)
             {
                 ticket.Active = false;
 
                 this._context.Update(ticket);
-                await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Delete);
+                await this._context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Delete);
             }
             else
                 throw new NotFoundException(ExceptionMessage.NotFound("Ticket", $"{id}"));
@@ -217,9 +228,8 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
         public async Task<TicketResponse> GetTicketById(int id)
         {
-            var ticket = this._context.Tickets.Where(x => x.Active == true)
-                                              .AsNoTracking()
-                                              .FirstOrDefault(x => x.Id == id);
+            var ticket = this._context.Tickets.AsNoTracking()
+                                              .FirstOrDefault(x => x.Id == id && x.OrganizationId == OrganizationId && x.Active == true);
 
             if (ticket != null)
                 return this._mapper.Map<TicketResponse>(ticket);
@@ -229,18 +239,21 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
         public async Task<List<TicketResponse>> GetTickets()
         {
-            User? user = await _context.Users.Include(x => x.RolNavigation)
+            User? user = await _context.Users.Include(x => x.RolXusers)
+                                             .ThenInclude(x => x.Rol)
                                              .AsNoTracking()
-                                             .FirstOrDefaultAsync(x => x.Id == UserIdRequest);
+                                             .FirstOrDefaultAsync(x => x.Id == UserIdRequest && x.RolXusers.Any(x => x.Rol.OrganizationId == OrganizationId));
 
             List<Ticket>? result = new List<Ticket>();
-            if (user?.RolNavigation?.PermissionLevel == PermissionLevel.Administrator)
+            if (user?.RolXusers.FirstOrDefault(x => x.Rol.OrganizationId == OrganizationId)?.Rol?.PermissionLevel == PermissionLevel.Administrator)
             {
                 result = await _context.Tickets
+                                               .Where(x => x.OrganizationId == OrganizationId && x.Active == true)
                                                 .Select(x => new Ticket
                                                 {
                                                     Id = x.Id,
                                                     Title = x.Title,
+                                                    Description = "",
                                                     ProjectId = x.ProjectId,
                                                     TicketPriorityId = x.TicketPriorityId,
                                                     TicketStatusId = x.TicketStatusId,
@@ -258,7 +271,6 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                     LastUpdatedBy = x.LastUpdatedBy,
                                                     Active = x.Active
                                                 })
-                                               .Where(x => x.Active == true)
                                                .AsNoTracking()
                                                .ToListAsync();
             }
@@ -270,8 +282,9 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                 .Include(x => x.Project)
                                                     .ThenInclude(x => x.ProjectXdevelopers)
                                                     .ThenInclude(x => x.Developer)
-                                               .Where(x => x.Project.ProjectXclients.Any(c => c.Client.Id == UserIdRequest) ||
-                                                                                x.Project.ProjectXdevelopers.Any(d => d.Developer.Id == UserIdRequest))
+                                               .Where(x => x.OrganizationId == OrganizationId &&
+                                                           (x.Project.ProjectXclients.Any(c => c.Client.Id == UserIdRequest) ||
+                                                            x.Project.ProjectXdevelopers.Any(d => d.Developer.Id == UserIdRequest)))
                                                .Select(x => new Ticket
                                                {
                                                    Id = x.Id,
@@ -310,7 +323,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
         public async Task<TicketResponse> UpdateTicket(int id, UpdateTicketRequest request)
         {
             var ticket = this._context.Tickets.Include(x => x.CreateByNavigation)
-                                              .FirstOrDefault(x => x.Id == id && x.Active == true);
+                                              .FirstOrDefault(x => x.Id == id && x.OrganizationId == OrganizationId && x.Active == true);
 
             int? originalStatusId = ticket?.TicketStatusId;
             int? originalPriorityId = ticket?.TicketPriorityId;
@@ -331,7 +344,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 }
 
                 this._context.Tickets.Update(ticket);
-                await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Modified);
+                await this._context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Modified);
 
                 //Notification Email Ticket Status Changed
                 if (originalStatusId != request.TicketStatusId)

@@ -34,14 +34,14 @@ namespace TicketsSupport.Infrastructure.Persistence.Interceptors
             return base.SavingChangesAsync(eventData, result, cancellationToken);
         }*/
 
-        public Task<int> SaveChangesAsync(int userId, InterceptorActions action, CancellationToken cancellationToken = default)
+        public Task<int> SaveChangesAsync(int userId, int? organizationId, InterceptorActions action, CancellationToken cancellationToken = default)
         {
             var entries = _context.ChangeTracker.Entries().ToList();
-            AuditLog(_context, entries, userId, action);
+            AuditLog(_context, entries, userId, organizationId, action);
             return _context.SaveChangesAsync(cancellationToken);
         }
 
-        private void AuditLog(DbContext context, List<EntityEntry> entries, int userId, InterceptorActions action)
+        private void AuditLog(DbContext context, List<EntityEntry> entries, int userId, int? organizationId, InterceptorActions action)
         {
             foreach (var entry in entries)
             {
@@ -57,6 +57,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Interceptors
                         Date = DateTime.Now,
                         Table = entry.Entity.GetType().Name,
                         PrimaryId = (PrimaryId is int id && id > 0) ? id.ToString() : string.Empty,
+                        OrganizationId = organizationId
                     };
 
 

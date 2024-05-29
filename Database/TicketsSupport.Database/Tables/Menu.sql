@@ -7,5 +7,6 @@
 	[Position] int NOT NULL,
 	[ParentId] int NULL,
 	[Show] bit NOT NULL,
+	[OrganizationId] INT FOREIGN KEY REFERENCES [Organization](Id) NOT NULL,
 	[Active] bit NOT NULL
 )

@@ -5,5 +5,6 @@
 	[Description] varchar(500) NOT NULL,
 	[Photo] varchar(MAX) NULL,
 	[ExpirationSupportDate] date NULL,
+	[OrganizationId] INT FOREIGN KEY REFERENCES [Organization](Id) NOT NULL,
 	[Active] bit NOT NULL,
 )

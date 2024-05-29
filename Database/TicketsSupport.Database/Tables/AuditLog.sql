@@ -6,4 +6,5 @@
 	[Date] DATETIME NOT NULL,
 	[Table] VARCHAR(MAX) NOT NULL,
 	[PrimaryId] VARCHAR(MAX) NOT NULL,
+	[OrganizationId] INT FOREIGN KEY REFERENCES [Organization](Id) NULL,
 )

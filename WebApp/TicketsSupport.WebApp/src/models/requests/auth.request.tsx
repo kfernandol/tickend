@@ -1,6 +1,7 @@
 export interface AuthRequest {
-    username: string;
-    password: string;
+    username: string,
+    password: string,
+    organization?: number
 }
 
 export interface AuthRegisterRequest {

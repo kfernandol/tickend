@@ -10,6 +10,8 @@ using TicketsSupport.Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using TicketsSupport.ApplicationCore.Exceptions;
 using TicketsSupport.ApplicationCore.Utils;
+using Microsoft.AspNetCore.Http;
+using TicketsSupport.ApplicationCore.Entities;
 
 namespace TicketsSupport.ApplicationCore.Authorization.Menu
 {
@@ -34,17 +36,24 @@ namespace TicketsSupport.ApplicationCore.Authorization.Menu
                 throw new NotFoundException(ExceptionMessage.NotFound("UserId in token"));
             #endregion
 
+            #region GetOrganizacionId
+            //Get OrganizationId
+            string? organizationIdTxt = context.User.Claims.FirstOrDefault(x => x.Type == "organization")?.Value;
+            int.TryParse(organizationIdTxt, out int OrganizationId);
+            #endregion
+
             #region Get User Database
-            var User = _context.Users.Include(x => x.RolNavigation)
-                                      .ThenInclude(x => x.MenuXrols)
-                                      .ThenInclude(x => x.Menu)
-                                      .FirstOrDefault(x => x.Id == int.Parse(UserId) && x.Active == true && x.RolNavigation.Active == true);
+            var User = _context.Users.Include(x => x.RolXusers)
+                                     .ThenInclude(x => x.Rol)
+                                     .ThenInclude(x => x.MenuXrols)
+                                     .ThenInclude(x => x.Menu)
+                                      .FirstOrDefault(x => x.Id == int.Parse(UserId) && x.Active == true && x.RolXusers.FirstOrDefault(x => x.Rol.OrganizationId == OrganizationId).Rol.Active == true);
             if (User == null)
                 throw new NotFoundException(ExceptionMessage.NotFound($"User", UserId));
             #endregion
 
             #region Get User Menus
-            var userMenus = User.RolNavigation.MenuXrols.Where(x => x.Menu.Active == true)
+            var userMenus = User.RolXusers.FirstOrDefault(x => x.Rol.OrganizationId == OrganizationId)?.Rol?.MenuXrols.Where(x => x.Menu.Active == true)
                                                           .ToList();
 
             if (userMenus == null)

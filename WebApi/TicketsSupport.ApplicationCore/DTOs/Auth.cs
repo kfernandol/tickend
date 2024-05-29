@@ -11,6 +11,8 @@ namespace TicketsSupport.ApplicationCore.DTOs
         [MaxLength(50, ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldMaxLength))]
         [MinLength(5, ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldMinLength))]
         public string Password { get; set; }
+
+        public int? Organization { get; set; }
     }
 
     public class AuthGoogleRequest

@@ -31,6 +31,14 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[Organization]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[OrganizationsXUser]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Project]",
          "ObjectType": 0
       },
@@ -56,6 +64,10 @@
       },
       {
          "Name": "[dbo].[Rol]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[RolXUser]",
          "ObjectType": 0
       },
       {

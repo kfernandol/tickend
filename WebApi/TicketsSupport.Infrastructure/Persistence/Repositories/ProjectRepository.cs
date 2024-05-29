@@ -15,6 +15,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
         private readonly TS_DatabaseContext _context;
         private readonly IMapper _mapper;
         private int UserIdRequest;
+        private int? OrganizationId = null;
 
         public ProjectRepository(TS_DatabaseContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
@@ -24,11 +25,16 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             //Get UserId
             string? userIdTxt = httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
             int.TryParse(userIdTxt, out UserIdRequest);
+            //Get OrganizationId
+            string? organizationIdTxt = httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "organization")?.Value;
+            if (!string.IsNullOrWhiteSpace(organizationIdTxt))
+                OrganizationId = int.Parse(organizationIdTxt);
         }
 
         public async Task<ProjectResponse> CreateProject(CreateProjectRequest request)
         {
             var project = _mapper.Map<Project>(request);
+            project.OrganizationId = (int)OrganizationId;
 
             //Save Photo
             if (!string.IsNullOrEmpty(request.Photo))
@@ -37,7 +43,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             project.Active = true;
 
             this._context.Projects.Add(project);
-            await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
+            await this._context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Created);
 
             //Add Tickets Type
             if (request.TicketTypes != null)
@@ -51,7 +57,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                     };
 
                     _context.ProjectXticketTypes.Add(ticketType);
-                    await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
+                    await _context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Created);
                 }
             }
 
@@ -68,7 +74,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                     };
 
                     _context.ProjectXticketPriorities.Add(ticketPriority);
-                    await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
+                    await _context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Created);
                 }
             }
 
@@ -85,7 +91,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                     };
 
                     _context.ProjectXticketStatuses.Add(ticketStatus);
-                    await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
+                    await _context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Created);
                 }
             }
 
@@ -102,7 +108,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                     };
 
                     _context.ProjectXclients.Add(projectXclient);
-                    await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
+                    await _context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Created);
                 }
             }
 
@@ -119,7 +125,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                     };
 
                     _context.ProjectXdevelopers.Add(projectXDeveloper);
-                    await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
+                    await _context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Created);
                 }
             }
 
@@ -134,13 +140,13 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                       .Include(x => x.ProjectXticketTypes)
                                                       .Include(x => x.ProjectXticketStatuses)
                                                       .Include(x => x.ProjectXdevelopers)
-                                                      .FirstOrDefaultAsync(x => x.Id == id);
+                                                      .FirstOrDefaultAsync(x => x.Id == id && x.OrganizationId == (int)OrganizationId);
             if (project != null)
             {
                 project.Active = false;
 
                 this._context.Update(project);
-                await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Delete);
+                await this._context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Delete);
             }
             else
                 throw new NotFoundException(ExceptionMessage.NotFound("Project", $"{id}"));
@@ -153,7 +159,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                 .Include(x => x.ProjectXticketTypes)
                                                 .Include(x => x.ProjectXticketStatuses)
                                                 .Include(x => x.ProjectXdevelopers)
-                                                .Where(x => x.Active == true && x.Id == id)
+                                                .Where(x => x.Active == true && x.Id == id && x.OrganizationId == (int)OrganizationId)
                                                 .Select(x => this._mapper.Map<ProjectResponse>(x))
                                                 .AsNoTracking()
                                                 .AsSplitQuery()
@@ -167,19 +173,20 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
         public async Task<List<ProjectResponse>> GetProjects(string? username)
         {
-            User? user = await _context.Users.Include(x => x.RolNavigation)
+            User? user = await _context.Users.Include(x => x.RolXusers)
+                                             .ThenInclude(x => x.Rol)
                                              .AsNoTracking()
                                              .FirstOrDefaultAsync(x => x.Username == username);
 
             List<Project>? result = new List<Project>();
-            if (user?.RolNavigation?.PermissionLevel == PermissionLevel.Administrator)
+            if (user?.RolXusers.FirstOrDefault(x => x.Rol.OrganizationId == OrganizationId)?.Rol?.PermissionLevel == PermissionLevel.Administrator)
             {
                 result = await _context.Projects.Include(x => x.ProjectXclients)
                                                 .Include(x => x.ProjectXticketPriorities)
                                                 .Include(x => x.ProjectXticketTypes)
                                                 .Include(x => x.ProjectXticketStatuses)
                                                 .Include(x => x.ProjectXdevelopers)
-                                                .Where(x => x.Active == true)
+                                                .Where(x => x.Active == true && x.OrganizationId == (int)OrganizationId)
                                                 .AsNoTracking()
                                                 .AsSplitQuery()
                                                 .ToListAsync();
@@ -196,7 +203,9 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                 .Include(x => x.ProjectXdevelopers)
                                                     .ThenInclude(x => x.Developer)
                                                 .Where(x => x.Active == true &&
-                                                            (x.ProjectXclients.Any(c => c.Client.Username == username) || x.ProjectXdevelopers.Any(d => d.Developer.Username == username)))
+                                                            (x.ProjectXclients.Any(c => c.Client.Username == username) ||
+                                                              x.ProjectXdevelopers.Any(d => d.Developer.Username == username) ||
+                                                              x.OrganizationId == (int)OrganizationId))
                                                 .AsNoTracking()
                                                 .AsSplitQuery()
                                                 .ToListAsync();
@@ -212,7 +221,8 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
         public async Task<ProjectResponse> UpdateProject(int id, UpdateProjectRequest request)
         {
-            var project = _context.Projects.Find(id);
+            var project = await _context.Projects.FirstOrDefaultAsync(x => x.Id == id && x.OrganizationId == (int)OrganizationId);
+            project.Description = request.Description;
 
             if (project == null)
                 throw new NotFoundException(ExceptionMessage.NotFound("Project"));
@@ -224,7 +234,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             //Delete all Tickets Types
             var TicketsType = await _context.ProjectXticketTypes.Where(x => x.ProjectId == project.Id).ToListAsync();
             _context.ProjectXticketTypes.RemoveRange(TicketsType);
-            await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Delete);
+            await _context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Delete);
 
             foreach (var TicketStatusId in request.TicketTypes)
             {
@@ -235,13 +245,13 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 };
 
                 _context.ProjectXticketTypes.Add(ticketType);
-                await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
+                await _context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Created);
             }
 
             //Delete all Tickets Priorities
             var TicketsPriorities = await _context.ProjectXticketPriorities.Where(x => x.ProjectId == project.Id).ToListAsync();
             _context.ProjectXticketPriorities.RemoveRange(TicketsPriorities);
-            await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Delete);
+            await _context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Delete);
 
             //Add Tickets Priorities
             foreach (var TicketPriorityId in request.TicketPriorities)
@@ -253,13 +263,13 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 };
 
                 _context.ProjectXticketPriorities.Add(ticketPriority);
-                await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
+                await _context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Created);
             }
 
             //Delete Tickets Status
             var TicketsStatus = await _context.ProjectXticketStatuses.Where(x => x.ProjectId == project.Id).ToListAsync();
             _context.ProjectXticketStatuses.RemoveRange(TicketsStatus);
-            await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Delete);
+            await _context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Delete);
 
             //Add Tickets Status
             foreach (var TicketStatusId in request.TicketStatus)
@@ -271,13 +281,13 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 };
 
                 _context.ProjectXticketStatuses.Add(ticketStatus);
-                await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
+                await _context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Created);
             }
 
             //Delete clients
             var Clients = await _context.ProjectXclients.Where(x => x.ProjectId == project.Id).ToListAsync();
             _context.ProjectXclients.RemoveRange(Clients);
-            await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Delete);
+            await _context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Delete);
 
             //Add Clients
             foreach (var ClientsId in request.Clients)
@@ -289,13 +299,13 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 };
 
                 _context.ProjectXclients.Add(projectXclient);
-                await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
+                await _context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Created);
             }
 
             //remove Developers
             var Developers = await _context.ProjectXdevelopers.Where(x => x.ProjectId == project.Id).ToListAsync();
             _context.ProjectXdevelopers.RemoveRange(Developers);
-            await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Delete);
+            await _context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Delete);
 
             //Add Developer
             foreach (var DeveloperId in request.Developers)
@@ -307,7 +317,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 };
 
                 _context.ProjectXdevelopers.Add(projectXDeveloper);
-                await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
+                await _context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Created);
             }
 
             return this._mapper.Map<ProjectResponse>(project);
