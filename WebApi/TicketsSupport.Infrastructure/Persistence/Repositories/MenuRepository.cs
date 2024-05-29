@@ -18,6 +18,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
         private readonly TS_DatabaseContext _context;
         private readonly IMapper _mapper;
         private int UserIdRequest;
+        private int OrganizationId;
 
         public MenuRepository(TS_DatabaseContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
@@ -27,16 +28,20 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             //Get UserId
             string? userIdTxt = httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
             int.TryParse(userIdTxt, out UserIdRequest);
+            //Get OrganizationId
+            string? organizationIdTxt = httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "organization")?.Value;
+            int.TryParse(organizationIdTxt, out OrganizationId);
         }
 
         public async Task<MenuResponse> CreateMenu(CreateMenuRequest request)
         {
             var menu = _mapper.Map<Menu>(request);
+            menu.OrganizationId = OrganizationId;
             menu.ParentId = request.ParentId > 0 ? request.ParentId : null;
             menu.Active = true;
 
             this._context.Menus.Add(menu);
-            await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
+            await this._context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Created);
 
             return this._mapper.Map<MenuResponse>(menu);
         }
@@ -49,7 +54,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 menu.Active = false;
 
                 this._context.Update(menu);
-                await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Delete);
+                await this._context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Delete);
             }
             else
                 throw new NotFoundException(ExceptionMessage.NotFound("Menu", $"{id}"));
@@ -57,7 +62,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
         public async Task<List<MenuResponse>> GetMenus()
         {
-            return this._context.Menus.Where(x => x.Active == true)
+            return this._context.Menus.Where(x => x.OrganizationId == OrganizationId && x.Active == true)
                                       .Select(x => this._mapper.Map<MenuResponse>(x))
                                       .AsNoTracking()
                                       .ToList();
@@ -65,7 +70,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
         public async Task<MenuResponse> GetMenusById(int id)
         {
-            var menu = this._context.Menus.Where(x => x.Active == true)
+            var menu = this._context.Menus.Where(x => x.OrganizationId == OrganizationId && x.Active == true)
                                           .AsNoTracking()
                                           .FirstOrDefault(x => x.Id == id);
 
@@ -79,27 +84,17 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
         {
             var menuByUser = await _context.MenuXrols.Include(x => x.Menu)
                                                      .Include(x => x.Role)
-                                                     .ThenInclude(x => x.Users)
-                                                     .Where(x => x.Role.Users.Any(x => x.Id == userId) && x.Menu.Active == true)
+                                                     .ThenInclude(x => x.RolXusers)
+                                                     .ThenInclude(x => x.User)
+                                                     .Where(x => x.Role.RolXusers.Any(x => x.User.Id == userId) &&
+                                                            x.Menu.OrganizationId == OrganizationId &&
+                                                            x.Role.OrganizationId == OrganizationId &&
+                                                            x.Menu.Active == true)
                                                      .OrderBy(p => p.Id)
                                                      .Select(x => _mapper.Map<MenuResponse>(x.Menu))
                                                      .AsSplitQuery()
                                                      .AsNoTracking()
                                                      .ToListAsync();
-
-            var parentIds = menuByUser.Where(x => x.ParentId != null).Select(x => x.ParentId).Distinct().ToList();
-
-            foreach (var parentId in parentIds)
-            {
-                var menu = await _context.Menus.Where(x => x.Id == parentId).Select(x => _mapper.Map<MenuResponse>(x)).FirstOrDefaultAsync();
-                if (menu != null)
-                    menuByUser.Add(menu);
-
-                else
-                    throw new NotFoundException(ExceptionMessage.NotFound("Menu Parent", $"{parentId}"));
-
-            }
-
 
             return menuByUser;
         }
@@ -117,7 +112,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 menu.Active = true;
 
                 this._context.Menus.Update(menu);
-                await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Modified);
+                await this._context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Modified);
 
                 return this._mapper.Map<MenuResponse>(menu);
             }

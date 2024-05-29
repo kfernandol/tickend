@@ -337,10 +337,10 @@ public partial class <#= Options.ContextName #> : DbContext
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
-    public async Task<int> SaveChangesAsync(int userId, InterceptorActions action, CancellationToken cancellationToken = default)
+    public async Task<int> SaveChangesAsync(int userId, int? organizationId, InterceptorActions action, CancellationToken cancellationToken = default)
     {
         var interceptor = new AuditLogInterceptor(this);
-        return await interceptor.SaveChangesAsync(userId, action, cancellationToken);
+        return await interceptor.SaveChangesAsync(userId, organizationId, action, cancellationToken);
     }
 
 }

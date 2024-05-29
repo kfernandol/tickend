@@ -129,6 +129,9 @@
   <data name="Menu" xml:space="preserve">
     <value>Menu</value>
   </data>
+  <data name="Organization" xml:space="preserve">
+    <value>Organizacion</value>
+  </data>
   <data name="Profile" xml:space="preserve">
     <value>Perfil</value>
   </data>

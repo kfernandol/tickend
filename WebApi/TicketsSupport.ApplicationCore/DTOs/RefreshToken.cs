@@ -15,5 +15,7 @@ namespace TicketsSupport.ApplicationCore.DTOs
 
         [Required(ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldRequired))]
         public string Username { get; set; }
+
+        public int? OrganizationId { get; set; }
     }
 }

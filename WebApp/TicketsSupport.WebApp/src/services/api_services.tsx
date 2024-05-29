@@ -1,10 +1,11 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 //redux
 import { RootState } from "../redux/store";
+import { useDispatch, useSelector } from "react-redux";
 import { login, logout } from "../redux/Slices/AuthSlice";
+import { isRefresh, retry } from "../redux/Slices/ApiServiceSlice";
 //hooks
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import useTokenData from "../hooks/useTokenData";
 //Models
 import { AuthResponse } from "../models/responses/auth.response";
@@ -12,13 +13,11 @@ import { AuthToken } from "../models/tokens/token.model";
 import { RefreshTokenRequest } from "../models/requests/refreshToken.request";
 import { ErrorResponse, ErrorsDetail, ErrorsResponse } from "../models/responses/basic.response";
 
-const RefreshToken = {
-    isRefreshing: false
-};
 
-const useApiClient = () => {
+const useApiClient = (organizacionId?: number) => {
     const authenticated = useSelector((state: RootState) => state.auth);
     const language = useSelector((state: RootState) => state.language);
+    const apiService = useSelector((state: RootState) => state.apiService);
     const getTokenData = useTokenData<AuthToken>(authenticated?.token);
     const dispatch = useDispatch();
 
@@ -35,41 +34,59 @@ const useApiClient = () => {
         })
     }
 
-    //Refresh token - interceptor response
-    apiClient.interceptors.response.use((response) => response, async (error) => {
+    // Refresh token - interceptor response
+    apiClient.interceptors.response.use(
+        (response) => response,
+        async (error) => {
+            const originalRequest = error.config;
+            if (error.response.status === 401 && !originalRequest._retry && !apiService.isRefresh) {
+                if (apiService.retry <= 3) {
+                    dispatch(retry(apiService.retry++))
+                    dispatch(isRefresh(true));
+                    originalRequest._retry = true;
 
-        const originalRequest = error.config;
-        if (error.response.status === 401 && !originalRequest._retry && !RefreshToken.isRefreshing) {
-            try {
-                originalRequest._retry = true;
+                    try {
 
-                //create request
-                const requestRefreshToken: RefreshTokenRequest = {
-                    username: getTokenData !== null ? getTokenData.sub : "",
-                    refreshToken: authenticated.refreshToken
+                        // Crear solicitud de refresco
+                        const requestRefreshToken: RefreshTokenRequest = {
+                            username: getTokenData ? getTokenData.sub : "",
+                            refreshToken: authenticated.refreshToken
+                        };
+
+                        if (organizacionId)
+                            requestRefreshToken.organizationId = organizacionId;
+
+                        // Enviar solicitud de refresco
+                        const response = await apiClient.post('v1/auth/refresh-token', requestRefreshToken);
+                        const AuthResponse = response.data;
+
+                        // Actualizar estado con el nuevo token
+                        dispatch(login(AuthResponse));
+
+                        // Modificar cabecera y reintentar la solicitud original
+                        originalRequest.headers.Authorization = `${AuthResponse.tokenType} ${AuthResponse.token}`;
+
+                        dispatch(isRefresh(false));
+                        return apiClient(originalRequest);
+                    } catch (error) {
+                        dispatch(isRefresh(false));
+                        dispatch(logout());
+                        return Promise.reject(error); // Asegúrate de rechazar la promesa en caso de error
+                    }
+                } else {
+                    dispatch(retry(0));
+                    dispatch(logout());
                 }
 
-                //send request
-                const response = await apiClient.post('v1/auth/refresh-token', requestRefreshToken);
-                const AuthResponse = response.data as AuthResponse;
-                dispatch(login(AuthResponse));
-
-                originalRequest.headers.Authorization = `${AuthResponse.tokenType} ${AuthResponse.token}`;
-                return axios(originalRequest);
-            } catch (error) {
-                console.error(error);
-                dispatch(logout());
             }
 
-            RefreshToken.isRefreshing = false;
+            return Promise.reject(error); // Asegúrate de rechazar la promesa para otros errores
         }
-        else {
-            return Promise.reject(error);
-        }
-    })
+    );
 
     return apiClient;
-};
+}
+
 
 function useAuthAPI() {
     const apiClient = useApiClient();
@@ -81,10 +98,11 @@ function useAuthAPI() {
     const SendAuthRequest = (url: string, dataSend = {}) => {
         setLoadingAuth(true);
 
-        apiClient.post(url, dataSend)
+        return apiClient.post(url, dataSend)
             .then((response) => {
                 setAuthResponse(response.data);
                 setHttpCodeAuth(response.status);
+                return { data: response.data, url: url }
             })
             .catch((error: unknown) => {
                 if (axios.isAxiosError(error)) {
@@ -135,6 +153,7 @@ function useAuthAPI() {
                     }
 
                 }
+                return Promise.reject(error);
             })
             .finally(() => {
                 setLoadingAuth(false);

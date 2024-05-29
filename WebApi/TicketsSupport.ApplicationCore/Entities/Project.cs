@@ -16,7 +16,11 @@ public partial class Project
 
     public DateOnly? ExpirationSupportDate { get; set; }
 
+    public int OrganizationId { get; set; }
+
     public bool Active { get; set; }
+
+    public virtual Organization Organization { get; set; } = null!;
 
     public virtual ICollection<ProjectXclient> ProjectXclients { get; set; } = new List<ProjectXclient>();
 

@@ -215,7 +215,7 @@ export default function Menus() {
                     <div className="flex justify-content-between align-items-center my-4">
                         <h2 className="my-0">{PageName}</h2>
                         {/* Add new */}
-                        {getTokenData?.PermissionLevel === "Administrator"
+                        {getTokenData?.permissionLevel === "Administrator"
                             ? <Link to={NewItemUrl}>
                                 <Button icon="pi pi-plus" severity='success'>
                                     <span className='pl-2'>{TableHeaderNew}</span>
@@ -255,7 +255,7 @@ export default function Menus() {
                             <Column field="position" header={TableHeaderPosition} sortable />
                             <Column field="parentId" header={TableHeaderParentId} sortable />
                             <Column field="show" header={TableHeaderShow} sortable />
-                            {getTokenData?.PermissionLevel === "Administrator" ? <Column header={TableHeaderActions} body={ActionsTableTemplate} sortable /> : <></>}
+                            {getTokenData?.permissionLevel === "Administrator" ? <Column header={TableHeaderActions} body={ActionsTableTemplate} sortable /> : <></>}
                         </DataTable>
                     </Card>
 

@@ -15,6 +15,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
         private readonly TS_DatabaseContext _context;
         private readonly IMapper _mapper;
         private int UserIdRequest;
+        private int OrganizationId;
 
         public RolRepository(TS_DatabaseContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
@@ -24,16 +25,20 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             //Get UserId
             string? userIdTxt = httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
             int.TryParse(userIdTxt, out UserIdRequest);
+            //Get OrganizationId
+            string? organizationIdTxt = httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "organization")?.Value;
+            int.TryParse(organizationIdTxt, out OrganizationId);
         }
 
         public async Task<RolResponse> CreateRol(CreateRolRequest request)
         {
             //add rol
             var rol = _mapper.Map<Rol>(request);
+            rol.OrganizationId = OrganizationId;
             rol.Active = true;
 
             this._context.Rols.Add(rol);
-            await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
+            await this._context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Created);
 
             //add menus
             foreach (var menu in request.Menus)
@@ -42,7 +47,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 this._context.MenuXrols.Add(menusXRol);
             }
 
-            await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
+            await this._context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Created);
 
             return this._mapper.Map<RolResponse>(rol);
         }
@@ -56,7 +61,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 rol.Active = false;
 
                 this._context.Update(rol);
-                await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Delete);
+                await this._context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Delete);
             }
             else
                 throw new NotFoundException(ExceptionMessage.NotFound("Rol", $"{id}"));
@@ -88,7 +93,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
         public async Task<List<RolResponse>> GetRol()
         {
-            var roles = this._context.Rols.Where(x => x.Active == true)
+            var roles = this._context.Rols.Where(x => x.OrganizationId == OrganizationId && x.Active == true)
                                           .Select(x => this._mapper.Map<RolResponse>(x))
                                           .AsNoTracking()
                                           .ToList();
@@ -107,7 +112,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
         public async Task<RolResponse> GetRolById(int id)
         {
-            var rol = this._context.Rols.Where(x => x.Active == true && x.Id == id)
+            var rol = this._context.Rols.Where(x => x.OrganizationId == OrganizationId && x.Active == true && x.Id == id)
                                         .Select(x => this._mapper.Map<RolResponse>(x))
                                         .AsNoTracking()
                                         .FirstOrDefault();
@@ -135,12 +140,12 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 rol.Active = true;
 
                 this._context.Rols.Update(rol);
-                await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Modified);
+                await this._context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Modified);
 
                 //Remove menus
                 var menusRemoved = _context.MenuXrols.Where(x => x.RoleId == rol.Id).ToList();
                 _context.MenuXrols.RemoveRange(menusRemoved);
-                await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Delete);
+                await this._context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Delete);
 
                 //add menus
                 foreach (var menu in request.Menus)
@@ -149,7 +154,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                     this._context.MenuXrols.Add(menusXRol);
                 }
 
-                await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Modified);
+                await this._context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Modified);
 
                 return this._mapper.Map<RolResponse>(rol);
             }

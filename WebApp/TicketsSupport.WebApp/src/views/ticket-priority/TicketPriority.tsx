@@ -48,7 +48,7 @@ export default function TicketPriority() {
 
     //Translations
     const { t } = useTranslation();
-    const GlobalConfirmationDeleteText = t("deleteConfirmation.description", { 0: t("element.TicketPriority").toLowerCase() + "?" });
+    const GlobalConfirmationDeleteText = t("deleteConfirmation.description", { 0: t("element.ticketPriority").toLowerCase() + "?" });
     const GlobalConfirmation = t("deleteConfirmation.title");
     const GlobalButtonDelete = t("buttons.delete");
     const GlobalButtonCancel = t("common.cardFormButtons.cancel");
@@ -135,6 +135,8 @@ export default function TicketPriority() {
     }, [errorDelete, httpCodeDelete, deleteResponse])
 
 
+
+
     //Table Search Filter
     const onGlobalFilterChange = (e: { target: { value: string | null } }) => {
         const value = e.target.value;
@@ -203,7 +205,7 @@ export default function TicketPriority() {
                     <div className="flex justify-content-between align-items-center my-4">
                         <h2 className="my-0">{PageName}</h2>
                         {/* Add new */}
-                        {getTokenData?.PermissionLevel === "Administrator"
+                        {getTokenData?.permissionLevel === "Administrator"
                             ? <Link to={NewItemUrl}>
                                 <Button icon="pi pi-plus" severity='success'>
                                     <span className='pl-2'>{TableHeaderNew}</span>
@@ -239,7 +241,7 @@ export default function TicketPriority() {
                             <Column field="id" header={TableHeaderId} sortable />
                             <Column field="name" header={TableHeaderName} sortable />
                             <Column field="color" header={TableHeaderColor} sortable />
-                            {getTokenData?.PermissionLevel === "Administrator" ? <Column header={TableHeaderActions} body={ActionsTableTemplate} sortable /> : <></>}
+                            {getTokenData?.permissionLevel === "Administrator" ? <Column header={TableHeaderActions} body={ActionsTableTemplate} sortable /> : <></>}
                         </DataTable>
                     </Card>
                 </>

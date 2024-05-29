@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="src\components\googleLoginButton\" />
+    <Folder Include="src\components\organizationSelect\" />
     <Folder Include="src\views\home\" />
     <Folder Include="src\views\confirm-register\" />
   </ItemGroup>

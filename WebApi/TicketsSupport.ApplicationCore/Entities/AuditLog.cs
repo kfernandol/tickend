@@ -19,7 +19,11 @@ public partial class AuditLog
 
     public string PrimaryId { get; set; } = null!;
 
+    public int? OrganizationId { get; set; }
+
     public virtual ICollection<AuditLogDetail> AuditLogDetails { get; set; } = new List<AuditLogDetail>();
+
+    public virtual Organization? Organization { get; set; }
 
     public virtual User? User { get; set; }
 }

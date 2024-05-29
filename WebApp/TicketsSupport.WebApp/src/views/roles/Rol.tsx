@@ -45,7 +45,7 @@ export default function Roles() {
 
     //Translations
     const { t } = useTranslation();
-    const GlobalConfirmationDeleteText = t("deleteConfirmation.description", { 0: t("element.Rol").toLowerCase() + "?" });
+    const GlobalConfirmationDeleteText = t("deleteConfirmation.description", { 0: t("element.rol").toLowerCase() + "?" });
     const GlobalConfirmation = t("deleteConfirmation.title");
     const GlobalButtonDelete = t("buttons.delete");
     const GlobalButtonCancel = t("common.cardFormButtons.cancel");
@@ -212,7 +212,7 @@ export default function Roles() {
                     <div className="flex justify-content-between align-items-center my-4">
                         <h2 className="my-0">{PageName}</h2>
                         {/* Add new */}
-                        {getTokenData?.PermissionLevel === "Administrator"
+                        {getTokenData?.permissionLevel === "Administrator"
                             ? <Link to={NewItemUrl}>
                                 <Button icon="pi pi-plus" severity='success'>
                                     <span className='pl-2'>{RolesTableHeaderNewRol}</span>
@@ -250,7 +250,7 @@ export default function Roles() {
                             <Column field="name" header={RolesTableHeaderName} sortable />
                             <Column field="permissionLevelId" header={RolesTableHeaderPermissionLevel} sortable body={PermissionlevelsBody} />
                             <Column field="menus.id" header={RolesTableHeaderMenus} sortable body={MenusBody} />
-                            {getTokenData?.PermissionLevel === "Administrator" ? <Column header={RolesTableHeaderActions} body={ActionsTableTemplate} sortable /> : <></>}
+                            {getTokenData?.permissionLevel === "Administrator" ? <Column header={RolesTableHeaderActions} body={ActionsTableTemplate} sortable /> : <></>}
                         </DataTable>
                     </Card>
                 </>

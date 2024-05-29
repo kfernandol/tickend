@@ -15,6 +15,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
         private readonly TS_DatabaseContext _context;
         private readonly IMapper _mapper;
         private int UserIdRequest;
+        private int OrganizationId;
 
         public TicketTypeRepository(TS_DatabaseContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
@@ -24,28 +25,32 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             //Get UserId
             string? userIdTxt = httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
             int.TryParse(userIdTxt, out UserIdRequest);
+            //Get OrganizationId
+            string? organizationIdTxt = httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "organization")?.Value;
+            int.TryParse(organizationIdTxt, out OrganizationId);
         }
 
         public async Task<TicketTypeResponse> CreateTicketType(CreateTicketTypeRequest request)
         {
             var ticketType = _mapper.Map<TicketType>(request);
+            ticketType.OrganizationId = OrganizationId;
             ticketType.Active = true;
 
             _context.TicketTypes.Add(ticketType);
-            await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
+            await _context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Created);
 
             return _mapper.Map<TicketTypeResponse>(ticketType);
         }
 
         public async Task DeleteTicketTypeById(int id)
         {
-            var ticketType = _context.TicketTypes.Find(id);
+            var ticketType = await _context.TicketTypes.FirstOrDefaultAsync(x => x.Id == id && x.OrganizationId == OrganizationId);
             if (ticketType != null)
             {
                 ticketType.Active = false;
 
                 _context.Update(ticketType);
-                await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Delete);
+                await _context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Delete);
             }
             else
                 throw new NotFoundException(ExceptionMessage.NotFound("Ticket Type", $"{id}"));
@@ -53,14 +58,16 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
         public async Task<List<TicketTypeResponse>> GetTicketType(string? username)
         {
-            User? user = await _context.Users.Include(x => x.RolNavigation)
+            User? user = await _context.Users.Include(x => x.RolXusers)
+                                             .ThenInclude(x => x.Rol)
                                              .AsNoTracking()
-                                             .FirstOrDefaultAsync(x => x.Username == username);
+                                             .FirstOrDefaultAsync(x => x.Username == username && x.RolXusers.Any(x => x.Rol.OrganizationId == OrganizationId));
 
             List<TicketType>? result = new List<TicketType>();
-            if (user?.RolNavigation?.PermissionLevel == PermissionLevel.Administrator)
+            if (user?.RolXusers?.FirstOrDefault(x => x.Rol.OrganizationId == OrganizationId)?.Rol?.PermissionLevel == PermissionLevel.Administrator)
             {
                 result = await _context.TicketTypes.AsNoTracking()
+                                                   .Where(x => x.OrganizationId == OrganizationId)
                                                    .ToListAsync();
             }
             else
@@ -72,8 +79,10 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                                     .Include(x => x.Project)
                                                                         .ThenInclude(x => x.ProjectXdevelopers)
                                                                         .ThenInclude(x => x.Developer)
-                                                                    .Where(x => x.Project.ProjectXclients.Any(c => c.Client.Username == username) ||
-                                                                                x.Project.ProjectXdevelopers.Any(d => d.Developer.Username == username))
+                                                                    .Where(x =>
+                                                                                x.TicketType.OrganizationId == OrganizationId &&
+                                                                                (x.Project.ProjectXclients.Any(c => c.Client.Username == username) ||
+                                                                                x.Project.ProjectXdevelopers.Any(d => d.Developer.Username == username)))
                                                                     .Select(x => x.TicketType)
                                                                     .AsNoTracking()
                                                                     .AsSplitQuery()
@@ -92,7 +101,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
         {
             var ticketType = await _context.TicketTypes.Where(x => x.Active == true)
                                                        .AsNoTracking()
-                                                       .FirstOrDefaultAsync(x => x.Id == id);
+                                                       .FirstOrDefaultAsync(x => x.Id == id && x.OrganizationId == OrganizationId);
 
             if (ticketType != null)
                 return _mapper.Map<TicketTypeResponse>(ticketType);
@@ -105,9 +114,8 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             var ticketType = await _context.Projects.Include(x => x.ProjectXticketTypes)
                                                              .ThenInclude(x => x.TicketType)
                                                          .Where(x => x.Id == projectId &&
-                                                                     x.ProjectXticketTypes.Any(p => p.TicketType.Active))
+                                                                     x.ProjectXticketTypes.Any(p => p.TicketType.Active == true && p.TicketType.OrganizationId == OrganizationId))
                                                          .SelectMany(x => x.ProjectXticketTypes
-                                                             .Where(p => p.TicketType.Active)
                                                              .Select(p => p.TicketType))
                                                          .AsNoTracking()
                                                          .AsSplitQuery()
@@ -121,7 +129,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
         public async Task<TicketTypeResponse> UpdateTicketType(int id, UpdateTicketTypeRequest request)
         {
-            var ticketType = await _context.TicketTypes.FirstOrDefaultAsync(x => x.Id == id && x.Active == true);
+            var ticketType = await _context.TicketTypes.FirstOrDefaultAsync(x => x.Id == id && x.OrganizationId == OrganizationId && x.Active == true);
             if (ticketType != null)
             {
                 ticketType.Name = request.Name;
@@ -130,7 +138,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 ticketType.Active = true;
 
                 this._context.TicketTypes.Update(ticketType);
-                await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Modified);
+                await this._context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Modified);
 
                 return this._mapper.Map<TicketTypeResponse>(ticketType);
             }

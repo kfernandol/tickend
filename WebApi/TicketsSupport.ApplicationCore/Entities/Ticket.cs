@@ -42,6 +42,8 @@ public partial class Ticket
 
     public int? Reply { get; set; }
 
+    public int OrganizationId { get; set; }
+
     public bool Active { get; set; }
 
     public virtual User? ClosedByNavigation { get; set; }
@@ -51,6 +53,8 @@ public partial class Ticket
     public virtual ICollection<Ticket> InverseReplyNavigation { get; set; } = new List<Ticket>();
 
     public virtual User? LastUpdatedByNavigation { get; set; }
+
+    public virtual Organization Organization { get; set; } = null!;
 
     public virtual Project Project { get; set; } = null!;
 

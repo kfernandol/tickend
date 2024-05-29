@@ -197,6 +197,7 @@ export default function UserEdit() {
                                                 id={field.name}
                                                 value={field.value}
                                                 className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
+                                                readOnly
                                                 onChange={(e) => field.onChange(e.target.value)}
                                             />
                                             {ErrorMessageHtml(field.name)}
@@ -230,6 +231,7 @@ export default function UserEdit() {
                                                 id={field.name}
                                                 value={field.value}
                                                 className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
+                                                readOnly
                                                 onChange={(e) => field.onChange(e.target.value)}
                                             />
                                             {ErrorMessageHtml(field.name)}
@@ -262,6 +264,7 @@ export default function UserEdit() {
                                                 id={field.name}
                                                 value={field.value}
                                                 className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
+                                                readOnly
                                                 onChange={(e) => field.onChange(e.target.value)}
                                             />
                                             {ErrorMessageHtml(field.name)}
@@ -296,6 +299,7 @@ export default function UserEdit() {
                                                 id={field.name}
                                                 value={field.value}
                                                 className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
+                                                readOnly
                                                 onChange={(e) => field.onChange(e.target.value)}
                                             />
                                             {ErrorMessageHtml(field.name)}
@@ -316,6 +320,7 @@ export default function UserEdit() {
                                                 id={field.name}
                                                 value={field.value}
                                                 className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
+                                                readOnly
                                                 onChange={(e) => field.onChange(e.target.value)}
                                             />
                                             {ErrorMessageHtml(field.name)}
@@ -336,78 +341,7 @@ export default function UserEdit() {
                                                 id={field.name}
                                                 value={field.value}
                                                 className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
-                                                onChange={(e) => field.onChange(e.target.value)}
-                                            />
-                                            {ErrorMessageHtml(field.name)}
-                                        </>
-                                    )}
-                                />
-                            </div>
-
-                            {/* Password Input */}
-                            <div className='col-12 md:col-6'>
-                                <Controller
-                                    name="password"
-                                    control={control}
-                                    rules={
-                                        {
-                                            maxLength: {
-                                                value: 50,
-                                                message: ErrorMaxCaracter.replace("{{0}}", "50")
-                                            },
-                                            minLength: {
-                                                value: 5,
-                                                message: ErrorMinCaracter.replace("{{0}}", "5")
-                                            },
-                                            validate: (value) => {
-                                                const { confirmPassword } = getValues();
-                                                return confirmPassword === value || ErrorNoMatch;
-                                            }
-                                        }}
-                                    render={({ field, fieldState }) => (
-                                        <>
-                                            <label className="align-self-start block mb-1">{CardFormPassword}</label>
-                                            <InputText
-                                                id={field.name}
-                                                value={field.value}
-                                                type="password"
-                                                className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
-                                                onChange={(e) => field.onChange(e.target.value)}
-                                            />
-                                            {ErrorMessageHtml(field.name)}
-                                        </>
-                                    )}
-                                />
-                            </div>
-
-                            {/* Password Confirm Input */}
-                            <div className='col-12 md:col-6'>
-                                <Controller
-                                    name="confirmPassword"
-                                    control={control}
-                                    rules={
-                                        {
-                                            maxLength: {
-                                                value: 50,
-                                                message: ErrorMaxCaracter.replace("{{0}}", "50")
-                                            },
-                                            minLength: {
-                                                value: 5,
-                                                message: ErrorMinCaracter.replace("{{0}}", "5")
-                                            },
-                                            validate: (value) => {
-                                                const { password } = getValues();
-                                                return password === value || ErrorNoMatch;
-                                            }
-                                        }}
-                                    render={({ field, fieldState }) => (
-                                        <>
-                                            <label className="align-self-start block mb-1">{CardFormConfirmPassword}</label>
-                                            <InputText
-                                                id={field.name}
-                                                value={field.value}
-                                                type="password"
-                                                className={classNames({ "p-invalid": fieldState.error }) + " w-full"}
+                                                readOnly
                                                 onChange={(e) => field.onChange(e.target.value)}
                                             />
                                             {ErrorMessageHtml(field.name)}

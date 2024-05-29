@@ -27,6 +27,9 @@ import { useTranslation } from "../../../i18n";
 //models
 import { AuthRequest } from "../../../models/requests/auth.request";
 import { ErrorResponse, ErrorsResponse } from "../../../models/responses/basic.response";
+import { changeOrganization } from "../../../redux/Slices/ApiServiceSlice";
+import { AuthToken } from "../../../models/tokens/token.model";
+import { jwtDecode } from "jwt-decode";
 
 function LayoutLogin() {
     //Form
@@ -68,6 +71,8 @@ function LayoutLogin() {
     useEffect(() => {
         if (authResponse) {
             dispatch(login(authResponse));
+            const getTokenData = jwtDecode<AuthToken>(authResponse.token, { header: false });
+            dispatch(changeOrganization(getTokenData?.organization))
         }
     }, [authResponse]);
 

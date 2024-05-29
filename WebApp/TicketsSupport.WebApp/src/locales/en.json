@@ -82,7 +82,8 @@
     "ticketTypes": "Ticket Type",
     "ticketPriority": "Ticket Priority",
     "project": "Project",
-    "profile": "Profile"
+    "profile": "Profile",
+    "organization": "Organization"
   },
   "sidebar": {
     "logout": "Logout"
@@ -346,5 +347,22 @@
     "oldValue": "Old Value",
     "newValue": "New Value",
     "registeredChanges": "Registered changes"
+  },
+  "organization": {
+    "labels": {
+      "addTitle": "Add new organization",
+      "editTitle": "Edit organization",
+      "addNew": "Add new",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address",
+      "select": "Select",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "placeholder": {
+      "selectOrganization": "Select a organization"
+    }
   }
 }

@@ -10,9 +10,7 @@ namespace TicketsSupport.ApplicationCore.Mappings
         {
             //User
             CreateMap<CreateUserRequest, User>();
-            CreateMap<User, UserResponse>()
-                .ForMember(dest => dest.RolId, opt => opt.MapFrom(src => src.Rol))
-                .ForMember(dest => dest.LevelPermission, opt => opt.MapFrom(src => (src.RolNavigation ?? new Rol()).PermissionLevel));
+            CreateMap<User, UserResponse>();
 
             //Rol
             CreateMap<CreateRolRequest, Rol>();
@@ -52,6 +50,10 @@ namespace TicketsSupport.ApplicationCore.Mappings
             CreateMap<AuditLogDetail, AuditLogDetailResponse>();
             CreateMap<AuditLog, AuditLogResponse>()
                 .ForMember(dest => dest.auditLogDetailResponses, opt => opt.MapFrom(opt => opt.AuditLogDetails));
+
+            //Organization
+            CreateMap<CreateOrganizationRequest, Organization>();
+            CreateMap<Organization, OrganizationResponse>();
 
         }
     }

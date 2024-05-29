@@ -27,7 +27,6 @@ export default function LenguajeSelect(props: Props) {
 
     useEffect(() => {
         i18next.changeLanguage(language.code)
-        console.log(language)
     }, [language])
 
     //List Languages

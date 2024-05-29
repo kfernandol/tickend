@@ -67,7 +67,7 @@ namespace TicketsSupport.Server.Controllers
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> AuthRefreshToken(RefreshTokenRequest request)
         {
-            var authResponse = await _authRepository.AuthRefreshToken(request.RefreshToken, request.Username);
+            var authResponse = await _authRepository.AuthRefreshToken(request);
             return Ok(authResponse);
         }
 

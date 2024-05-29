@@ -18,7 +18,7 @@ namespace TicketsSupport.ApplicationCore.Utils
         /// <param name="user">User data with RolNavegation and Peermission Level Include</param>
         /// <param name="configJWT">Config JWT in Appsetting</param>
         /// <returns></returns>
-        public static string GenerateToken(User user, ConfigJWT configJWT)
+        public static string GenerateToken(int? organizationId, User user, ConfigJWT configJWT)
         {
             var key = Encoding.ASCII.GetBytes(configJWT.Key);
 
@@ -30,7 +30,8 @@ namespace TicketsSupport.ApplicationCore.Utils
                     new Claim(JwtRegisteredClaimNames.Sub, user.Username),
                     new Claim(JwtRegisteredClaimNames.Name, $"{user.FirstName} {user.LastName}"),
                     new Claim(JwtRegisteredClaimNames.Email, user?.Email ?? ""),
-                    new Claim("PermissionLevel", user?.RolNavigation?.PermissionLevel.ToString() ?? "NewUser"),
+                    new Claim("organization", $"{organizationId}"),
+                    new Claim("permissionLevel", user?.RolXusers.FirstOrDefault(x => x.Rol?.OrganizationId == organizationId)?.Rol?.PermissionLevel.ToString() ?? "NewUser"),
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(configJWT.ExpirationMin),
                 Issuer = configJWT.Issuer,

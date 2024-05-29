@@ -36,8 +36,7 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> GetTotalTickets()
         {
-            string? username = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-            var ticketsTotal = await _stadisticsRepository.GetTotalTickets(username);
+            var ticketsTotal = await _stadisticsRepository.GetTotalTickets();
             return Ok(ticketsTotal);
         }
 
@@ -51,8 +50,7 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> GetPendingTickets()
         {
-            string? username = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-            var ticketsPending = await _stadisticsRepository.GetPendingTickets(username);
+            var ticketsPending = await _stadisticsRepository.GetPendingTickets();
             return Ok(ticketsPending);
         }
 
@@ -66,8 +64,7 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> GetOpenTickets()
         {
-            string? username = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-            var openTickets = await _stadisticsRepository.GetOpenTickets(username);
+            var openTickets = await _stadisticsRepository.GetOpenTickets();
             return Ok(openTickets);
         }
 
@@ -81,8 +78,7 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> GetClosedTickets()
         {
-            string? username = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-            var closedTickets = await _stadisticsRepository.GetClosedTickets(username);
+            var closedTickets = await _stadisticsRepository.GetClosedTickets();
             return Ok(closedTickets);
         }
 
@@ -96,8 +92,7 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> GetStatusTicketsChart()
         {
-            string? username = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-            var chartData = await _stadisticsRepository.GetStatusTicketsChart(username);
+            var chartData = await _stadisticsRepository.GetStatusTicketsChart();
             return Ok(chartData);
         }
 
@@ -111,8 +106,7 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> GetTicketsByMonthChart()
         {
-            string? username = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-            var chartDatas = await _stadisticsRepository.GetTicketsByMonthChart(username);
+            var chartDatas = await _stadisticsRepository.GetTicketsByMonthChart();
             return Ok(chartDatas);
         }
 
@@ -126,8 +120,7 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> GetLastTicketsCreated()
         {
-            string? username = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-            var ticketResponses = await _stadisticsRepository.GetLastTicketsCreated(username);
+            var ticketResponses = await _stadisticsRepository.GetLastTicketsCreated();
             return Ok(ticketResponses);
         }
 
@@ -141,8 +134,7 @@ namespace TicketsSupport.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> GetTicketsByProject()
         {
-            string? username = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-            var ticketsByProjects = await _stadisticsRepository.GetTicketsByProject(username);
+            var ticketsByProjects = await _stadisticsRepository.GetTicketsByProject();
             return Ok(ticketsByProjects);
         }
     }

@@ -30,17 +30,17 @@ public partial class User
 
     public DateTime? RefreshTokenExpirationTime { get; set; }
 
-    public int? Rol { get; set; }
-
     public bool Active { get; set; }
 
     public virtual ICollection<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
+
+    public virtual ICollection<OrganizationsXuser> OrganizationsXusers { get; set; } = new List<OrganizationsXuser>();
 
     public virtual ICollection<ProjectXclient> ProjectXclients { get; set; } = new List<ProjectXclient>();
 
     public virtual ICollection<ProjectXdeveloper> ProjectXdevelopers { get; set; } = new List<ProjectXdeveloper>();
 
-    public virtual Rol? RolNavigation { get; set; }
+    public virtual ICollection<RolXuser> RolXusers { get; set; } = new List<RolXuser>();
 
     public virtual ICollection<Ticket> TicketClosedByNavigations { get; set; } = new List<Ticket>();
 

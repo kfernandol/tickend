@@ -21,6 +21,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
         private readonly TS_DatabaseContext _context;
         private readonly IMapper _mapper;
         private int UserIdRequest;
+        private int OrganizationId;
 
         public UserRepository(TS_DatabaseContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
@@ -30,6 +31,9 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             //Get UserId
             string? userIdTxt = httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
             int.TryParse(userIdTxt, out UserIdRequest);
+            //Get OrganizationId
+            string? organizationIdTxt = httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "organization")?.Value;
+            int.TryParse(organizationIdTxt, out OrganizationId);
         }
 
         public async Task<UserResponse> CreateUser(CreateUserRequest request)
@@ -46,18 +50,27 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             if (user != null)
                 throw new ExistException(ExceptionMessage.Exist("Email"));
 
-            //Add new user
-            user = _mapper.Map<User>(request);
-            user.Rol = request.RolId;
-            user.Active = true;
-
             //Hash password
             var passwordHashed = HashUtils.HashPassword(request.Password);
+
+            //Add new user
+            user = _mapper.Map<User>(request);
             user.Password = passwordHashed.hashedPassword;
             user.Salt = passwordHashed.salt;
+            user.Active = true;
 
             this._context.Users.Add(user);
-            await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Created);
+            await this._context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Created);
+
+            //Add rol user
+            RolXuser rolXuser = new RolXuser
+            {
+                UserId = user.Id,
+                RolId = request.RolId
+            };
+
+            this._context.RolXusers.Add(rolXuser);
+            await this._context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Created);
 
             return this._mapper.Map<UserResponse>(user);
         }
@@ -70,7 +83,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 user.Active = false;
 
                 this._context.Update(user);
-                await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Delete);
+                await this._context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Delete);
             }
             else
                 throw new NotFoundException(ExceptionMessage.NotFound("User", $"{id}"));
@@ -78,49 +91,83 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
         public async Task<UserResponse> GetUserById(int id)
         {
-            var user = this._context.Users.Include(x => x.RolNavigation)
-                                          .Where(x => x.Active == true)
-                                          .FirstOrDefault(x => x.Id == id);
+            var user = await _context.Users.Include(x => x.RolXusers)
+                                          .ThenInclude(x => x.Rol)
+                                          .FirstOrDefaultAsync(x => x.Id == id &&
+                                                               x.RolXusers.Any(x => x.Rol.OrganizationId == OrganizationId) &&
+                                                               x.Active == true);
 
             if (user != null)
-                return this._mapper.Map<UserResponse>(user);
+            {
+                var response = _mapper.Map<UserResponse>(user);
+                //Set rol id
+                var rol = user.RolXusers.FirstOrDefault(x => x.Rol.OrganizationId == OrganizationId);
+                if (rol != null && rol.RolId != null)
+                    response.RolId = (int)rol.RolId;
+
+                return response;
+            }
 
             throw new NotFoundException(ExceptionMessage.NotFound("User", $"{id}"));
         }
 
         public async Task<List<UserResponse>> GetUsers()
         {
-            return this._context.Users.Include(x => x.RolNavigation)
+            var users = _context.Users.Include(x => x.RolXusers)
+                                      .ThenInclude(x => x.Rol)
                                       .Where(x => x.Active == true)
-                                      .Select(x => this._mapper.Map<UserResponse>(x))
                                       .ToList();
+
+            var response = users.Select(x => _mapper.Map<UserResponse>(x)).ToList();
+
+            //Add RolId
+            response.ForEach(x =>
+            {
+                var user = users.FirstOrDefault(user => x.Id == user.Id);
+                if (user != null)
+                {
+                    var rolXuser = user.RolXusers.FirstOrDefault(rolXuser => rolXuser.Rol.OrganizationId == OrganizationId);
+                    if (rolXuser != null && rolXuser.RolId != null)
+                    {
+                        x.RolId = (int)rolXuser.RolId;
+                    }
+                }
+            });
+
+            return response;
         }
 
         public async Task<UserResponse> UpdateUser(int id, UpdateUserRequest request)
         {
-            var user = this._context.Users.FirstOrDefault(x => x.Id == id && x.Active == true);
+            var user = this._context.Users.Include(x => x.RolXusers)
+                                          .ThenInclude(x => x.Rol)
+                                          .FirstOrDefault(x => x.Id == id && x.Active == true);
             if (user != null)
             {
-                user.Username = request.Username;
+                /*user.Username = request.Username;
                 user.FirstName = request.FirstName;
                 user.LastName = request.LastName;
                 user.Email = request.Email;
-                user.Rol = request.RolId;
                 user.Phone = request.Phone;
                 user.Direction = request.Direction;
-                user.Active = true;
+                user.Active = true;*/
 
-                if (!string.IsNullOrWhiteSpace(request.Password))
-                {
-                    //Hash password
-                    var passwordHashed = HashUtils.HashPassword(request.Password);
-                    user.Password = passwordHashed.hashedPassword;
-                    user.Salt = passwordHashed.salt;
-                }
+                var rolUser = user.RolXusers.FirstOrDefault(x => x.Rol.OrganizationId == OrganizationId);
+
+                if (rolUser != null)
+                    rolUser.RolId = request.RolId;
+
+                /* if (!string.IsNullOrWhiteSpace(request.Password))
+                 {
+                     //Hash password
+                     var passwordHashed = HashUtils.HashPassword(request.Password);
+                     user.Password = passwordHashed.hashedPassword;
+                     user.Salt = passwordHashed.salt;
+                 }*/
 
 
                 this._context.Users.Update(user);
-                await this._context.SaveChangesAsync(UserIdRequest, InterceptorActions.Modified);
+                await this._context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Modified);
 
                 return this._mapper.Map<UserResponse>(user);
             }

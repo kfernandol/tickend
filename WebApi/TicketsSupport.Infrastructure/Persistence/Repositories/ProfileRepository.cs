@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using TicketsSupport.ApplicationCore.Configuration;
 using TicketsSupport.ApplicationCore.DTOs;
+using TicketsSupport.ApplicationCore.Entities;
 using TicketsSupport.ApplicationCore.Exceptions;
 using TicketsSupport.ApplicationCore.Interfaces;
 using TicketsSupport.ApplicationCore.Utils;
@@ -14,6 +15,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
         private readonly TS_DatabaseContext _context;
         private readonly ConfigJWT _configJWT;
         private int UserIdRequest;
+        private int? OrganizationId = null;
 
         public ProfileRepository(TS_DatabaseContext context, IOptions<ConfigJWT> configJWT, IHttpContextAccessor httpContextAccessor)
         {
@@ -23,6 +25,10 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             //Get UserId
             string? userIdTxt = httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
             int.TryParse(userIdTxt, out UserIdRequest);
+            //Get OrganizationId
+            string? organizationIdTxt = httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "organization")?.Value;
+            if (!string.IsNullOrWhiteSpace(organizationIdTxt))
+                OrganizationId = int.Parse(organizationIdTxt);
         }
 
         public async Task<bool> UpdateProfile(int id, UpdateProfileRequest request)
@@ -54,7 +60,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 user.Active = true;
 
                 _context.Users.Update(user);
-                await _context.SaveChangesAsync(UserIdRequest, InterceptorActions.Modified);
+                await _context.SaveChangesAsync();
 
                 return true;
             }

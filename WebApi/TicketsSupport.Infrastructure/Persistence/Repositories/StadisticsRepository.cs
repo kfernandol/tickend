@@ -15,6 +15,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
         private readonly TS_DatabaseContext _context;
         private readonly IMapper _mapper;
         private int UserIdRequest;
+        private int OrganizationId;
 
         public StadisticsRepository(TS_DatabaseContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
@@ -24,15 +25,19 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             //Get UserId
             string? userIdTxt = httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
             int.TryParse(userIdTxt, out UserIdRequest);
+            //Get OrganizationId
+            string? organizationIdTxt = httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "organization")?.Value;
+            int.TryParse(organizationIdTxt, out OrganizationId);
         }
 
-        public async Task<int> GetClosedTickets(string? username)
+        public async Task<int> GetClosedTickets()
         {
             var user = await _context.Users.AsNoTracking()
-                                           .Include(x => x.RolNavigation)
-                                           .FirstOrDefaultAsync(x => x.Username == username);
+                                           .Include(x => x.RolXusers)
+                                           .ThenInclude(x => x.Rol)
+                                           .FirstOrDefaultAsync(x => x.Id == UserIdRequest);
 
-            if (user?.RolNavigation?.PermissionLevel == PermissionLevel.Administrator)
+            if (user?.RolXusers.FirstOrDefault(x => x.Rol.OrganizationId == OrganizationId)?.Rol?.PermissionLevel == PermissionLevel.Administrator)
                 return _context.Tickets.AsNoTracking().Where(x => x.IsClosed == true && x.Reply == null).Count();
             else
             {
@@ -44,8 +49,8 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                         .ThenInclude(x => x.ProjectXdevelopers)
                                                         .ThenInclude(x => x.Developer)
                                                     .Include(x => x.TicketStatus)
-                                                    .Where(x => x.Project.ProjectXclients.Any(c => c.Client.Username == username) ||
-                                                                x.Project.ProjectXdevelopers.Any(d => d.Developer.Username == username))
+                                                    .Where(x => x.Project.ProjectXclients.Any(c => c.Client.Id == UserIdRequest) ||
+                                                                x.Project.ProjectXdevelopers.Any(d => d.Developer.Id == UserIdRequest))
                                                     .AsNoTracking()
                                                     .AsSplitQuery()
                                                     .ToListAsync();
@@ -54,14 +59,15 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             }
         }
 
-        public async Task<List<TicketResponse>> GetLastTicketsCreated(string? username)
+        public async Task<List<TicketResponse>> GetLastTicketsCreated()
         {
             var user = await _context.Users.AsNoTracking()
-                                           .Include(x => x.RolNavigation)
-                                           .FirstOrDefaultAsync(x => x.Username == username);
+                                           .Include(x => x.RolXusers)
+                                           .ThenInclude(x => x.Rol)
+                                           .FirstOrDefaultAsync(x => x.Id == UserIdRequest);
 
             List<Ticket>? lastTickets = new List<Ticket>();
-            if (user?.RolNavigation?.PermissionLevel == PermissionLevel.Administrator)
+            if (user?.RolXusers.FirstOrDefault(x => x.Rol.OrganizationId == OrganizationId)?.Rol?.PermissionLevel == PermissionLevel.Administrator)
             {
                 lastTickets = await _context.Tickets.OrderByDescending(x => x.DateCreated)
                                                     .Take(10)
@@ -96,8 +102,8 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                         .ThenInclude(x => x.Developer)
                                                     .OrderByDescending(x => x.DateCreated)
                                                     .Take(10)
-                                                    .Where(x => x.Project.ProjectXclients.Any(c => c.Client.Username == username) ||
-                                                                x.Project.ProjectXdevelopers.Any(d => d.Developer.Username == username &&
+                                                    .Where(x => x.Project.ProjectXclients.Any(c => c.Client.Id == UserIdRequest) ||
+                                                                x.Project.ProjectXdevelopers.Any(d => d.Developer.Id == UserIdRequest &&
                                                                 x.Active == true))
                                                     .Select(x => new Ticket
                                                     {
@@ -123,13 +129,14 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             return _mapper.Map<List<TicketResponse>>(lastTickets);
         }
 
-        public async Task<int> GetOpenTickets(string? username)
+        public async Task<int> GetOpenTickets()
         {
             var user = await _context.Users.AsNoTracking()
-                                            .Include(x => x.RolNavigation)
-                                            .FirstOrDefaultAsync(x => x.Username == username);
+                                            .Include(x => x.RolXusers)
+                                            .ThenInclude(x => x.Rol)
+                                            .FirstOrDefaultAsync(x => x.Id == UserIdRequest);
 
-            if (user?.RolNavigation?.PermissionLevel == PermissionLevel.Administrator)
+            if (user?.RolXusers.FirstOrDefault(x => x.Rol.OrganizationId == OrganizationId)?.Rol?.PermissionLevel == PermissionLevel.Administrator)
                 return _context.Tickets.AsNoTracking().Where(x => x.Reply == null && x.IsClosed == false).Count();
             else
             {
@@ -141,8 +148,8 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                         .ThenInclude(x => x.ProjectXdevelopers)
                                                         .ThenInclude(x => x.Developer)
                                                     .Include(x => x.TicketStatus)
-                                                    .Where(x => x.Project.ProjectXclients.Any(c => c.Client.Username == username) ||
-                                                                x.Project.ProjectXdevelopers.Any(d => d.Developer.Username == username))
+                                                    .Where(x => x.Project.ProjectXclients.Any(c => c.Client.Id == UserIdRequest) ||
+                                                                x.Project.ProjectXdevelopers.Any(d => d.Developer.Id == UserIdRequest))
                                                     .AsNoTracking()
                                                     .AsSplitQuery()
                                                     .ToListAsync();
@@ -151,13 +158,14 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             }
         }
 
-        public async Task<int> GetPendingTickets(string? username)
+        public async Task<int> GetPendingTickets()
         {
             var user = await _context.Users.AsNoTracking()
-                                            .Include(x => x.RolNavigation)
-                                            .FirstOrDefaultAsync(x => x.Username == username);
+                                           .Include(x => x.RolXusers)
+                                           .ThenInclude(x => x.Rol)
+                                           .FirstOrDefaultAsync(x => x.Id == UserIdRequest);
 
-            if (user?.RolNavigation?.PermissionLevel == PermissionLevel.Administrator)
+            if (user?.RolXusers.FirstOrDefault(x => x.Rol.OrganizationId == OrganizationId)?.Rol?.PermissionLevel == PermissionLevel.Administrator)
                 return _context.Tickets.AsNoTracking().Where(x => x.Reply == null && x.IsClosed == false && x.TicketPriorityId == null).Count();
             else
             {
@@ -169,8 +177,8 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                         .ThenInclude(x => x.ProjectXdevelopers)
                                                         .ThenInclude(x => x.Developer)
                                                     .Include(x => x.TicketStatus)
-                                                    .Where(x => x.Project.ProjectXclients.Any(c => c.Client.Username == username) ||
-                                                                x.Project.ProjectXdevelopers.Any(d => d.Developer.Username == username))
+                                                    .Where(x => x.Project.ProjectXclients.Any(c => c.Client.Id == UserIdRequest) ||
+                                                                x.Project.ProjectXdevelopers.Any(d => d.Developer.Id == UserIdRequest))
                                                     .AsNoTracking()
                                                     .AsSplitQuery()
                                                     .ToListAsync();
@@ -179,13 +187,14 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             }
         }
 
-        public async Task<ChartData> GetStatusTicketsChart(string? username)
+        public async Task<ChartData> GetStatusTicketsChart()
         {
             var user = await _context.Users.AsNoTracking()
-                                            .Include(x => x.RolNavigation)
-                                            .FirstOrDefaultAsync(x => x.Username == username);
+                                            .Include(x => x.RolXusers)
+                                            .ThenInclude(x => x.Rol)
+                                            .FirstOrDefaultAsync(x => x.Id == UserIdRequest);
 
-            if (user?.RolNavigation?.PermissionLevel == PermissionLevel.Administrator)
+            if (user?.RolXusers.FirstOrDefault(x => x.Rol.OrganizationId == OrganizationId)?.Rol?.PermissionLevel == PermissionLevel.Administrator)
             {
                 ChartData ticketsStatusChart = new ChartData
                 {
@@ -213,8 +222,8 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                         .ThenInclude(x => x.ProjectXdevelopers)
                                                         .ThenInclude(x => x.Developer)
                                                     .Include(x => x.TicketStatus)
-                                                    .Where(x => x.Project.ProjectXclients.Any(c => c.Client.Username == username) ||
-                                                                x.Project.ProjectXdevelopers.Any(d => d.Developer.Username == username))
+                                                    .Where(x => x.Project.ProjectXclients.Any(c => c.Client.Id == UserIdRequest) ||
+                                                                x.Project.ProjectXdevelopers.Any(d => d.Developer.Id == UserIdRequest))
                                                     .AsNoTracking()
                                                     .AsSplitQuery()
                                                     .ToListAsync();
@@ -237,16 +246,17 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             }
         }
 
-        public async Task<List<ChartData>> GetTicketsByMonthChart(string? username)
+        public async Task<List<ChartData>> GetTicketsByMonthChart()
         {
             var user = await _context.Users.AsNoTracking()
-                                           .Include(x => x.RolNavigation)
-                                           .FirstOrDefaultAsync(x => x.Username == username);
+                                           .Include(x => x.RolXusers)
+                                           .ThenInclude(x => x.Rol)
+                                           .FirstOrDefaultAsync(x => x.Id == UserIdRequest);
 
             int currentMonth = DateTime.Now.Month;
             int currentYear = DateTime.Now.Year;
 
-            if (user?.RolNavigation?.PermissionLevel == PermissionLevel.Administrator)
+            if (user?.RolXusers.FirstOrDefault(x => x.Rol.OrganizationId == OrganizationId)?.Rol?.PermissionLevel == PermissionLevel.Administrator)
             {
                 var projects = await _context.Projects.Include(x => x.ProjectXclients)
                                                       .Include(x => x.ProjectXticketPriorities)
@@ -284,7 +294,8 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                     .Include(x => x.ProjectXdevelopers)
                                                         .ThenInclude(x => x.Developer)
                                                     .Where(x => x.Active == true &&
-                                                                (x.ProjectXclients.Any(c => c.Client.Username == username) || x.ProjectXdevelopers.Any(d => d.Developer.Username == username)))
+                                                                (x.ProjectXclients.Any(c => c.Client.Id == UserIdRequest) ||
+                                                                 x.ProjectXdevelopers.Any(d => d.Developer.Id == UserIdRequest)))
                                                     .AsNoTracking()
                                                     .AsSplitQuery()
                                                     .ToListAsync();
@@ -307,13 +318,14 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             }
         }
 
-        public async Task<List<TicketsByProjectResponse>> GetTicketsByProject(string? username)
+        public async Task<List<TicketsByProjectResponse>> GetTicketsByProject()
         {
             var user = await _context.Users.AsNoTracking()
-                                            .Include(x => x.RolNavigation)
-                                            .FirstOrDefaultAsync(x => x.Username == username);
+                                            .Include(x => x.RolXusers)
+                                            .ThenInclude(x => x.Rol)
+                                            .FirstOrDefaultAsync(x => x.Id == UserIdRequest);
 
-            if (user?.RolNavigation?.PermissionLevel == PermissionLevel.Administrator)
+            if (user?.RolXusers.FirstOrDefault(x => x.Rol.OrganizationId == OrganizationId)?.Rol?.PermissionLevel == PermissionLevel.Administrator)
             {
                 var TicketsByProjectResponse = await _context.Projects.Include(x => x.Tickets)
                                                                     .Where(x => x.Active == true && x.Tickets.Any(ticket => ticket.Active == true))
@@ -340,8 +352,8 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                                            .ThenInclude(x => x.Developer)
                                                                         .Include(x => x.Tickets)
                                                                        .Where(x => x.Active == true &&
-                                                                                x.ProjectXclients.Any(c => c.Client.Username == username ||
-                                                                                x.ProjectXdevelopers.Any(d => d.Developer.Username == username) &&
+                                                                                x.ProjectXclients.Any(c => c.Client.Id == UserIdRequest ||
+                                                                                x.ProjectXdevelopers.Any(d => d.Developer.Id == UserIdRequest) &&
                                                                                 x.Tickets.Any(x => x.Reply == null && x.Active == true)))
                                                                        .Select(x => new TicketsByProjectResponse
                                                                        {
@@ -359,13 +371,14 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             }
         }
 
-        public async Task<int> GetTotalTickets(string? username)
+        public async Task<int> GetTotalTickets()
         {
             var user = await _context.Users.AsNoTracking()
-                                            .Include(x => x.RolNavigation)
-                                            .FirstOrDefaultAsync(x => x.Username == username);
+                                            .Include(x => x.RolXusers)
+                                            .ThenInclude(x => x.Rol)
+                                            .FirstOrDefaultAsync(x => x.Id == UserIdRequest);
 
-            if (user?.RolNavigation?.PermissionLevel == PermissionLevel.Administrator)
+            if (user?.RolXusers.FirstOrDefault(x => x.Rol.OrganizationId == OrganizationId)?.Rol?.PermissionLevel == PermissionLevel.Administrator)
                 return _context.Tickets.AsNoTracking().Where(x => x.Reply == null).Count();
             else
             {
@@ -377,8 +390,8 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                         .ThenInclude(x => x.ProjectXdevelopers)
                                                         .ThenInclude(x => x.Developer)
                                                     .Include(x => x.TicketStatus)
-                                                    .Where(x => x.Project.ProjectXclients.Any(c => c.Client.Username == username) ||
-                                                                x.Project.ProjectXdevelopers.Any(d => d.Developer.Username == username))
+                                                    .Where(x => x.Project.ProjectXclients.Any(c => c.Client.Id == UserIdRequest) ||
+                                                                x.Project.ProjectXdevelopers.Any(d => d.Developer.Id == UserIdRequest))
                                                     .AsNoTracking()
                                                     .AsSplitQuery()
                                                     .ToListAsync();

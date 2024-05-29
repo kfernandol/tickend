@@ -18,6 +18,7 @@ export const authSlice = createSlice({
             state.expirationMin = expirationMin;
             state.tokenType = tokenType;
             state.refreshToken = refreshToken;
+            console.log(action.payload)
         },
         logout: (state) => {
             window.location.replace("/");

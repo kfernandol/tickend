@@ -34,14 +34,21 @@ namespace TicketsSupport.ApplicationCore.Authorization.Role
                 throw new NotFoundException(ExceptionMessage.NotFound($"UserId in token"));
             #endregion
 
+            #region GetOrganizacionId
+            //Get OrganizationId
+            string? organizationIdTxt = context.User.Claims.FirstOrDefault(x => x.Type == "organization")?.Value;
+            int.TryParse(organizationIdTxt, out int OrganizationId);
+            #endregion
+
             #region Get User Database
-            var User = _context.Users.Include(x => x.RolNavigation)
-                                      .FirstOrDefault(x => x.Id == int.Parse(UserId) && x.Active == true && x.RolNavigation.Active == true);
+            var User = _context.Users.Include(x => x.RolXusers)
+                                     .ThenInclude(x => x.Rol)
+                                     .FirstOrDefault(x => x.Id == int.Parse(UserId) && x.Active == true && x.RolXusers.FirstOrDefault(x => x.Rol.OrganizationId == OrganizationId).Rol.Active == true);
             if (User == null)
                 throw new NotFoundException(ExceptionMessage.NotFound("User", UserId));
             #endregion
 
-            var userWithRole = User.RolNavigation.PermissionLevel == requirement.PermissionLevel;
+            var userWithRole = User.RolXusers.FirstOrDefault(x => x.Rol.OrganizationId == OrganizationId)?.Rol?.PermissionLevel == requirement.PermissionLevel;
 
             if (userWithRole == true)
                 context.Succeed(requirement);

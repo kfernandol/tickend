@@ -14,7 +14,11 @@ public partial class TicketType
 
     public string IconColor { get; set; } = null!;
 
+    public int OrganizationId { get; set; }
+
     public bool Active { get; set; }
+
+    public virtual Organization Organization { get; set; } = null!;
 
     public virtual ICollection<ProjectXticketType> ProjectXticketTypes { get; set; } = new List<ProjectXticketType>();
 

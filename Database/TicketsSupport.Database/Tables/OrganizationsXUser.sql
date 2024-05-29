@@ -1,0 +1,6 @@
+﻿CREATE TABLE [dbo].[OrganizationsXUser]
+(
+	[Id] INT NOT NULL PRIMARY KEY IDENTITY,
+	[OrganizationId] INT FOREIGN KEY REFERENCES [Organization](Id) NOT NULL,
+	[UserId] INT FOREIGN KEY REFERENCES  [User](Id) NOT NULL
+)
