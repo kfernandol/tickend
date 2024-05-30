@@ -82,6 +82,35 @@ namespace TicketsSupport.WebApi.Controllers
             return Ok(closedTickets);
         }
 
+
+        /// <summary>
+        /// gets the total number of projects assigned
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("projects/total/"), MapToApiVersion(1.0)]
+        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(int))]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
+        [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
+        public async Task<IActionResult> GetProjectsAssigned()
+        {
+            var projects = await _stadisticsRepository.GetProjectsAssigned();
+            return Ok(projects);
+        }
+
+        /// <summary>
+        /// gets the avg ticket closed time
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("tickets/closed-average/"), MapToApiVersion(1.0)]
+        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(double))]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
+        [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
+        public async Task<IActionResult> GetTicketAvgClosed()
+        {
+            var ticketAvgClosed = await _stadisticsRepository.GetTicketAvgClosed();
+            return Ok(ticketAvgClosed);
+        }
+
         /// <summary>
         /// gets the data for the ticket chart by state
         /// </summary>
@@ -101,7 +130,7 @@ namespace TicketsSupport.WebApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("tickets/month-chart/"), MapToApiVersion(1.0)]
-        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(List<int>))]
+        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(List<ChartData>))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> GetTicketsByMonthChart()
@@ -111,11 +140,25 @@ namespace TicketsSupport.WebApi.Controllers
         }
 
         /// <summary>
+        /// gets the data for the ticket closed chart by month and by project
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("tickets/closed-month-chart/"), MapToApiVersion(1.0)]
+        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(List<ChartData>))]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
+        [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
+        public async Task<IActionResult> GetStatusTicketsClosedChart()
+        {
+            var chartClosedMont = await _stadisticsRepository.GetStatusTicketsClosedChart();
+            return Ok(chartClosedMont);
+        }
+
+        /// <summary>
         /// gets the data of the last created tickets
         /// </summary>
         /// <returns></returns>
         [HttpGet("tickets/last-created/"), MapToApiVersion(1.0)]
-        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(List<int>))]
+        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(List<TicketResponse>))]
         [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> GetLastTicketsCreated()

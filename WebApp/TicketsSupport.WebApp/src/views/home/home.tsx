@@ -52,6 +52,7 @@ export default function Home() {
     const statusOpen = t('tickets.status.open');
     const statusClosed = t('tickets.status.closed');
     const LastTicketCreated = t('home.lastTicketsCreated');
+    const ticketOpenByMonth = t('home.ticketOpenByMonth');
     const project = t('tickets.labels.project');
     const ticketsByProjectTxt = t('home.ticketsByProject');
     //links
@@ -345,7 +346,7 @@ export default function Home() {
                     </Card>
                 </div>
                 <div className="col-12">
-                    <Card>
+                    <Card title={ticketOpenByMonth}>
                         <Chart type="line" data={chartTicketsByMonthData} options={chartTicketsByMonthOptions} />
                     </Card>
                 </div>

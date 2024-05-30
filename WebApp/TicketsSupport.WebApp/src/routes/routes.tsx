@@ -36,6 +36,7 @@ import Page404 from "../views/error-pages/Page404.tsx";
 import Page401 from "../views/error-pages/Page401.tsx";
 import LayoutRegister from "../views/shared/layoutLogin/LayoutRegister.tsx";
 import ConfirmRegister from "../views/confirm-register/ConfirmRegister.tsx";
+import Stadistics from "../views/stadistics/Stadistics.tsx";
 
 //Routes with login
 export const routesAuthorized = () => {
@@ -267,6 +268,13 @@ export const routesAuthorized = () => {
                     element:
                         <ProtectedRoute name="AuditLogs">
                             <AuditLog />
+                        </ProtectedRoute>
+                },
+                {
+                    path: paths.Stadistics,
+                    element:
+                        <ProtectedRoute name="Stadistics">
+                            <Stadistics />
                         </ProtectedRoute>
                 }
             ],

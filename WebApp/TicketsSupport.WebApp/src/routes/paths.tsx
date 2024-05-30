@@ -38,4 +38,5 @@ export const paths = {
     TicketsWithId: "/Tickets/:id",
     newTicket: "/Ticket/New",
     Audit: "/Audit",
+    Stadistics: "/Stadistics"
 };
