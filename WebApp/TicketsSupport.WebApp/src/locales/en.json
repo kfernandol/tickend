@@ -313,7 +313,8 @@
     "percentageResolution": "Percentage of resolution",
     "ticketsByStatus": "Tickets by status",
     "lastTicketsCreated": "Last tickets created",
-    "ticketsByProject": "Tickets by project"
+    "ticketsByProject": "Tickets by project",
+    "ticketOpenByMonth": "Tickets Open By Month"
   },
   "months": {
     "1": "January",
@@ -364,5 +365,14 @@
     "placeholder": {
       "selectOrganization": "Select a organization"
     }
+  },
+  "stadistics": {
+    "projects": "Projects",
+    "projectDesc": "Assigned",
+    "timeAVG": "Time Average",
+    "timeAVGClose": "Ticket Closed",
+    "satisfaction": "Satisfaction",
+    "satisfactionDesc": "User",
+    "ticketCloseByMonth": "Tickets Closed By Month"
   }
 }

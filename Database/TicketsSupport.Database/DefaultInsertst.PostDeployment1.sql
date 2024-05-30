@@ -125,7 +125,7 @@ END;
 IF NOT EXISTS (SELECT 1 FROM [Menu] WHERE Name = 'Stadistics')
 BEGIN 
     INSERT INTO [Menu](Name,  Icon, Url, ParentId, Position, Show, OrganizationId, Active) 
-    VALUES('Stadistics', '', '/Stadistics', 13, 1, 1, 1, 1)
+    VALUES('Stadistics', 'pi pi-chart-line', '/Stadistics', 13, 1, 1, 1, 1)
 END;
 
 /* Default insert in MenuXRol */
@@ -220,7 +220,7 @@ BEGIN
     VALUES(13,1)
 END;
 
-IF NOT EXISTS (SELECT 1 FROM [MenuXRol] WHERE MenuId = 12)
+IF NOT EXISTS (SELECT 1 FROM [MenuXRol] WHERE MenuId = 14)
 BEGIN 
     /* Stadistics Menu */
     INSERT INTO [MenuXRol](MenuId, RoleId) 

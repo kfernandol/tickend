@@ -13,5 +13,6 @@
     <Folder Include="src\components\organizationSelect\" />
     <Folder Include="src\views\home\" />
     <Folder Include="src\views\confirm-register\" />
+    <Folder Include="src\views\stadistics\" />
   </ItemGroup>
 </Project>

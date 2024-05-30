@@ -40,8 +40,8 @@ const useApiClient = (organizacionId?: number) => {
         async (error) => {
             const originalRequest = error.config;
             if (error.response.status === 401 && !originalRequest._retry && !apiService.isRefresh) {
-                if (apiService.retry <= 3) {
-                    dispatch(retry(apiService.retry++))
+                if (apiService.retry < 3) {
+                    dispatch(retry(apiService.retry + 1))
                     dispatch(isRefresh(true));
                     originalRequest._retry = true;
 
@@ -62,6 +62,7 @@ const useApiClient = (organizacionId?: number) => {
 
                         // Actualizar estado con el nuevo token
                         dispatch(login(AuthResponse));
+                        dispatch(retry(0));
 
                         // Modificar cabecera y reintentar la solicitud original
                         originalRequest.headers.Authorization = `${AuthResponse.tokenType} ${AuthResponse.token}`;

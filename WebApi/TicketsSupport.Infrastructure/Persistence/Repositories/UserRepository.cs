@@ -77,12 +77,12 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
         public async Task DeleteUserById(int id)
         {
-            var user = this._context.Users.Find(id);
+            var user = await _context.OrganizationsXusers.Include(x => x.User)
+                                                        .FirstOrDefaultAsync(x => x.UserId == id && x.OrganizationId == OrganizationId && x.User.Active == true);
+
             if (user != null)
             {
-                user.Active = false;
-
-                this._context.Update(user);
+                _context.RemoveRange(user);
                 await this._context.SaveChangesAsync(UserIdRequest, OrganizationId, InterceptorActions.Delete);
             }
             else
