@@ -294,7 +294,8 @@
       "options": "Opciones",
       "phone": "Telefono",
       "deviceInfo": "Informacion del dispositivo",
-      "browser": "Navegador"
+      "browser": "Navegador",
+      "replyTo": "Responder a"
     },
     "status": {
       "open": "Abierto",
