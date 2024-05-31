@@ -42,7 +42,10 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             string? userIdTxt = httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
             int.TryParse(userIdTxt, out UserIdRequest);
             //Get UserIP
-            UserIPRequest = httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString().Replace(@"^::ffff:", string.Empty) ?? string.Empty;
+            string ipAddress = httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString();
+            if (!string.IsNullOrEmpty(ipAddress) && ipAddress.StartsWith("::ffff:"))
+                ipAddress = ipAddress.Substring(7); // Delte Prefix "::ffff:"
+            UserIPRequest = ipAddress ?? string.Empty;
             //Get UserAgent
             UserAgentRequest = httpContextAccessor.HttpContext?.Request?.Headers["User-Agent"].FirstOrDefault() ?? string.Empty;
 
