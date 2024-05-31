@@ -86,6 +86,7 @@ export default function Tickets() {
     const deviceInfoTxt = t("tickets.labels.deviceInfo");
     const browserTxt = t("tickets.labels.browser");
     const optionsTxt = t("tickets.labels.options");
+    const replyToTxt = t("tickets.labels.replyTo");
     const replyTitleTxt = t("tickets.labels.replyTitle");
 
     //Links
@@ -393,6 +394,16 @@ export default function Tickets() {
 
     }
 
+    const getPhotoUser = (users: UserResponse[], userId: number | undefined | null) => {
+        const user = users.find(x => x.id === userId);
+        return user?.photo ? user.photo : "/src/assets/imgs/avatar-default.png";
+    };
+
+    const getPhotoProject = (projects: ProjectResponse[], ProjectId: number | undefined | null) => {
+        const user = projects.find(x => x.id === ProjectId);
+        return user?.photo ? user.photo : "/src/assets/imgs/project-default.png";
+    };
+
     const handlerTicketClick = (event: React.MouseEvent<HTMLDivElement> | Element | null, ticket: TicketResponse) => {
         const TicketInfoContainer: HTMLDivElement | null = document.querySelector("#ticketInfo");
         const TicketDataContainer: HTMLDivElement | null = document.querySelector("#ticketData");
@@ -625,7 +636,7 @@ export default function Tickets() {
                                         <div className="grid m-0 w-full border-bottom-1 border-gray-200 py-2">
                                             <div className="col-12 flex align-items-center p-0 pb-2 mt-1">
                                                 <div className="w-11 flex align-items-center gap-3">
-                                                    <Avatar image={Projects.find(x => x.id == ticket.projectId)?.photo} size={'normal'}></Avatar>
+                                                    <Avatar image={getPhotoProject(Projects, ticket.projectId)} size={'normal'}></Avatar>
                                                     <p className="font-bold text-lg m-0">{(() => {
                                                         const user = Users.find(x => x.id == ticket.createBy)
                                                         return `${user?.firstName} ${user?.lastName}`
@@ -700,7 +711,11 @@ export default function Tickets() {
                                 <div className="flex gap-2 my-2">
                                     {/*Avatar */}
                                     <div className="flex align-items-center">
-                                        <Avatar image={Users.find(x => x.id == TicketSelected?.createBy)?.photo} size="large"></Avatar>
+                                        <Avatar
+                                            image={getPhotoUser(Users, TicketSelected?.createBy)}
+                                            size="large"
+                                        />
+
                                     </div>
                                     {/*User and Date*/}
                                     <div className="flex flex-column justify-content-center">
@@ -732,7 +747,7 @@ export default function Tickets() {
                                         <div className="flex gap-2 my-2">
                                             {/*Avatar */}
                                             <div className="flex align-items-center">
-                                                <Avatar image={Users.find(x => x.id == ticket?.createBy)?.photo} size="large"></Avatar>
+                                                <Avatar image={getPhotoUser(Users, TicketSelected?.createBy)} size="large"></Avatar>
                                             </div>
                                             {/*User and Date*/}
                                             <div className="flex flex-column justify-content-center">
@@ -774,8 +789,8 @@ export default function Tickets() {
                                     }}>
                                     {/*To*/}
                                     <div className="flex align-items-center my-2 gap-3 relative">
-                                        <Avatar image={Users.find(x => x.id == parseInt(getTokenData?.id ?? '0'))?.photo} size={'large'}></Avatar>
-                                        <p>Reply to:</p>
+                                        <Avatar image={getPhotoUser(Users, parseInt(getTokenData?.id ?? '0'))} size={'large'}></Avatar>
+                                        <p>{replyToTxt}:</p>
                                         <Chip label={`${Users.find(x => x.id == TicketSelected?.createBy)?.firstName} ${Users.find(x => x.id == TicketSelected?.createBy)?.lastName} (${Users.find(x => x.id == TicketSelected?.createBy)?.email})`} />
                                         <Button
                                             className="absolute right-0"

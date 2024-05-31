@@ -294,7 +294,8 @@
       "options": "Options",
       "phone": "Phone",
       "deviceInfo": "Device Info",
-      "browser": "Browser"
+      "browser": "Browser",
+      "replyTo": "Reply To"
     },
     "status": {
       "open": "Open",
