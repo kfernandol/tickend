@@ -77,9 +77,6 @@ function Sidebar() {
                 }))
             }));
 
-            console.log(Menus.filter(x => x.parentId === null && x.show === true))
-            console.log(Menus)
-
             const combinedMenuItems: MenuItem[] = [menuHome, ...menus];
             setMenusItems(combinedMenuItems);
         }
@@ -133,9 +130,11 @@ function Sidebar() {
 
         if (container && sideBar && window.innerWidth > 576) //Tablet and PC
         {
+            console.log("aaa")
             container.offsetHeight;
-            if (container.style.gridTemplateColumns === '300px calc(100% - 300px)' || container.style.gridTemplateColumns === '') //Contract 
+            if (container.style.gridTemplateColumns === '270px calc(100% - 270px)' || container.style.gridTemplateColumns === '') //Contract 
             {
+                console.log("bbb")
                 container.style.gridTemplateColumns = '60px calc(100% - 60px)';
                 sideBar.style.width = "60px";
                 container.style.transition = "grid-template-columns 0.50s ease-in-out";

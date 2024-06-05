@@ -99,7 +99,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
         public async Task<TicketStatusResponse> GetTicketStatusById(int id)
         {
             var ticketStatus = await _context.TicketStatuses.AsNoTracking()
-                                                            .FirstOrDefaultAsync(x => x.Active == true && x.OrganizationId == OrganizationId);
+                                                            .FirstOrDefaultAsync(x => x.Id == id && x.Active == true && x.OrganizationId == OrganizationId);
 
             if (ticketStatus != null)
                 return this._mapper.Map<TicketStatusResponse>(ticketStatus);

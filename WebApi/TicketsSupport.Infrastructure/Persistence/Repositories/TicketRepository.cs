@@ -94,7 +94,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 //Send Email All Clients And Administrators
                 foreach (var client in clients)
                 {
-                    var TicketViewLink = $"{_webAppConfig.Url}/Ticket/Edit/{ticket.Id}";
+                    var TicketViewLink = $"{_webAppConfig.Url}/Tickets/{ticket.Id}";
                     Dictionary<string, string> EmailData = new Dictionary<string, string>
                     {
                         {"FullName", $"{client.FirstName} {client.LastName}"},
@@ -125,7 +125,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 //Send Email All Developers
                 foreach (var Usr in adminsAndDevs)
                 {
-                    var TicketViewLink = $"{_webAppConfig.Url}/Ticket/Edit/{ticket.Id}";
+                    var TicketViewLink = $"{_webAppConfig.Url}/Tickets/{ticket.Id}";
                     Dictionary<string, string> EmailData = new Dictionary<string, string>
                     {
                         {"FullName", $"{Usr?.FirstName} {Usr?.LastName}"},
