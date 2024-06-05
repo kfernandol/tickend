@@ -295,7 +295,8 @@
       "phone": "Telefono",
       "deviceInfo": "Informacion del dispositivo",
       "browser": "Navegador",
-      "replyTo": "Responder a"
+      "replyTo": "Responder a",
+      "search": "Titulo o No."
     },
     "status": {
       "open": "Abierto",

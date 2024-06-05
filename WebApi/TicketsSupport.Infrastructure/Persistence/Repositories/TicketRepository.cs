@@ -315,7 +315,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                .ToListAsync();
             }
 
-            result = result.Where(x => x.Active == true).DistinctBy(x => x.Id).ToList();
+            result = result.Where(x => x.Active == true).DistinctBy(x => x.Id).OrderByDescending(x => x.DateCreated).ToList();
 
             if (result != null)
                 return _mapper.Map<List<TicketResponse>>(result);

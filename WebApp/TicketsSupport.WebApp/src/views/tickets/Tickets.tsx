@@ -42,6 +42,7 @@ import { TicketRequest } from '../../models/requests/ticket.request';
 export default function Tickets() {
     const { id } = useParams();
     const [Tickets, setTickets] = useState<TicketResponse[]>([]);
+    const [TicketsFiltered, setTicketsFiltered] = useState<TicketResponse[]>([]);
     const [Projects, setProjects] = useState<ProjectResponse[]>([]);
     const [TicketPriorities, setTicketPriorities] = useState<TicketPriorityResponse[]>([]);
     const [TicketStatus, setTicketStatus] = useState<TicketStatusResponse[]>([]);
@@ -50,6 +51,7 @@ export default function Tickets() {
     const [TicketSelected, setTicketSelected] = useState<TicketResponse>();
     const [TicketReplySelected, setTicketReplySelected] = useState<TicketResponse[]>();
     const [TicketReplyDesc, setTicketReplyDesc] = useState<string>();
+    const [TicketSearch, setTicketSearch] = useState<string>();
     //Form
     const { control, ErrorMessageHtml, errors, reset, setValue, getValues } = useCustomForm<TicketForm>({ Title: '', Description: '', Priority: null, Project: null, Status: null, Type: null, });
     //Redux
@@ -88,6 +90,7 @@ export default function Tickets() {
     const optionsTxt = t("tickets.labels.options");
     const replyToTxt = t("tickets.labels.replyTo");
     const replyTitleTxt = t("tickets.labels.replyTitle");
+    const searchTxt = t("tickets.labels.search");
 
     //Links
     const NewItemUrl = paths.newTicket;
@@ -107,9 +110,10 @@ export default function Tickets() {
         requests.forEach((request) => {
             Promise.resolve(request)
                 .then((response) => {
+                    let tickets;
                     switch (response.url) {
                         case "v1/tickets":
-                            setTickets((response.data as TicketResponse[]).map((value) => (
+                            tickets = (response.data as TicketResponse[]).map((value) => (
                                 {
                                     id: value.id,
                                     title: value.title,
@@ -130,7 +134,10 @@ export default function Tickets() {
                                     lastUpdatedBy: value.lastUpdatedBy,
                                     reply: value.reply
                                 }
-                            )));
+                            ));
+
+                            setTickets(tickets);
+                            setTicketsFiltered(tickets);
                             break;
                         case "v1/projects":
                             setProjects(response.data as ProjectResponse[]);
@@ -321,6 +328,20 @@ export default function Tickets() {
 
         fetchReplies();
     }, [Tickets, TicketSelected]);
+
+    //Search
+    useEffect(() => {
+        if (TicketSearch && TicketSearch !== "") {
+            const ticketFiltered = Tickets.filter(x =>
+                x.title.toLowerCase().includes(TicketSearch.toLowerCase()) ||
+                x.id.toString().includes(TicketSearch)
+            );
+            setTicketsFiltered(ticketFiltered);
+        } else {
+            setTicketsFiltered(Tickets);
+        }
+    }, [TicketSearch, Tickets]);
+
 
 
 
@@ -616,7 +637,11 @@ export default function Tickets() {
                                 <div className="w-full">
                                     <IconField iconPosition="left">
                                         <InputIcon className="pi pi-search"> </InputIcon>
-                                        <InputText className="w-full" placeholder={`No. or Title`} />
+                                        <InputText
+                                            value={TicketSearch}
+                                            onChange={(e) => { setTicketSearch(e.currentTarget.value) }}
+                                            className="w-full"
+                                            placeholder={searchTxt} />
                                     </IconField>
                                 </div>
                             </div>
@@ -624,7 +649,7 @@ export default function Tickets() {
                             <ScrollPanel
                                 className="w-full"
                                 style={{ width: '100%', height: 'calc(100% - 100px)' }}>
-                                {Tickets.filter(x => x.reply == null).map((ticket, index) => {
+                                {TicketsFiltered.filter(x => x.reply == null).map((ticket, index) => {
                                     if (tooltipRef.current) {
                                         tooltipRef.current.updateTargetEvents();
                                     }
