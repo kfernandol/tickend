@@ -123,5 +123,22 @@ namespace TicketsSupport.WebApi.Controllers
             await _ticketRepository.DeleteTicketById(id);
             return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementDeleted"), ResourcesUtils.GetResponseMessage("Ticket")) });
         }
+
+        /// <summary>
+        /// Rating ticket
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [AuthorizeMenu("Tickets")]
+        [HttpPut("rating/{id}"), MapToApiVersion(1.0)]
+        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
+        [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
+        public async Task<IActionResult> RatingTicket(int id, RatingTicketRequest request)
+        {
+            await _ticketRepository.RatingTicket(id, request.Rating);
+            return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementUpdated"), ResourcesUtils.GetResponseMessage("Ticket")) });
+        }
     }
 }

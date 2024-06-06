@@ -23,6 +23,8 @@ public partial class TS_DatabaseContext : DbContext
 
     public virtual DbSet<Organization> Organizations { get; set; }
 
+    public virtual DbSet<OrganizationInvitation> OrganizationInvitations { get; set; }
+
     public virtual DbSet<OrganizationsXuser> OrganizationsXusers { get; set; }
 
     public virtual DbSet<Project> Projects { get; set; }
@@ -142,7 +144,24 @@ public partial class TS_DatabaseContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.Photo).IsUnicode(false);
-            entity.Property(e => e.Active);
+        });
+
+        modelBuilder.Entity<OrganizationInvitation>(entity =>
+        {
+            entity.Property(e => e.CreateDate).HasColumnType("datetime");
+            entity.Property(e => e.ExpirationDate).HasColumnType("datetime");
+            entity.Property(e => e.Hash)
+                .IsRequired()
+                .HasMaxLength(150)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.Organization).WithMany(p => p.OrganizationInvitations)
+                .HasForeignKey(d => d.OrganizationId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            entity.HasOne(d => d.User).WithMany(p => p.OrganizationInvitations)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
         });
 
         modelBuilder.Entity<OrganizationsXuser>(entity =>

@@ -44,6 +44,8 @@ public partial class Ticket
 
     public int OrganizationId { get; set; }
 
+    public double? Rating { get; set; }
+
     public bool Active { get; set; }
 
     public virtual User? ClosedByNavigation { get; set; }

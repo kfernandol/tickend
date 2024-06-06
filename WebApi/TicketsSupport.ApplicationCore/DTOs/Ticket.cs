@@ -46,6 +46,12 @@ namespace TicketsSupport.ApplicationCore.DTOs
         public bool IsClosed { get; set; }
     }
 
+    public class RatingTicketRequest
+    {
+        [Required(ErrorMessageResourceType = typeof(PropertiesLocalitation), ErrorMessageResourceName = nameof(PropertiesLocalitation.FieldRequired))]
+        public float Rating { get; set; }
+    }
+
     public class TicketResponse
     {
         public int Id { get; set; }

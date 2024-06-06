@@ -10,5 +10,6 @@ namespace TicketsSupport.ApplicationCore.Interfaces
         Task<TicketResponse> CreateTicket(CreateTicketRequest request);
         Task<TicketResponse> ReplyTicket(CreateTicketRequest request);
         Task<TicketResponse> UpdateTicket(int id, UpdateTicketRequest request);
+        Task<bool> RatingTicket(int id, float rating);
     }
 }

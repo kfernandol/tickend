@@ -163,7 +163,10 @@
       "lastName": "Last Name",
       "email": "Email",
       "role": "Role",
-      "new": "New User",
+      "new": "Invite User",
+      "inviteTitle": "Enter the user's email address",
+      "inviteText": "*The user must be registered",
+      "inviteBtn": "Invite",
       "password": "Password",
       "confirmPassword": "Confirm Password",
       "direction": "Direction",
@@ -362,7 +365,9 @@
       "address": "Address",
       "select": "Select",
       "edit": "Edit",
-      "delete": "Delete"
+      "delete": "Delete",
+      "invitationAcceptedTitle": "Invitation has been accepted",
+      "invitationAcceptedSubTitle": "Click the button below to continue"
     },
     "placeholder": {
       "selectOrganization": "Select a organization"

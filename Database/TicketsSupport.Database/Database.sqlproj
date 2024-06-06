@@ -82,6 +82,7 @@
     <Build Include="Tables\Organization.sql" />
     <Build Include="Tables\OrganizationsXUser.sql" />
     <Build Include="Tables\RolXUser.sql" />
+    <Build Include="Tables\OrganizationInvitations.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TS_Database.dev.publish.xml" />

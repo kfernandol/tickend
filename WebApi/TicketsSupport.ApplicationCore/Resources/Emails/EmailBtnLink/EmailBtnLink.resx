@@ -117,6 +117,15 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="InviteBtn" xml:space="preserve">
+    <value>Accept invitation</value>
+  </data>
+  <data name="InviteMessage" xml:space="preserve">
+    <value>The organization {0} has invited you to join it on our platform, click the button to accept the invitation.</value>
+  </data>
+  <data name="InviteSubject" xml:space="preserve">
+    <value>Invitation to organization</value>
+  </data>
   <data name="RegisterBtn" xml:space="preserve">
     <value>Confirm</value>
   </data>

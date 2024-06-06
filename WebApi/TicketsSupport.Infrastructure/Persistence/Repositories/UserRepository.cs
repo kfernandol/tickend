@@ -94,7 +94,6 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
             var user = await _context.Users.Include(x => x.RolXusers)
                                           .ThenInclude(x => x.Rol)
                                           .FirstOrDefaultAsync(x => x.Id == id &&
-                                                               x.RolXusers.Any(x => x.Rol.OrganizationId == OrganizationId) &&
                                                                x.Active == true);
 
             if (user != null)
@@ -113,10 +112,12 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
         public async Task<List<UserResponse>> GetUsers()
         {
-            var users = _context.Users.Include(x => x.RolXusers)
-                                      .ThenInclude(x => x.Rol)
-                                      .Where(x => x.Active == true)
-                                      .ToList();
+            var users = _context.OrganizationsXusers.Include(x => x.User)
+                                                        .ThenInclude(x => x.RolXusers)
+                                                        .ThenInclude(x => x.Rol)
+                                                    .Where(x => x.OrganizationId == OrganizationId && x.User.Active == true)
+                                                    .Select(x => x.User)
+                                                    .ToList();
 
             var response = users.Select(x => _mapper.Map<UserResponse>(x)).ToList();
 
@@ -156,6 +157,17 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
                 if (rolUser != null)
                     rolUser.RolId = request.RolId;
+                else
+                {
+                    RolXuser rolXUser = new RolXuser
+                    {
+                        UserId = user.Id,
+                        RolId = request.RolId
+                    };
+
+                    _context.RolXusers.Add(rolXUser);
+                    await _context.SaveChangesAsync();
+                }
 
                 /* if (!string.IsNullOrWhiteSpace(request.Password))
                  {

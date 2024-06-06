@@ -19,5 +19,6 @@
 	[Browser] varchar(100) NOT NULL,
 	[Reply] INT NULL FOREIGN KEY REFERENCES [Ticket](Id),
 	[OrganizationId] INT FOREIGN KEY REFERENCES [Organization](Id) NOT NULL,
+	[Rating] FLOAT NULL,
 	[Active] bit NOT NULL,
 )

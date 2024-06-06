@@ -7,6 +7,7 @@ using TicketsSupport.ApplicationCore.Commons;
 using TicketsSupport.ApplicationCore.DTOs;
 using TicketsSupport.ApplicationCore.Interfaces;
 using TicketsSupport.ApplicationCore.Utils;
+using TicketsSupport.Infrastructure.Persistence.Repositories;
 
 namespace TicketsSupport.WebApi.Controllers
 {
@@ -111,6 +112,51 @@ namespace TicketsSupport.WebApi.Controllers
         {
             await _organizationRepository.DeleteOrganizationById(id);
             return Ok(new BasicResponse { Success = true, Message = string.Format(ResourcesUtils.GetResponseMessage("ElementDeleted"), ResourcesUtils.GetResponseMessage("Organization")) });
+        }
+
+        /// <summary>
+        /// User organization invite
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [Route("invite")]
+        [HttpPut, MapToApiVersion(1.0)]
+        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
+        [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
+        public async Task<IActionResult> OrganizationInviteUserAsync(OrganizationInviteRequest request)
+        {
+            var resetResponse = await _organizationRepository.OrganizationInviteUserAsync(request);
+
+            if (resetResponse)
+                return Ok(new BasicResponse { Success = true, Message = "Invite completed" });
+
+            else
+                return Ok(new BasicResponse { Success = false, Message = "Error" });
+
+        }
+
+        /// <summary>
+        /// confirm invitation
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [AllowAnonymous]
+        [Route("confirm-invitation")]
+        [HttpPut, MapToApiVersion(1.0)]
+        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(BasicResponse))]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
+        [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
+        public async Task<IActionResult> OrganizationInviteConfirmationAsync(OrganizationInviteConfirmationRequest request)
+        {
+            var resetResponse = await _organizationRepository.OrganizationInviteConfirmationAsync(request.Hash);
+
+            if (resetResponse)
+                return Ok(new BasicResponse { Success = true, Message = "invitation completed" });
+
+            else
+                return Ok(new BasicResponse { Success = false, Message = "Error" });
+
         }
     }
 }

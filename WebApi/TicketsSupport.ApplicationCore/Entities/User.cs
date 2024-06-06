@@ -34,6 +34,8 @@ public partial class User
 
     public virtual ICollection<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
 
+    public virtual ICollection<OrganizationInvitation> OrganizationInvitations { get; set; } = new List<OrganizationInvitation>();
+
     public virtual ICollection<OrganizationsXuser> OrganizationsXusers { get; set; } = new List<OrganizationsXuser>();
 
     public virtual ICollection<ProjectXclient> ProjectXclients { get; set; } = new List<ProjectXclient>();

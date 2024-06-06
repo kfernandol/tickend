@@ -10,5 +10,7 @@ namespace TicketsSupport.ApplicationCore.Interfaces
         Task DeleteOrganizationById(int id);
         Task CreateOrganization(CreateOrganizationRequest request);
         Task UpdateOrganization(int id, UpdateOrganizationRequest request);
+        Task<bool> OrganizationInviteUserAsync(OrganizationInviteRequest request);
+        Task<bool> OrganizationInviteConfirmationAsync(string HashConfirmation);
     }
 }

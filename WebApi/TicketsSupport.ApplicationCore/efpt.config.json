@@ -35,6 +35,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[OrganizationInvitations]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[OrganizationsXUser]",
          "ObjectType": 0
       },

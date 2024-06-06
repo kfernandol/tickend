@@ -1,12 +1,18 @@
 ﻿using AutoMapper;
+using Azure.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Serilog;
+using System.Web;
+using TicketsSupport.ApplicationCore.Configuration;
 using TicketsSupport.ApplicationCore.DTOs;
 using TicketsSupport.ApplicationCore.Entities;
 using TicketsSupport.ApplicationCore.Exceptions;
 using TicketsSupport.ApplicationCore.Interfaces;
 using TicketsSupport.ApplicationCore.Utils;
 using TicketsSupport.Infrastructure.Persistence.Contexts;
+using TicketsSupport.Infrastructure.Services.Email;
 
 namespace TicketsSupport.Infrastructure.Persistence.Repositories
 {
@@ -14,13 +20,22 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
     {
         private readonly TS_DatabaseContext _context;
         private readonly IMapper _mapper;
+        private readonly WebApp _webAppConfig;
+        private readonly IEmailSender _emailSender;
         private int UserIdRequest;
         private int OrganizationId;
 
-        public OrganizationRepository(TS_DatabaseContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        public OrganizationRepository(
+            TS_DatabaseContext context,
+            IMapper mapper,
+            IHttpContextAccessor httpContextAccessor,
+            IOptions<WebApp> webAppConfig,
+            IEmailSender emailSender)
         {
             _context = context;
             _mapper = mapper;
+            _emailSender = emailSender;
+            _webAppConfig = webAppConfig.Value;
             //Get UserId
             string? userIdTxt = httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
             int.TryParse(userIdTxt, out UserIdRequest);
@@ -229,7 +244,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 new Menu
                 {
                     Name = "Stadistics",
-                    Icon = "",
+                    Icon = "pi pi-chart-line",
                     Url = "/Stadistics",
                     ParentId = null,
                     Position = 1,
@@ -322,6 +337,90 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                                   .ToListAsync();
 
             return organizations;
+        }
+
+        public async Task<bool> OrganizationInviteConfirmationAsync(string HashConfirmation)
+        {
+            try
+            {
+                var organizationInvitacion = await _context.OrganizationInvitations.Include(x => x.User)
+                                                                                   .FirstOrDefaultAsync(x => x.Hash == HashConfirmation && x.Used == false);
+
+                if (organizationInvitacion == null)
+                    throw new NotFoundException(ExceptionMessage.Invalid("Organization Invitation"));
+
+                if (DateTime.Now >= organizationInvitacion.ExpirationDate)
+                    throw new InvalidException(ExceptionMessage.Invalid("Invitation expired"));
+
+
+                //Add user to organization
+                OrganizationsXuser organizationsXuser = new OrganizationsXuser
+                {
+                    OrganizationId = organizationInvitacion.OrganizationId,
+                    UserId = organizationInvitacion.UserId,
+                };
+
+                _context.OrganizationsXusers.Add(organizationsXuser);
+                await _context.SaveChangesAsync();
+
+                //Mark Hash used
+                organizationInvitacion.Used = true;
+                _context.Update(organizationInvitacion);
+
+                await _context.SaveChangesAsync(organizationInvitacion.User.Id, OrganizationId, InterceptorActions.Modified);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error change password");
+                return false;
+            }
+        }
+
+        public async Task<bool> OrganizationInviteUserAsync(OrganizationInviteRequest request)
+        {
+            try
+            {
+                var HashReset = TokenUtils.GenerateRandomHash();
+                var organization = await _context.Organizations.FirstOrDefaultAsync(x => x.Id == request.OrganizationId);
+                var user = await _context.Users.Include(x => x.OrganizationsXusers).FirstOrDefaultAsync(x => x.Email == request.Email);
+
+                if (user != null)
+                {
+                    OrganizationInvitation organizationInvitation = new OrganizationInvitation();
+
+                    organizationInvitation.UserId = user.Id;
+                    organizationInvitation.OrganizationId = request.OrganizationId;
+                    organizationInvitation.Hash = HashReset;
+                    organizationInvitation.CreateDate = DateTime.Now;
+                    organizationInvitation.ExpirationDate = DateTime.Now.AddDays(1);
+
+                    _context.OrganizationInvitations.Add(organizationInvitation);
+                    await _context.SaveChangesAsync(user.Id, OrganizationId, InterceptorActions.Modified);
+
+                    var resetPasswordLink = $"{_webAppConfig.Url}/InviteOrganization/{HttpUtility.UrlEncode(HashReset)}";
+
+                    Dictionary<string, string> EmailData = new Dictionary<string, string>
+                    {
+                        {"Subject", ResourcesUtils.GetEmailBtnLink("InviteBtn") ?? string.Empty},
+                        {"Message", ResourcesUtils.GetEmailBtnLink("InviteMessage")?.ToString().Replace("{0}", "") ?? string.Empty},
+                        {"FullName", $"{user.FirstName} {user.LastName}"},
+                        {"BtnLink", resetPasswordLink},
+                        {"BtnText", ResourcesUtils.GetEmailBtnLink("InviteBtn") ?? string.Empty},
+                    };
+
+                    await _emailSender.SendEmail(request.Email, string.Empty, EmailTemplate.EmailBtnLink, EmailData);
+                    return true;
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error reset password");
+                return false;
+            }
         }
 
         public async Task UpdateOrganization(int id, UpdateOrganizationRequest request)

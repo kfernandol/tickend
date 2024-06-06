@@ -61,6 +61,33 @@ namespace TicketsSupport.ApplicationCore.Resources.Emails.EmailBtnLink {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Accept invitation.
+        /// </summary>
+        internal static string InviteBtn {
+            get {
+                return ResourceManager.GetString("InviteBtn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The organization {0} has invited you to join it on our platform, click the button to accept the invitation..
+        /// </summary>
+        internal static string InviteMessage {
+            get {
+                return ResourceManager.GetString("InviteMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invitation to organization.
+        /// </summary>
+        internal static string InviteSubject {
+            get {
+                return ResourceManager.GetString("InviteSubject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Confirm.
         /// </summary>
         internal static string RegisterBtn {

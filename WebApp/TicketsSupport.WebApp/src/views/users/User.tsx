@@ -14,7 +14,7 @@ import Swal from 'sweetalert2';
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 //hooks
-import { useDelete, useGet } from "../../services/api_services";
+import { useDelete, useGet, usePut } from "../../services/api_services";
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import useTokenData from '../../hooks/useTokenData';
@@ -41,6 +41,7 @@ export default function Users() {
 
     //Api Request
     const { SendGetRequest, loadingGet } = useGet<UserResponse[]>();
+    const { SendPutRequest } = usePut();
     const { SendDeleteRequest, deleteResponse, errorDelete, httpCodeDelete } = useDelete<BasicResponse>();
     const [users, setUsers] = useState<UserResponse[]>([]);
     const [roles, setRoles] = useState<RolesResponse[]>([]);
@@ -62,12 +63,14 @@ export default function Users() {
     const TableHeaderLastName = t("users.labels.lastName");
     const TableHeaderEmail = t("users.labels.email");
     const TableHeaderRol = t("users.labels.role");
+    const inviteTitle = t("users.labels.inviteTitle");
+    const inviteText = t("users.labels.inviteText");
+    const inviteBtn = t("users.labels.inviteBtn");
     const TableHeaderActions = t("common.labels.actions");
     const TableNoElements = t("common.table.noElements");
     const PageName = t("navigation.Users");
 
     //Links
-    const NewItemUrl = paths.newUser;
     const EditItemUrl = paths.editUserWithId;
 
     const [TableData, setTableData] = useState<{
@@ -216,6 +219,46 @@ export default function Users() {
         </>
     }
 
+    const inviteUser = () => {
+        return Swal.fire({
+            title: inviteTitle,
+            text: inviteText,
+            icon: "question",
+            input: "email",
+            inputAttributes: {
+                autocapitalize: "off"
+            },
+            showCancelButton: true,
+            confirmButtonText: inviteBtn,
+            confirmButtonColor: "#1db655",
+            showLoaderOnConfirm: true,
+            preConfirm: async (email) => {
+                try {
+                    const data = {
+                        email: email,
+                        organizationId: getTokenData?.organization
+                    }
+
+                    return await SendPutRequest("/v1/organizations/invite", data);
+                } catch (error) {
+                    Swal.showValidationMessage(`
+                        Request failed`);
+                }
+            },
+            allowOutsideClick: () => !Swal.isLoading()
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "Your work has been saved",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+        });
+    }
+
     return (
         <>
             {loadingGet
@@ -231,11 +274,10 @@ export default function Users() {
                         <h2 className="my-0">{PageName}</h2>
                         {/* Add new */}
                         {getTokenData?.permissionLevel === "Administrator"
-                            ? <Link to={NewItemUrl}>
-                                <Button icon="pi pi-plus" severity='success'>
-                                    <span className='pl-2'>{TableHeaderNew}</span>
-                                </Button>
-                            </Link>
+                            ?
+                            <Button icon="pi pi-plus" severity='success' onClick={() => inviteUser()}>
+                                <span className='pl-2'>{TableHeaderNew}</span>
+                            </Button>
                             : null}
                     </div>
                     {/*Table*/}

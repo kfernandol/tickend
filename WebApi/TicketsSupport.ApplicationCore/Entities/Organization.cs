@@ -26,6 +26,8 @@ public partial class Organization
 
     public virtual ICollection<Menu> Menus { get; set; } = new List<Menu>();
 
+    public virtual ICollection<OrganizationInvitation> OrganizationInvitations { get; set; } = new List<OrganizationInvitation>();
+
     public virtual ICollection<OrganizationsXuser> OrganizationsXusers { get; set; } = new List<OrganizationsXuser>();
 
     public virtual ICollection<Project> Projects { get; set; } = new List<Project>();

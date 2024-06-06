@@ -163,7 +163,10 @@
       "lastName": "Apellido",
       "email": "Correo electrónico",
       "role": "Rol",
-      "new": "Nuevo Usuario",
+      "new": "Invitar Usuario",
+      "inviteTitle": "Ingresa el email del usuario",
+      "inviteText": "*El usuario debe estar registrado",
+      "inviteBtn": "Invitar",
       "password": "Contraseña",
       "confirmPassword": "Confirmar Contraseña",
       "direction": "Dirección",
@@ -362,7 +365,9 @@
       "addNew": "Agregar",
       "select": "Seleccionar",
       "edit": "Editar",
-      "delete": "Borrar"
+      "delete": "Borrar",
+      "invitationAcceptedTitle": "La invitacion a sido aceptada",
+      "invitationAcceptedSubTitle": "Preciona el boton de abajo para continuar"
     },
     "placeholder": {
       "selectOrganization": "Selecciona una organizacion"

@@ -6,7 +6,6 @@ import Home from "../views/home/home";
 import Layout from "../views/shared/layout/Layout.tsx";
 import LayoutLogin from "../views/shared/layoutLogin/layoutLogin.tsx";
 import Users from "../views/users/User.tsx";
-import UsersNew from "../views/users/User.new.tsx";
 import UsersEdit from "../views/users/User.edit.tsx";
 import Roles from "../views/roles/Rol.tsx";
 import RolNew from "../views/roles/Rol.new.tsx";
@@ -37,6 +36,7 @@ import Page401 from "../views/error-pages/Page401.tsx";
 import LayoutRegister from "../views/shared/layoutLogin/LayoutRegister.tsx";
 import ConfirmRegister from "../views/confirm-register/ConfirmRegister.tsx";
 import Stadistics from "../views/stadistics/Stadistics.tsx";
+import InviteOrganization from "../views/inviteOrganization/InviteOrganization.tsx";
 
 //Routes with login
 export const routesAuthorized = () => {
@@ -66,13 +66,6 @@ export const routesAuthorized = () => {
                         <ProtectedRoute name="Users">
                             <Users />
                         </ProtectedRoute>,
-                },
-                {
-                    path: paths.newUser,
-                    element:
-                        <ProtectedRoute name="Users">
-                            <UsersNew />
-                        </ProtectedRoute>
                 },
                 {
                     path: paths.editUser,
@@ -280,6 +273,18 @@ export const routesAuthorized = () => {
             ],
         },
         {
+            path: paths.resetPassword,
+            element: <ResetPassword />
+        },
+        {
+            path: paths.changePassword,
+            element: <ChangePassword />
+        },
+        {
+            path: paths.inviteOrganization,
+            element: <InviteOrganization />
+        },
+        {
             path: paths.unauthorized,
             element: <Page401 />
         },
@@ -313,6 +318,10 @@ export const routesUnauthorized = () => {
         {
             path: paths.confirmRegister,
             element: <ConfirmRegister />
+        },
+        {
+            path: paths.inviteOrganization,
+            element: <InviteOrganization />
         },
         {
             path: paths.unauthorized,

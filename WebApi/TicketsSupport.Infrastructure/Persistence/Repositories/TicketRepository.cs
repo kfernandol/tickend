@@ -392,5 +392,22 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
 
             throw new NotFoundException(ExceptionMessage.NotFound("Ticket", $"{id}"));
         }
+
+        public async Task<bool> RatingTicket(int id, float rating)
+        {
+            var ticket = this._context.Tickets.Include(x => x.CreateByNavigation)
+                                              .FirstOrDefault(x => x.Id == id && x.OrganizationId == OrganizationId && x.Active == true);
+
+            if (ticket != null)
+            {
+                ticket.Rating = rating;
+
+                _context.Tickets.Update(ticket);
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            return false;
+        }
     }
 }
