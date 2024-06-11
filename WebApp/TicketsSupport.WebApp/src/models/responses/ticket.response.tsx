@@ -17,4 +17,5 @@ export interface TicketResponse {
     os: string,
     browser: string,
     reply: number,
+    rating: number,
 }

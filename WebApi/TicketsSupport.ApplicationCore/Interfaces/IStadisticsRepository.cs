@@ -10,6 +10,7 @@ namespace TicketsSupport.ApplicationCore.Interfaces
         Task<int> GetOpenTickets();
         Task<int> GetPendingTickets();
         Task<double> GetTicketAvgClosed();
+        Task<double> GetTicketAvgRating();
         Task<int> GetProjectsAssigned();
         Task<List<ChartData>> GetStatusTicketsClosedChart();
         Task<ChartData> GetStatusTicketsChart();

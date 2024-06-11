@@ -72,6 +72,7 @@ namespace TicketsSupport.ApplicationCore.DTOs
         public string Os { get; set; } = null!;
         public string Browser { get; set; } = null!;
         public int? Reply { get; set; }
+        public double? Rating { get; set; }
         public bool Active { get; set; }
     }
 }

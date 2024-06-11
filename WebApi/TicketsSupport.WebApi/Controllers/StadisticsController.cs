@@ -112,6 +112,20 @@ namespace TicketsSupport.WebApi.Controllers
         }
 
         /// <summary>
+        /// gets the avg ticket rating time
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("tickets/rating-average/"), MapToApiVersion(1.0)]
+        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(double))]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
+        [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ErrorResponse))]
+        public async Task<IActionResult> GetTicketAvgRating()
+        {
+            var ticketAvgRating = await _stadisticsRepository.GetTicketAvgRating();
+            return Ok(ticketAvgRating);
+        }
+
+        /// <summary>
         /// gets the data for the ticket chart by state
         /// </summary>
         /// <returns></returns>

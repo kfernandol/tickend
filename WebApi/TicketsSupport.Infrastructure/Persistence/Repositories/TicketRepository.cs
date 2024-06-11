@@ -272,6 +272,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                     Os = x.Os,
                                                     Reply = x.Reply,
                                                     LastUpdatedBy = x.LastUpdatedBy,
+                                                    Rating = x.Rating,
                                                     Active = x.Active
                                                 })
                                                .AsNoTracking()
@@ -308,6 +309,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                    Os = x.Os,
                                                    Reply = x.Reply,
                                                    LastUpdatedBy = x.LastUpdatedBy,
+                                                   Rating = x.Rating,
                                                    Active = x.Active
                                                })
                                                .AsNoTracking()

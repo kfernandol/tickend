@@ -1,4 +1,4 @@
-//components
+﻿//components
 import { Card } from "primereact/card";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { useEffect, useState } from "react";
@@ -19,6 +19,7 @@ function Stadistics() {
     const [ticketsClosed, setTicketsClosed] = useState<number | null>(null);
     const [projectsAssigned, setProjectsAssigned] = useState<number | null>(null);
     const [ticketsClosedAVG, setTicketsClosedAVG] = useState<number | null>(null);
+    const [ticketsRatingAVG, setTicketsRatingAVG] = useState<number | null>(null);
     const [chartTicketsClosedByMonthData, setChartTicketsClosedByMonthData] = useState({});
     const [chartTicketsClosedByMonthOptions, setChartTicketsClosedByMonthOptions] = useState({});
 
@@ -49,6 +50,7 @@ function Stadistics() {
             SendGetRequest("v1/stadistics/tickets/open"),
             SendGetRequest("v1/stadistics/tickets/closed"),
             SendGetRequest("v1/stadistics/tickets/closed-average"),
+            SendGetRequest("v1/stadistics/tickets/rating-average"),
             SendGetRequest("v1/stadistics/projects/total"),
             SendGetRequest("v1/stadistics/tickets/closed-month-chart"),
         ];
@@ -78,6 +80,9 @@ function Stadistics() {
                     break;
                 case "v1/stadistics/tickets/closed-average":
                     setTicketsClosedAVG(response.data as number);
+                    break;
+                case "v1/stadistics/tickets/rating-average":
+                    setTicketsRatingAVG(response.data as number);
                     break;
                 case "v1/stadistics/projects/total":
                     setProjectsAssigned(response.data as number);
@@ -221,11 +226,24 @@ function Stadistics() {
                             subTitle={SatisfactionDescTxt}
                             pt={{ root: { className: "h-full" }, content: { className: "py-0" }, title: { className: "font-semibold mb-0" }, subTitle: { className: "mb-0" } }}>
                             <h1 className="m-0 text-center text-6xl">
-                                {
-                                    ticketsClosedAVG != null
-                                        ? ticketsClosedAVG.toFixed(2) + " h"
-                                        : <ProgressSpinner style={{ width: '30px', height: '30px' }} animationDuration=".5s" />
-                                }
+                                {ticketsRatingAVG !== null ? (
+                                    <span>
+                                        {(() => {
+                                            const emojiMap: { [key: number]: string } =
+                                            {
+                                                1: '😠', // Carita enojada
+                                                2: '😞', // Carita triste
+                                                3: '😐', // Carita neutral
+                                                4: '🙂', // Carita sonriente
+                                                5: '😁' // Carita feliz (excelencia)
+                                            };
+                                            const rating = Math.round(ticketsRatingAVG);
+                                            return emojiMap[rating] + ticketsRatingAVG.toFixed(2) || '0';
+                                        })()}
+                                    </span>
+                                ) : (
+                                    <ProgressSpinner style={{ width: '30px', height: '30px' }} animationDuration=".5s" />
+                                )}
                             </h1>
                         </Card>
                     </div>

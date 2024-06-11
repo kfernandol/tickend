@@ -392,6 +392,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                         (x.Project.ProjectXclients.Any(c => c.Client.Id == UserIdRequest) ||
                                                          x.Project.ProjectXdevelopers.Any(d => d.Developer.Id == UserIdRequest)))
                                              .AsNoTracking()
+                                             .AsSplitQuery()
                                              .Select(x => new
                                              {
                                                  ClosedTime = (x.DateClosed.Value - x.DateCreated).TotalHours
@@ -559,6 +560,55 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                     .AsSplitQuery()
                                                     .ToListAsync();
                 return tickets.Count();
+            }
+        }
+
+        public async Task<double> GetTicketAvgRating()
+        {
+            var user = await _context.Users.AsNoTracking()
+                                             .Include(x => x.RolXusers)
+                                             .ThenInclude(x => x.Rol)
+                                             .FirstOrDefaultAsync(x => x.Id == UserIdRequest);
+
+            if (user?.RolXusers.FirstOrDefault(x => x.Rol.OrganizationId == OrganizationId)?.Rol?.PermissionLevel == PermissionLevel.Administrator)
+            {
+                var ticketsAssigned = await _context.Tickets.Where(x => x.DateClosed.HasValue && x.Active == true && x.OrganizationId == OrganizationId)
+                                                            .Select(x => new
+                                                            {
+                                                                Rating = (double)(x.Rating != null ? x.Rating : 0)
+                                                            })
+                                                            .ToListAsync();
+                if (ticketsAssigned.Any())
+                    return ticketsAssigned.Select(x => x.Rating).Average();
+
+                return 0;
+            }
+            else
+            {
+                var ticketsAssigned = await _context.Tickets.Include(x => x.Project)
+                                                .ThenInclude(x => x.ProjectXclients)
+                                                .ThenInclude(x => x.Client)
+                                             .Include(x => x.Project)
+                                                .ThenInclude(x => x.ProjectXdevelopers)
+                                                .ThenInclude(x => x.Developer)
+                                             .Where(x => x.DateClosed.HasValue &&
+                                                         x.Active == true &&
+                                                         x.OrganizationId == OrganizationId &&
+                                                         x.Project.Active == true &&
+                                                        (x.Project.ProjectXclients.Any(c => c.Client.Id == UserIdRequest) ||
+                                                         x.Project.ProjectXdevelopers.Any(d => d.Developer.Id == UserIdRequest)))
+                                             .AsNoTracking()
+                                             .AsSplitQuery()
+                                             .Select(x => new
+                                             {
+                                                 Rating = (double)(x.Rating != null ? x.Rating : 0)
+                                             })
+                                             .ToListAsync();
+
+                if (ticketsAssigned.Any())
+                    return ticketsAssigned.Select(x => x.Rating).Average();
+
+                return 0;
             }
         }
     }

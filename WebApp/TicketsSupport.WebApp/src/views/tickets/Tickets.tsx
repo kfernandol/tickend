@@ -38,6 +38,7 @@ import { UserResponse } from '../../models/responses/users.response';
 import { TicketForm } from '../../models/forms/ticket.form';
 import { BasicResponse, ErrorResponse, ErrorsResponse } from '../../models/responses/basic.response';
 import { TicketRequest } from '../../models/requests/ticket.request';
+import { Rating, RatingChangeEvent } from 'primereact/rating';
 
 export default function Tickets() {
     const { id } = useParams();
@@ -132,6 +133,7 @@ export default function Tickets() {
                                     os: value.os,
                                     dateClosed: new Date(value.dateClosed),
                                     lastUpdatedBy: value.lastUpdatedBy,
+                                    rating: value.rating,
                                     reply: value.reply
                                 }
                             ));
@@ -206,6 +208,7 @@ export default function Tickets() {
                         os: value.os,
                         dateClosed: new Date(value.dateClosed),
                         lastUpdatedBy: value.lastUpdatedBy,
+                        rating: value.rating,
                         reply: value.reply
                     }
                 )));
@@ -313,6 +316,7 @@ export default function Tickets() {
                         os: response.data.os,
                         dateClosed: new Date(response.data.dateClosed),
                         lastUpdatedBy: response.data.lastUpdatedBy,
+                        rating: response.data.rating,
                         reply: response.data.reply
                     });
                 })
@@ -467,6 +471,7 @@ export default function Tickets() {
                                 ip: (response.data as TicketResponse).ip,
                                 os: (response.data as TicketResponse).os,
                                 browser: (response.data as TicketResponse).browser,
+                                rating: (response.data as TicketResponse).rating,
                                 reply: (response.data as TicketResponse).reply
                             });
 
@@ -558,6 +563,7 @@ export default function Tickets() {
                     os: value.os,
                     dateClosed: new Date(value.dateClosed),
                     lastUpdatedBy: value.lastUpdatedBy,
+                    rating: value.rating,
                     reply: value.reply
                 })))
             }
@@ -604,6 +610,13 @@ export default function Tickets() {
 
         if (ticketData)
             ticketData.style.setProperty("display", "flex", "important")
+    }
+
+    const handlerRatingOnChange = (e: RatingChangeEvent, ticketId: number) => {
+        const data = {
+            rating: e.value
+        }
+        SendPutRequest("v1/tickets/rating/" + ticketId, data);
     }
 
     return (
@@ -683,6 +696,9 @@ export default function Tickets() {
                                                 <div className="w-10 flex align-items-center gap-2">
                                                     {GetTicketStatusBadge(ticket.ticketStatusId, ticket.id)}
                                                     {GetTicketPriorityBadge(ticket.ticketPriorityId)}
+                                                    {ticket.isClosed && ticket.isClosed === true
+                                                        ? <Rating value={ticket.rating} onChange={(e) => handlerRatingOnChange(e, ticket.id)} />
+                                                        : null}
                                                 </div>
                                                 <div className="w-2 flex justify-content-end align-items-center">
                                                     <p className="text-sm text-gray-400 font-semibold m-0">{`#${ticket.id}`}</p>
