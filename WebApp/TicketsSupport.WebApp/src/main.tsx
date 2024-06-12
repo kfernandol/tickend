@@ -15,7 +15,7 @@ import "./assets/themes/tickend-light/theme.css"
 //i18n
 import "./assets/themes/tickend-light/theme.css"
 import { LanguageComponent } from "./i18n.tsx";
-//google
+//googleOauth
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
