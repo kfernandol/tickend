@@ -101,7 +101,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                     var firstUserOrganization = user.OrganizationsXusers.FirstOrDefault();
 
                     if (firstUserOrganization != null)
-                        organizationId = firstUserOrganization.Id;
+                        organizationId = firstUserOrganization.OrganizationId;
                 }
 
                 var token = TokenUtils.GenerateToken(organizationId, user, _configJWT);
@@ -184,7 +184,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                 var firstUserOrganization = user.OrganizationsXusers.FirstOrDefault();
 
                 if (firstUserOrganization != null)
-                    organizationId = firstUserOrganization.Id;
+                    organizationId = firstUserOrganization.OrganizationId;
             }
 
 

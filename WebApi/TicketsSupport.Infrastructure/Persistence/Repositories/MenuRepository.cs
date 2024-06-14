@@ -96,7 +96,25 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                                                      .AsNoTracking()
                                                      .ToListAsync();
 
-            return menuByUser;
+            // Obtener los IDs de los menús padres únicos
+            var parentMenuIds = menuByUser.Where(m => m.ParentId.HasValue)
+                                         .Select(m => m.ParentId.Value)
+                                         .Distinct()
+                                         .ToList();
+
+            // Obtener los menús padres correspondientes
+            var parentMenus = await _context.Menus
+                                            .Where(m => parentMenuIds.Contains(m.Id) &&
+                                                        m.OrganizationId == OrganizationId &&
+                                                        m.Active == true)
+                                            .Select(m => _mapper.Map<MenuResponse>(m))
+                                            .ToListAsync();
+
+            // Combinar los menús hijos y padres
+            var allMenus = menuByUser.Concat(parentMenus).ToList();
+
+
+            return allMenus;
         }
 
         public async Task<MenuResponse> UpdateMenu(int id, UpdateMenuRequest request)
