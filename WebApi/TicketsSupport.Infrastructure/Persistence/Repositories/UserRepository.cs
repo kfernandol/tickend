@@ -131,6 +131,7 @@ namespace TicketsSupport.Infrastructure.Persistence.Repositories
                     if (rolXuser != null && rolXuser.RolId != null)
                     {
                         x.RolId = (int)rolXuser.RolId;
+                        x.LevelPermission = ((rolXuser.Rol ?? new Rol()).PermissionLevel).ToString();
                     }
                 }
             });
