@@ -753,7 +753,7 @@ export default function Tickets() {
                                     {/*Avatar */}
                                     <div className="flex align-items-center">
                                         <Avatar
-                                            image={"/src/assets/imgs/avatar-default.png"}
+                                            image={getPhotoUser(Users, TicketSelected?.createBy)}
                                             size="large"
                                         />
 
@@ -788,7 +788,7 @@ export default function Tickets() {
                                         <div className="flex gap-2 my-2">
                                             {/*Avatar */}
                                             <div className="flex align-items-center">
-                                                <Avatar image={getPhotoUser(Users, TicketSelected?.createBy)} size="large"></Avatar>
+                                                <Avatar image={getPhotoUser(Users, ticket?.createBy)} size="large"></Avatar>
                                             </div>
                                             {/*User and Date*/}
                                             <div className="flex flex-column justify-content-center">
