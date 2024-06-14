@@ -753,7 +753,7 @@ export default function Tickets() {
                                     {/*Avatar */}
                                     <div className="flex align-items-center">
                                         <Avatar
-                                            image={getPhotoUser(Users, TicketSelected?.createBy)}
+                                            image={"/src/assets/imgs/avatar-default.png"}
                                             size="large"
                                         />
 
